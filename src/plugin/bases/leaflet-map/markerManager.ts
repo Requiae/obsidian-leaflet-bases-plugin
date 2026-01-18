@@ -20,6 +20,6 @@ export class MarkerManager {
 		this.markers = data.data
 			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker")))
 			.filter((marker) => marker !== null);
-		console.log(this.markers);
+		// console.log(this.markers);
 	}
 }

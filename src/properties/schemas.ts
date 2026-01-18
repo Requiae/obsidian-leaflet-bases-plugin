@@ -21,7 +21,7 @@ const schemas: Record<SchemaType, Schema<string>> = {
 };
 
 export function schemaValidatorFactory(schema: SchemaType): ValidatorFunction {
-	return (value: { [key: string]: any }) => {
+	return (value: { [key: string]: unknown }) => {
 		return Object.entries(schemas[schema])
 			.map(
 				([key, validate]) =>

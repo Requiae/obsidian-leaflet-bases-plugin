@@ -14,10 +14,12 @@ const validator: ValidatorFunction = schemaValidatorFactory("marker");
 
 export function markersFromEntry(entry: Value | null): Marker[] | null {
 	// castEntryToMarker is only safe to use after validation
-	function castEntryToMarker(cast: any): Marker {
+	function castEntryToMarker(cast: object): Marker {
+		if (!("coordinates" in cast)) throw new Error("Cast not properly validated");
+
 		return {
 			...cast,
-			coordinates: (cast.coordinates as string)
+			coordinates: (cast["coordinates"] as string)
 				.replace(/\s/g, "")
 				.split(",")
 				.map((coordinate) => parseInt(coordinate)),
@@ -28,19 +30,19 @@ export function markersFromEntry(entry: Value | null): Marker[] | null {
 
 	// ListValue is not iterable and ObjectValue is burdensome
 	// Because working with nested Values is horrible, JSON cast to POJO
-	var markerEntries: any;
+	let markerEntries: unknown;
 	try {
 		markerEntries = JSON.parse(entry.toString());
-	} catch (error) {
-		console.log(error);
+	} catch {
 		return null;
 	}
 
-	const markers: any[] = Array.isArray(markerEntries) ? markerEntries : [markerEntries];
-	return markers
+	const markers: unknown[] = Array.isArray(markerEntries) ? markerEntries : [markerEntries];
+	if (!markers.every((marker) => marker && typeof marker === "object")) return null;
+	return (markers as object[])
 		.map((markerEntry) => {
 			// The POJO cast messes with number properties, repair minZoom before validation
-			if (markerEntry.minZoom) {
+			if ("minZoom" in markerEntry) {
 				markerEntry.minZoom = parseInt(markerEntry.minZoom as string);
 			}
 			return validator(markerEntry) ? castEntryToMarker(markerEntry) : null;

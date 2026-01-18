@@ -16,7 +16,7 @@ export class PropertyManager {
 
 		this.plugin.registerEvent(
 			this.metadataTypeManager.on("changed", (property) => {
-				console.log(property);
+				// console.log(property);
 			}),
 		);
 	}
