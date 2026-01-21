@@ -1,4 +1,5 @@
 import { Value } from "obsidian";
+import { markerColourMap } from "plugin/constants";
 import { schemaValidatorFactory } from "properties/schemas";
 import { ValidatorFunction } from "properties/validators";
 
@@ -12,20 +13,44 @@ export interface Marker {
 
 const validator: ValidatorFunction = schemaValidatorFactory("marker");
 
+function isProperEntry(entry: unknown): entry is { [key: string]: string } {
+	if (!entry || typeof entry !== "object") return false;
+	return Object.values(entry).every((property) => typeof property === "string");
+}
+
+function parseCoordinates(coordinates: string): number[] {
+	return coordinates
+		.replace(/\s/g, "")
+		.split(",")
+		.map((coordinate) => parseInt(coordinate));
+}
+
+function parseColour(colour: string): string {
+	const inputValue = colour.toLowerCase();
+	return Object.keys(markerColourMap).includes(inputValue)
+		? markerColourMap[inputValue as keyof typeof markerColourMap]
+		: inputValue;
+}
+
+function parseMarkerFromEntry(entry: unknown): Marker | null {
+	if (!isProperEntry(entry)) return null;
+
+	// The POJO cast messes with number properties, repair minZoom before validation
+	const minZoom = "minZoom" in entry ? parseInt(entry.minZoom) : undefined;
+	if (!validator({ ...entry, minZoom })) return null;
+
+	if (!("coordinates" in entry)) throw new Error("Marker not properly validated");
+
+	return {
+		mapName: entry.mapName,
+		coordinates: parseCoordinates(entry.coordinates),
+		icon: entry.icon,
+		colour: "colour" in entry ? parseColour(entry.colour) : undefined,
+		minZoom,
+	};
+}
+
 export function markersFromEntry(entry: Value | null): Marker[] | null {
-	// castEntryToMarker is only safe to use after validation
-	function castEntryToMarker(cast: object): Marker {
-		if (!("coordinates" in cast)) throw new Error("Cast not properly validated");
-
-		return {
-			...cast,
-			coordinates: (cast["coordinates"] as string)
-				.replace(/\s/g, "")
-				.split(",")
-				.map((coordinate) => parseInt(coordinate)),
-		};
-	}
-
 	if (entry === null) return null;
 
 	// ListValue is not iterable and ObjectValue is burdensome
@@ -38,14 +63,7 @@ export function markersFromEntry(entry: Value | null): Marker[] | null {
 	}
 
 	const markers: unknown[] = Array.isArray(markerEntries) ? markerEntries : [markerEntries];
-	if (!markers.every((marker) => marker && typeof marker === "object")) return null;
-	return (markers as object[])
-		.map((markerEntry) => {
-			// The POJO cast messes with number properties, repair minZoom before validation
-			if ("minZoom" in markerEntry) {
-				markerEntry.minZoom = parseInt(markerEntry.minZoom as string);
-			}
-			return validator(markerEntry) ? castEntryToMarker(markerEntry) : null;
-		})
+	return markers
+		.map((markerEntry) => parseMarkerFromEntry(markerEntry))
 		.filter((marker) => marker !== null);
 }
