@@ -1,14 +1,23 @@
 import { markerColourMap, regExpMap } from "plugin/constants";
 
-type Validator = "name" | "integer" | "coordinates" | "icon" | "colour";
+type Validator = "name" | "source" | "integer" | "number" | "coordinates" | "icon" | "colour";
 export type ValidatorFunction = (value: unknown) => boolean;
 
 function nameValidator(value: unknown): boolean {
 	return String.isString(value);
 }
 
+function sourcevalidator(value: unknown): boolean {
+	const preparedValue = typeof value === "string" ? value : value?.toString();
+	return !!preparedValue;
+}
+
 function integerValidator(value: unknown): boolean {
 	return Number.isInteger(value);
+}
+
+function numberValidator(value: unknown): boolean {
+	return Number.isNumber(value);
 }
 
 function coordinatesValidator(value: unknown): boolean {
@@ -31,7 +40,9 @@ function colourValidator(value: unknown): boolean {
 
 const validators: Record<Validator, ValidatorFunction> = {
 	name: nameValidator,
+	source: sourcevalidator,
 	integer: integerValidator,
+	number: numberValidator,
 	coordinates: coordinatesValidator,
 	icon: iconValidator,
 	colour: colourValidator,

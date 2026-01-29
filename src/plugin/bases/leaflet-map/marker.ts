@@ -36,7 +36,7 @@ function parseMarkerFromEntry(entry: unknown): Marker | null {
 	if (!isProperEntry(entry)) return null;
 
 	// The POJO cast messes with number properties, repair minZoom before validation
-	const minZoom = "minZoom" in entry ? parseInt(entry.minZoom) : undefined;
+	const minZoom = "minZoom" in entry ? parseFloat(entry.minZoom) : undefined;
 	if (!validator({ ...entry, minZoom })) return null;
 
 	if (!("coordinates" in entry)) throw new Error("Marker not properly validated");
