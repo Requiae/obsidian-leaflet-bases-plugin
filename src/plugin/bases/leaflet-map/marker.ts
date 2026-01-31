@@ -2,8 +2,10 @@ import { App, BasesEntry, getIcon, TFile, Value } from "obsidian";
 import {
 	divIcon,
 	DivIcon,
+	LayerGroup,
 	LeafletMouseEvent,
 	LeafletMouseEventHandlerFn,
+	Map,
 	marker,
 	Marker,
 } from "leaflet";
@@ -83,13 +85,12 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 }
 
 export class MarkerManager {
-	private _markers: Marker[] = [];
-	private mapName: string | undefined = undefined;
 	private xmlSerializer: XMLSerializer;
 
-	get markers(): Marker[] {
-		return this._markers;
-	}
+	private mapName: string | undefined = undefined;
+	private map: Map;
+	private markerLayer: LayerGroup;
+	private mapMinZoom: number = 0;
 
 	constructor(public app: App) {
 		this.load();
@@ -99,26 +100,55 @@ export class MarkerManager {
 		this.xmlSerializer = new XMLSerializer();
 	}
 
-	unload() {}
+	unload() {
+		this.markerLayer?.clearLayers();
+	}
+
+	addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
+		const tolerance = 0.00001; // We have to deal with floating point errors
+		if (this.map.getZoom() >= markerZoom - tolerance) {
+			markerItem.addTo(this.markerLayer);
+		} else {
+			markerItem.remove();
+		}
+	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
-		this._markers = data.data
+		if (!this.markerLayer) throw new Error("Marker not properly validated");
+		this.markerLayer.clearLayers();
+
+		data.data
 			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker"), entry.file))
 			.filter((markerEntry) => markerEntry !== null)
 			.filter(
 				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
 			)
-			.map((markerEntry) => {
+			.forEach((markerEntry) => {
 				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
 				// LatLng is y, x so we reverse the coordinates
-				return marker([markerEntry.coordinates[1], markerEntry.coordinates[0]], options)
+				const markerItem = marker([markerEntry.coordinates[1], markerEntry.coordinates[0]], options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
+
+				this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom);
+				this.map.on("zoomend", () =>
+					this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom),
+				);
 			});
 	}
 
-	setMapName(name: string | undefined) {
-		this.mapName = name;
+	setMap(map: Map) {
+		this.map = map;
+	}
+
+	setMapName(mapName: string | undefined) {
+		this.mapName = mapName;
+	}
+
+	setMarkerLayer(markerLayer: LayerGroup, mapMinZoom: number) {
+		this.markerLayer?.clearLayers();
+		this.markerLayer = markerLayer;
+		this.mapMinZoom = mapMinZoom;
 	}
 
 	private buildMarkerIcon(iconId: string | undefined, colour: string | undefined): DivIcon {

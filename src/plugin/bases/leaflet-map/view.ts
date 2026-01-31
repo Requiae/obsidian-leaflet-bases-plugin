@@ -1,7 +1,7 @@
 import { BasesView, QueryController } from "obsidian";
 import { ViewRegistrationBuilder } from "../viewManager";
 import { MarkerManager } from "./marker";
-import { map, CRS, Map, imageOverlay, LatLngBoundsExpression } from "leaflet";
+import { map, CRS, Map, imageOverlay, LatLngBoundsExpression, layerGroup } from "leaflet";
 import { ImageLoader } from "./imageLoader";
 import { schemaValidatorFactory } from "properties/schemas";
 import { defaultMapSettings } from "plugin/constants";
@@ -12,8 +12,8 @@ interface MapSettings {
 	image: string | string[][]; // Wiki links take the shape of string[][]
 	minZoom?: number;
 	maxZoom?: number;
-	initialZoom?: number;
-	zoomStep?: number;
+	defaultZoom?: number;
+	zoomDelta?: number;
 }
 
 function isValidMapSettings(value: unknown): value is MapSettings {
@@ -62,10 +62,6 @@ class LeafletMapView extends BasesView {
 		if (!this.leafletMap) await this.initialiseMap();
 
 		this.markerManager.updateMarkers(this.data);
-
-		this.markerManager.markers.forEach((marker) => {
-			marker.addTo(this.leafletMap);
-		});
 	}
 
 	private async initialiseMap(): Promise<void> {
@@ -79,8 +75,11 @@ class LeafletMapView extends BasesView {
 
 		const minZoom = this.mapSettings.minZoom ?? defaultMapSettings.minZoom;
 		const maxZoom = Math.max(this.mapSettings.maxZoom ?? defaultMapSettings.maxZoom, minZoom);
-		const initialZoom = clamp(this.mapSettings.initialZoom ?? minZoom, minZoom, maxZoom);
-		const zoomDelta = this.mapSettings.zoomStep ?? defaultMapSettings.zoomStep;
+		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
+		const zoomDelta = this.mapSettings.zoomDelta ?? defaultMapSettings.zoomDelta;
+
+		const markerLayer = layerGroup();
+		const overlay = imageOverlay(imageData.url, bounds);
 
 		this.leafletMap = map(this.mapEl, {
 			crs: CRS.Simple,
@@ -89,13 +88,13 @@ class LeafletMapView extends BasesView {
 			maxZoom,
 			zoomSnap: defaultMapSettings.zoomSnap,
 			zoomDelta,
+			layers: [markerLayer, overlay],
 		});
 
-		const overlay = imageOverlay(imageData.url, bounds);
-		overlay.addTo(this.leafletMap);
-
 		this.leafletMap.fitBounds(bounds);
-		this.leafletMap.setZoom(initialZoom);
+		this.leafletMap.setZoom(defaultZoom);
+		this.markerManager.setMap(this.leafletMap);
+		this.markerManager.setMarkerLayer(markerLayer, minZoom);
 	}
 
 	private initialiseMapSettings(): void {
@@ -106,8 +105,8 @@ class LeafletMapView extends BasesView {
 			image: this.config.get("image"),
 			minZoom: this.config.get("minZoom"),
 			maxZoom: this.config.get("maxZoom"),
-			initialZoom: this.config.get("initialZoom"),
-			zoomStep: this.config.get("zoomStep"),
+			defaultZoom: this.config.get("defaultZoom"),
+			zoomDelta: this.config.get("zoomDelta"),
 		};
 
 		if (isValidMapSettings(settings)) {

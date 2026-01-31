@@ -16,14 +16,14 @@ const markerSchema: Schema<MarkerKeys> = {
 	minZoom: { validator: validatorFactory("number") },
 };
 
-type MapKeys = "name" | "image" | "minZoom" | "maxZoom" | "initialZoom" | "zoomStep";
+type MapKeys = "name" | "image" | "minZoom" | "maxZoom" | "defaultZoom" | "zoomDelta";
 const mapSchema: Schema<MapKeys> = {
 	name: { validator: validatorFactory("name") },
 	image: { validator: validatorFactory("source"), required: true },
 	minZoom: { validator: validatorFactory("number") },
 	maxZoom: { validator: validatorFactory("number") },
-	initialZoom: { validator: validatorFactory("number") },
-	zoomStep: { validator: validatorFactory("number") },
+	defaultZoom: { validator: validatorFactory("number") },
+	zoomDelta: { validator: validatorFactory("number") },
 };
 
 const schemas: Record<SchemaType, Schema<string>> = {
