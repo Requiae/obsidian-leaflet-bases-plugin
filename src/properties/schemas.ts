@@ -36,7 +36,7 @@ export function schemaValidatorFactory(schema: SchemaType): ValidatorFunction {
 		return Object.entries(schemas[schema])
 			.map(
 				([key, validate]) =>
-					(key in value === false && !validate.required) || validate.validator(value[key]),
+					(value[key] === undefined && !validate.required) || validate.validator(value[key]),
 			)
 			.every(Boolean);
 	};

@@ -10,6 +10,31 @@
 	}
 }
 
+.leaflet-marker-icon .leaflet-marker-pin {
+	position: absolute;
+	width: 32px;
+	height: 48px;
+	margin: 0px auto;
+	z-index: inherit;
+}
+
+.leaflet-marker-icon .leaflet-marker-inner-icon {
+	position: absolute;
+	width: 32px;
+	height: 19px;
+	font-size: 19px;
+	top: 8px;
+	left: 0px;
+	z-index: inherit;
+	margin: 0px auto;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	color: #ebebec;
+}
+
 .leaflet-pane,
 .leaflet-tile,
 .leaflet-marker-icon,

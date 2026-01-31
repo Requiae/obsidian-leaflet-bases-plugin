@@ -1,22 +1,24 @@
 import { BasesView, QueryController } from "obsidian";
 import { ViewRegistrationBuilder } from "../viewManager";
-import { MarkerManager } from "./markerManager";
+import { MarkerManager } from "./marker";
 import { map, CRS, Map, imageOverlay, LatLngBoundsExpression } from "leaflet";
 import { ImageLoader } from "./imageLoader";
 import { schemaValidatorFactory } from "properties/schemas";
+import { defaultMapSettings } from "plugin/constants";
+import { clamp } from "plugin/util";
 
-type wiki = string[][];
 interface MapSettings {
 	name?: string;
-	image: string | wiki;
+	image: string | string[][]; // Wiki links take the shape of string[][]
 	minZoom?: number;
 	maxZoom?: number;
 	initialZoom?: number;
 	zoomStep?: number;
 }
+
 function isValidMapSettings(value: unknown): value is MapSettings {
 	if (!value || typeof value !== "object") return false;
-	return schemaValidatorFactory("map")(value); // TODO: is broken, fix
+	return schemaValidatorFactory("map")(value);
 }
 
 const LeafletMapViewType: string = "leaflet-map";
@@ -47,7 +49,7 @@ class LeafletMapView extends BasesView {
 		this.containerEl = parentEl.createDiv("bases-leaflet-map-container");
 		this.mapEl = this.containerEl.createDiv("bases-leaflet-map");
 
-		this.markerManager = new MarkerManager();
+		this.markerManager = new MarkerManager(this.app);
 		this.imageLoader = new ImageLoader(this.app);
 	}
 
@@ -60,11 +62,14 @@ class LeafletMapView extends BasesView {
 		if (!this.leafletMap) await this.initialiseMap();
 
 		this.markerManager.updateMarkers(this.data);
+
+		this.markerManager.markers.forEach((marker) => {
+			marker.addTo(this.leafletMap);
+		});
 	}
 
 	private async initialiseMap(): Promise<void> {
-		const image = this.config.get("image"); // TODO: Get this from this.mapSettings
-		const imageData = await this.imageLoader.getImageData(image);
+		const imageData = await this.imageLoader.getImageData(this.mapSettings.image);
 		if (!imageData) return;
 
 		const bounds: LatLngBoundsExpression = [
@@ -72,27 +77,32 @@ class LeafletMapView extends BasesView {
 			[imageData.dimensions.width, imageData.dimensions.height],
 		];
 
+		const minZoom = this.mapSettings.minZoom ?? defaultMapSettings.minZoom;
+		const maxZoom = Math.max(this.mapSettings.maxZoom ?? defaultMapSettings.maxZoom, minZoom);
+		const initialZoom = clamp(this.mapSettings.initialZoom ?? minZoom, minZoom, maxZoom);
+		const zoomDelta = this.mapSettings.zoomStep ?? defaultMapSettings.zoomStep;
+
 		this.leafletMap = map(this.mapEl, {
 			crs: CRS.Simple,
 			maxBounds: bounds,
-			minZoom: 0,
-			maxZoom: 2,
-			zoomSnap: 0.01,
-			zoomDelta: 0.5,
+			minZoom,
+			maxZoom,
+			zoomSnap: defaultMapSettings.zoomSnap,
+			zoomDelta,
 		});
 
 		const overlay = imageOverlay(imageData.url, bounds);
 		overlay.addTo(this.leafletMap);
 
 		this.leafletMap.fitBounds(bounds);
-		this.leafletMap.setZoom(0);
+		this.leafletMap.setZoom(initialZoom);
 	}
 
 	private initialiseMapSettings(): void {
 		if (this.mapSettings) return;
 
 		const settings = {
-			name: this.config.get("name"),
+			name: this.config.get("mapName"),
 			image: this.config.get("image"),
 			minZoom: this.config.get("minZoom"),
 			maxZoom: this.config.get("maxZoom"),
@@ -100,7 +110,9 @@ class LeafletMapView extends BasesView {
 			zoomStep: this.config.get("zoomStep"),
 		};
 
-		if (isValidMapSettings(settings)) this.mapSettings = settings;
-		console.log(this.mapSettings);
+		if (isValidMapSettings(settings)) {
+			this.mapSettings = settings;
+			this.markerManager.setMapName(settings.name);
+		}
 	}
 }
