@@ -1,3 +1,4 @@
+import { MapObject, MarkerObject } from "plugin/types";
 import { validatorFactory, ValidatorFunction } from "./validators";
 
 type SchemaType = "marker" | "map";
@@ -7,17 +8,14 @@ type Entry = {
 	required?: boolean;
 };
 
-type MarkerKeys = "mapName" | "coordinates" | "icon" | "colour" | "minZoom";
-const markerSchema: Schema<MarkerKeys> = {
+const markerSchema: Schema<keyof MarkerObject> = {
 	mapName: { validator: validatorFactory("name") },
 	coordinates: { validator: validatorFactory("coordinates"), required: true },
 	icon: { validator: validatorFactory("icon") },
 	colour: { validator: validatorFactory("colour") },
 	minZoom: { validator: validatorFactory("number") },
 };
-
-type MapKeys = "name" | "image" | "minZoom" | "maxZoom" | "defaultZoom" | "zoomDelta";
-const mapSchema: Schema<MapKeys> = {
+const mapSchema: Schema<keyof MapObject> = {
 	name: { validator: validatorFactory("name") },
 	image: { validator: validatorFactory("source"), required: true },
 	minZoom: { validator: validatorFactory("number") },
@@ -32,12 +30,18 @@ const schemas: Record<SchemaType, Schema<string>> = {
 };
 
 export function schemaValidatorFactory(schema: SchemaType): ValidatorFunction {
-	return (value: { [key: string]: unknown }) => {
+	return (value: unknown) => {
+		function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
+			if (!value || typeof value !== "object") return false;
+			return Object.keys.length > 0;
+		}
+
+		if (!isNonEmptyObject(value)) return false;
+
 		return Object.entries(schemas[schema])
-			.map(
-				([key, validate]) =>
-					(value[key] === undefined && !validate.required) || validate.validator(value[key]),
-			)
+			.map(([key, validate]) => {
+				return (value[key] === undefined && !validate.required) || validate.validator(value[key]);
+			})
 			.every(Boolean);
 	};
 }

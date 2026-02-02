@@ -6,17 +6,9 @@ import { ImageLoader } from "./imageLoader";
 import { schemaValidatorFactory } from "properties/schemas";
 import { defaultMapSettings } from "plugin/constants";
 import { clamp } from "plugin/util";
+import { MapObject } from "plugin/types";
 
-interface MapSettings {
-	name?: string;
-	image: string | string[][]; // Wiki links take the shape of string[][]
-	minZoom?: number;
-	maxZoom?: number;
-	defaultZoom?: number;
-	zoomDelta?: number;
-}
-
-function isValidMapSettings(value: unknown): value is MapSettings {
+function isValidMapSettings(value: unknown): value is MapObject {
 	if (!value || typeof value !== "object") return false;
 	return schemaValidatorFactory("map")(value);
 }
@@ -33,7 +25,7 @@ export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = () => 
 
 class LeafletMapView extends BasesView {
 	type = LeafletMapViewType;
-	private mapSettings: MapSettings;
+	private mapSettings: MapObject;
 
 	private containerEl: HTMLElement;
 	private mapEl: HTMLElement;
@@ -55,6 +47,12 @@ class LeafletMapView extends BasesView {
 
 	onDataUpdated(): void {
 		void this.updateData();
+	}
+
+	unload(): void {
+		this.markerManager?.unload();
+		this.leafletMap?.clearAllEventListeners();
+		this.leafletMap?.remove();
 	}
 
 	private async updateData(): Promise<void> {

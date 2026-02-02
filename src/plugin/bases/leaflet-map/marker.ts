@@ -1,4 +1,4 @@
-import { App, BasesEntry, getIcon, TFile, Value } from "obsidian";
+import { App, BasesEntry, TFile, Value } from "obsidian";
 import {
 	divIcon,
 	DivIcon,
@@ -9,18 +9,15 @@ import {
 	marker,
 	Marker,
 } from "leaflet";
-import { markerColourMap } from "plugin/constants";
+import { markerColourMap, regExpMap } from "plugin/constants";
 import { schemaValidatorFactory } from "properties/schemas";
 import { ValidatorFunction } from "properties/validators";
+import { MarkerObject } from "plugin/types";
+import { getIconWithDefault } from "plugin/util";
 
-interface MarkerEntry {
-	mapName?: string;
+interface MarkerEntry extends MarkerObject {
 	name: string;
 	link: string;
-	coordinates: [number, number];
-	icon?: string;
-	colour?: string;
-	minZoom?: number;
 }
 
 const validator: ValidatorFunction = schemaValidatorFactory("marker");
@@ -71,15 +68,19 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 
 	// ListValue is not iterable and ObjectValue is burdensome
 	// Because working with nested Values is horrible, JSON cast to POJO
+	// Value converted to string is CSV, even when array, make into a proper array
+	let entryString = entry.toString();
+	if (!regExpMap.arrayString.test(entryString)) entryString = `[${entryString}]`;
+
 	let markerEntries: unknown;
 	try {
-		markerEntries = JSON.parse(entry.toString());
+		markerEntries = JSON.parse(entryString);
 	} catch {
 		return null;
 	}
 
-	const markers: unknown[] = Array.isArray(markerEntries) ? markerEntries : [markerEntries];
-	return markers
+	if (!Array.isArray(markerEntries)) return null;
+	return markerEntries
 		.map((markerEntry) => parseMarkerFromEntry(markerEntry, file.name, file.path))
 		.filter((marker) => marker !== null);
 }
@@ -93,14 +94,10 @@ export class MarkerManager {
 	private mapMinZoom: number = 0;
 
 	constructor(public app: App) {
-		this.load();
-	}
-
-	private load() {
 		this.xmlSerializer = new XMLSerializer();
 	}
 
-	unload() {
+	unload(): void {
 		this.markerLayer?.clearLayers();
 	}
 
@@ -114,7 +111,7 @@ export class MarkerManager {
 	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
-		if (!this.markerLayer) throw new Error("Marker not properly validated");
+		if (!this.markerLayer) throw new Error("MarkerLayer not initialised");
 		this.markerLayer.clearLayers();
 
 		data.data
@@ -152,13 +149,7 @@ export class MarkerManager {
 	}
 
 	private buildMarkerIcon(iconId: string | undefined, colour: string | undefined): DivIcon {
-		function defaultIcon(): SVGSVGElement {
-			const defaultIcon = getIcon("circle-small") as SVGSVGElement;
-			defaultIcon.setAttribute("fill", "currentColor");
-			return defaultIcon;
-		}
-
-		const innerIcon = iconId ? (getIcon(iconId) ?? defaultIcon()) : defaultIcon();
+		const innerIcon = getIconWithDefault(iconId);
 		innerIcon.addClass("leaflet-marker-inner-icon");
 
 		return divIcon({

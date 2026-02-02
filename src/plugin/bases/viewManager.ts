@@ -7,10 +7,6 @@ export type ViewRegistrationBuilder = () => ViewRegistration;
 
 export class ViewManager {
 	constructor(public plugin: BaseLeafletViewPlugin) {
-		this.load();
-	}
-
-	private load() {
 		this.plugin.registerBasesView(...LeafletMapViewRegistrationBuilder());
 	}
 
