@@ -2,7 +2,7 @@ import { BaseLeafletViewPlugin } from "plugin/plugin";
 import { LeafletMapViewRegistrationBuilder } from "./leaflet-map/view";
 import { BasesViewRegistration } from "obsidian";
 
-export type ViewRegistration = [string, BasesViewRegistration];
+type ViewRegistration = [string, BasesViewRegistration];
 export type ViewRegistrationBuilder = () => ViewRegistration;
 
 export class ViewManager {

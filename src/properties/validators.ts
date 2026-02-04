@@ -1,7 +1,5 @@
-import { markerColourMap, regExpMap } from "plugin/constants";
-
-type Validator = "name" | "source" | "integer" | "number" | "coordinates" | "icon" | "colour";
-export type ValidatorFunction = (value: unknown) => boolean;
+import { Constants as C } from "plugin/constants";
+import { ValidatorFunction } from "plugin/types";
 
 function nameValidator(value: unknown): boolean {
 	return String.isString(value);
@@ -12,10 +10,6 @@ function sourcevalidator(value: unknown): boolean {
 	return !!preparedValue;
 }
 
-function integerValidator(value: unknown): boolean {
-	return Number.isInteger(value);
-}
-
 function numberValidator(value: unknown): boolean {
 	return Number.isNumber(value);
 }
@@ -23,31 +17,26 @@ function numberValidator(value: unknown): boolean {
 function coordinatesValidator(value: unknown): boolean {
 	if (!String.isString(value)) return false;
 	const innerValues = value.replace(/\s/g, "").split(",");
-	return innerValues.length === 2 && innerValues.every((innerValue) => parseInt(innerValue));
+	return (
+		innerValues.length === 2 &&
+		innerValues.every((innerValue) => Number.isInteger(parseInt(innerValue)))
+	);
 }
 
 function iconValidator(value: unknown): boolean {
-	return String.isString(value) && regExpMap.iconValidation.test(value);
+	return String.isString(value) && C.regExp.iconValidation.test(value);
 }
 
 function colourValidator(value: unknown): boolean {
 	if (typeof value !== "string") return false;
-	return (
-		Object.keys(markerColourMap).includes(value.toLowerCase()) ||
-		regExpMap.hexColourValidation.test(value)
-	);
+	return C.regExp.hexColourValidation.test(value);
 }
 
-const validators: Record<Validator, ValidatorFunction> = {
+export const Validator = {
 	name: nameValidator,
 	source: sourcevalidator,
-	integer: integerValidator,
 	number: numberValidator,
 	coordinates: coordinatesValidator,
 	icon: iconValidator,
 	colour: colourValidator,
-};
-
-export function validatorFactory(validatorType: Validator): ValidatorFunction {
-	return validators[validatorType];
-}
+} as const satisfies Record<string, ValidatorFunction>;

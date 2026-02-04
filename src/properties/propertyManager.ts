@@ -1,6 +1,6 @@
 import { MetadataTypeManager } from "obsidian-typings";
-import { markerProperty } from "./markerProperty";
 import { BaseLeafletViewPlugin } from "plugin/plugin";
+import { markerWidget } from "./components/markerPropertyWidget";
 
 export class PropertyManager {
 	private metadataTypeManager: MetadataTypeManager;
@@ -12,7 +12,7 @@ export class PropertyManager {
 	}
 
 	private load() {
-		this.metadataTypeManager.registeredTypeWidgets["marker"] = markerProperty;
+		this.metadataTypeManager.registeredTypeWidgets["marker"] = markerWidget;
 
 		this.plugin.registerEvent(
 			this.metadataTypeManager.on("changed", (property) => {

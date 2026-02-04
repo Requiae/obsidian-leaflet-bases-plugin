@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { regExpMap } from "plugin/constants";
+import { Constants as C } from "plugin/constants";
 
 interface ImageData {
 	dimensions: { width: number; height: number };
@@ -34,7 +34,7 @@ export class ImageLoader {
 		const pathOrWiki = typeof file === "string" ? file : file?.toString();
 		if (!pathOrWiki) return null;
 
-		if (regExpMap.url.test(pathOrWiki)) return pathOrWiki;
+		if (C.regExp.url.test(pathOrWiki)) return pathOrWiki;
 
 		const path = this.app.metadataCache.getFirstLinkpathDest(pathOrWiki, "");
 		if (!path) return null;

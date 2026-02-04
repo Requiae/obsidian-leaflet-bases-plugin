@@ -3,12 +3,11 @@ import {
 	PropertyWidget,
 	PropertyWidgetComponentBase,
 } from "obsidian-typings";
-import { schemaValidatorFactory } from "./schemas";
-import { ValueComponent } from "obsidian";
+import { SchemaValidator } from "properties/schemas";
 import { MarkerObject } from "plugin/types";
-import { getIconWithDefault } from "plugin/util";
+import { MarkerValueComponent } from "./markerValue";
 
-export const markerProperty: PropertyWidget<MarkerPropertyWidgetComponent> = {
+export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 	type: "marker",
 	name: () => "Marker",
 	icon: "lucide-map-pin",
@@ -22,12 +21,10 @@ export const markerProperty: PropertyWidget<MarkerPropertyWidgetComponent> = {
 	reservedKeys: ["marker"],
 };
 
-const markerValidator = schemaValidatorFactory("marker");
-
 function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is MarkerObject[] {
 	const arrayValue = Array.isArray(propertyValue) ? propertyValue : [propertyValue];
 	if (arrayValue.some((element) => typeof element !== "object" || element === null)) return false;
-	return arrayValue.every((element) => markerValidator(element));
+	return arrayValue.every((element) => SchemaValidator.marker(element));
 }
 
 class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
@@ -35,7 +32,7 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	type = "marker" as const;
 
 	listComponent: HTMLUListElement;
-	innerComponents: MarkerComponent[] = [];
+	innerComponents: MarkerValueComponent[] = [];
 
 	constructor(
 		public element: HTMLElement,
@@ -83,87 +80,11 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 		this.listComponent.replaceChildren();
 
 		for (const [index, markerObject] of this.value.entries()) {
-			const tagEl = new MarkerComponent(this.listComponent);
+			const tagEl = new MarkerValueComponent(this.listComponent);
 			tagEl.setValue(markerObject);
 			tagEl.onChange((value) => this.updateValueAtIndex(value, index));
 			tagEl.onDelete(() => this.removeValueAtIndex(index));
 			this.innerComponents.push(tagEl);
 		}
-	}
-}
-
-class MarkerComponent extends ValueComponent<MarkerObject> {
-	private value: MarkerObject;
-
-	iconEl: HTMLDivElement;
-	tagEl: HTMLLIElement;
-	textEl: HTMLDivElement;
-
-	componentsContainerEl: HTMLElement;
-
-	onChangeCallback: (value: MarkerObject) => void = () => {};
-	onDeleteCallback: () => void = () => {};
-
-	constructor(containerEl: HTMLElement) {
-		super();
-
-		this.tagEl = document.createElement("li");
-		this.tagEl.addClass("leaflet-map-property-tag-item");
-
-		// TODO: set colour to marker colour
-		this.tagEl.setCssStyles({ background: "#21409a" });
-
-		this.iconEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-icon" });
-		this.textEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-text" });
-		const closeEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-close" });
-
-		this.tagEl.onClickEvent((event) => {
-			event.stopPropagation();
-			//console.log("modal");
-			// TODO: the whole modal thing
-
-			//this.setValue(newValue);
-			this.onChanged();
-		});
-		closeEl.onClickEvent((event) => {
-			event.stopPropagation();
-			this.onDeleted();
-		});
-
-		containerEl.appendChild(this.tagEl);
-	}
-
-	unload() {
-		this.onChange(() => {});
-	}
-
-	getValue(): MarkerObject {
-		return this.value;
-	}
-
-	setValue(value: MarkerObject): this {
-		this.value = value;
-		this.iconEl.replaceChildren(getIconWithDefault(value.icon));
-		this.textEl.textContent = `${value.mapName}: ${value.coordinates.toString()}`;
-
-		return this;
-	}
-
-	onChanged() {
-		this.onChangeCallback(this.getValue());
-	}
-
-	onChange(cb: (value: MarkerObject) => void): this {
-		this.onChangeCallback = cb;
-		return this;
-	}
-
-	onDeleted() {
-		this.onDeleteCallback();
-	}
-
-	onDelete(cb: () => void): this {
-		this.onDeleteCallback = cb;
-		return this;
 	}
 }

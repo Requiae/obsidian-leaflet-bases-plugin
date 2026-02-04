@@ -3,14 +3,14 @@ import { ViewRegistrationBuilder } from "../viewManager";
 import { MarkerManager } from "./marker";
 import { map, CRS, Map, imageOverlay, LatLngBoundsExpression, layerGroup } from "leaflet";
 import { ImageLoader } from "./imageLoader";
-import { schemaValidatorFactory } from "properties/schemas";
-import { defaultMapSettings } from "plugin/constants";
+import { SchemaValidator } from "properties/schemas";
 import { clamp } from "plugin/util";
 import { MapObject } from "plugin/types";
+import { Constants as C } from "plugin/constants";
 
 function isValidMapSettings(value: unknown): value is MapObject {
 	if (!value || typeof value !== "object") return false;
-	return schemaValidatorFactory("map")(value);
+	return SchemaValidator.map(value);
 }
 
 const LeafletMapViewType: string = "leaflet-map";
@@ -71,10 +71,10 @@ class LeafletMapView extends BasesView {
 			[imageData.dimensions.width, imageData.dimensions.height],
 		];
 
-		const minZoom = this.mapSettings.minZoom ?? defaultMapSettings.minZoom;
-		const maxZoom = Math.max(this.mapSettings.maxZoom ?? defaultMapSettings.maxZoom, minZoom);
+		const minZoom = this.mapSettings.minZoom ?? C.map.minZoom;
+		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.maxZoom, minZoom);
 		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
-		const zoomDelta = this.mapSettings.zoomDelta ?? defaultMapSettings.zoomDelta;
+		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.zoomDelta;
 
 		const markerLayer = layerGroup();
 		const overlay = imageOverlay(imageData.url, bounds);
@@ -84,7 +84,7 @@ class LeafletMapView extends BasesView {
 			maxBounds: bounds,
 			minZoom,
 			maxZoom,
-			zoomSnap: defaultMapSettings.zoomSnap,
+			zoomSnap: C.map.zoomSnap,
 			zoomDelta,
 			layers: [markerLayer, overlay],
 		});

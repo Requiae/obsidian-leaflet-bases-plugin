@@ -14,3 +14,5 @@ export interface MapObject {
 	defaultZoom?: number;
 	zoomDelta?: number;
 }
+
+export type ValidatorFunction = (value: unknown) => boolean;

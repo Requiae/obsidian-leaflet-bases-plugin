@@ -9,18 +9,15 @@ import {
 	marker,
 	Marker,
 } from "leaflet";
-import { markerColourMap, regExpMap } from "plugin/constants";
-import { schemaValidatorFactory } from "properties/schemas";
-import { ValidatorFunction } from "properties/validators";
+import { SchemaValidator } from "properties/schemas";
 import { MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
+import { Constants as C } from "plugin/constants";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
 	link: string;
 }
-
-const validator: ValidatorFunction = schemaValidatorFactory("marker");
 
 function isProperEntry(entry: unknown): entry is { [key: string]: string } {
 	if (!entry || typeof entry !== "object") return false;
@@ -37,10 +34,7 @@ function parseCoordinates(coordinates: string): [number, number] {
 }
 
 function parseColour(colour: string): string {
-	const inputValue = colour.toLowerCase();
-	return Object.keys(markerColourMap).includes(inputValue)
-		? markerColourMap[inputValue as keyof typeof markerColourMap]
-		: inputValue;
+	return colour.toLowerCase();
 }
 
 function parseMarkerFromEntry(entry: unknown, name: string, link: string): MarkerEntry | null {
@@ -48,7 +42,7 @@ function parseMarkerFromEntry(entry: unknown, name: string, link: string): Marke
 
 	// The POJO cast messes with number properties, repair minZoom before validation
 	const minZoom = "minZoom" in entry ? parseFloat(entry.minZoom) : undefined;
-	if (!validator({ ...entry, minZoom })) return null;
+	if (!SchemaValidator.marker({ ...entry, minZoom })) return null;
 
 	if (!("coordinates" in entry)) throw new Error("Marker not properly validated");
 
@@ -70,7 +64,7 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 	// Because working with nested Values is horrible, JSON cast to POJO
 	// Value converted to string is CSV, even when array, make into a proper array
 	let entryString = entry.toString();
-	if (!regExpMap.arrayString.test(entryString)) entryString = `[${entryString}]`;
+	if (!C.regExp.arrayString.test(entryString)) entryString = `[${entryString}]`;
 
 	let markerEntries: unknown;
 	try {
@@ -155,7 +149,7 @@ export class MarkerManager {
 		return divIcon({
 			className: "leaflet-marker-icon",
 			html: `
-				<svg class="leaflet-marker-pin" style="fill:${colour ?? markerColourMap.blue}" viewBox="0 0 32 48">
+				<svg class="leaflet-marker-pin" style="fill:${colour ?? C.marker.defaultColour}" viewBox="0 0 32 48">
 					<path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
 				</svg>
 				${this.xmlSerializer.serializeToString(innerIcon)}
