@@ -3,7 +3,7 @@ import {
 	PropertyWidget,
 	PropertyWidgetComponentBase,
 } from "obsidian-typings";
-import { SchemaValidator } from "properties/schemas";
+import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
 import { MarkerValueComponent } from "./markerValue";
 
@@ -39,9 +39,11 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 		public value: MarkerObject[],
 		public ctx: PropertyRenderContext,
 	) {
+		this.containerEl = this.element.createDiv();
+
 		this.listComponent = document.createElement("ul");
 		this.listComponent.addClass("leaflet-map-property-tag-list");
-		element.appendChild(this.listComponent);
+		this.containerEl.appendChild(this.listComponent);
 
 		this.updateChildren();
 	}
@@ -80,8 +82,7 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 		this.listComponent.replaceChildren();
 
 		for (const [index, markerObject] of this.value.entries()) {
-			const tagEl = new MarkerValueComponent(this.listComponent);
-			tagEl.setValue(markerObject);
+			const tagEl = new MarkerValueComponent(this.listComponent, markerObject);
 			tagEl.onChange((value) => this.updateValueAtIndex(value, index));
 			tagEl.onDelete(() => this.removeValueAtIndex(index));
 			this.innerComponents.push(tagEl);

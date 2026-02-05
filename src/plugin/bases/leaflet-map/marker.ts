@@ -9,7 +9,7 @@ import {
 	marker,
 	Marker,
 } from "leaflet";
-import { SchemaValidator } from "properties/schemas";
+import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
 import { Constants as C } from "plugin/constants";
@@ -82,9 +82,9 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 export class MarkerManager {
 	private xmlSerializer: XMLSerializer;
 
-	private mapName: string | undefined = undefined;
-	private map: Map;
-	private markerLayer: LayerGroup;
+	private mapName: string | undefined;
+	private map: Map | undefined;
+	private markerLayer: LayerGroup | undefined;
 	private mapMinZoom: number = 0;
 
 	constructor(public app: App) {
@@ -92,10 +92,13 @@ export class MarkerManager {
 	}
 
 	unload(): void {
+		this.map?.clearAllEventListeners();
 		this.markerLayer?.clearLayers();
 	}
 
 	addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
+		if (!this.map || !this.markerLayer) throw new Error("Map not properly initialised");
+
 		const tolerance = 0.00001; // We have to deal with floating point errors
 		if (this.map.getZoom() >= markerZoom - tolerance) {
 			markerItem.addTo(this.markerLayer);
@@ -105,8 +108,7 @@ export class MarkerManager {
 	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
-		if (!this.markerLayer) throw new Error("MarkerLayer not initialised");
-		this.markerLayer.clearLayers();
+		this.markerLayer?.clearLayers();
 
 		data.data
 			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker"), entry.file))
@@ -122,24 +124,21 @@ export class MarkerManager {
 					.on("click", this.getMarkerOnClick(markerEntry.link));
 
 				this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom);
-				this.map.on("zoomend", () =>
+				this.map?.on("zoomend", () =>
 					this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom),
 				);
 			});
 	}
 
-	setMap(map: Map) {
+	setMap(map: Map, markerLayer: LayerGroup, mapMinZoom: number) {
 		this.map = map;
+		this.markerLayer?.clearLayers();
+		this.markerLayer = markerLayer;
+		this.mapMinZoom = mapMinZoom;
 	}
 
 	setMapName(mapName: string | undefined) {
 		this.mapName = mapName;
-	}
-
-	setMarkerLayer(markerLayer: LayerGroup, mapMinZoom: number) {
-		this.markerLayer?.clearLayers();
-		this.markerLayer = markerLayer;
-		this.mapMinZoom = mapMinZoom;
 	}
 
 	private buildMarkerIcon(iconId: string | undefined, colour: string | undefined): DivIcon {

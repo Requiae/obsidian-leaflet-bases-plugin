@@ -1,22 +1,26 @@
-import { Plugin } from "obsidian";
+import { App, Plugin, PluginManifest } from "obsidian";
 import {
 	DEFAULT_SETTINGS,
 	BaseLeafletViewPluginSettings,
 	BaseLeafletViewPluginSettingTab,
 } from "plugin/settings";
-import { PropertyManager } from "properties/propertyManager";
+import { PropertyManager } from "plugin/properties/propertyManager";
 import { ViewManager } from "plugin/bases/viewManager";
-import { MarkerModal } from "properties/components/markerModal";
+import { MarkerModal } from "plugin/properties/components/markerModal";
 
 export class BaseLeafletViewPlugin extends Plugin {
-	settings: BaseLeafletViewPluginSettings;
+	settings: BaseLeafletViewPluginSettings = DEFAULT_SETTINGS;
 	propertyManager: PropertyManager;
 	viewManager: ViewManager;
 
-	async onload() {
-		await this.loadSettings();
+	constructor(app: App, manifest: PluginManifest) {
+		super(app, manifest);
 		this.propertyManager = new PropertyManager(this);
 		this.viewManager = new ViewManager(this);
+	}
+
+	async onload() {
+		await this.loadSettings();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new BaseLeafletViewPluginSettingTab(this.app, this));
@@ -27,8 +31,8 @@ export class BaseLeafletViewPlugin extends Plugin {
 	}
 
 	onunload() {
-		this.propertyManager.unload();
-		this.viewManager.unload();
+		this.propertyManager?.unload();
+		this.viewManager?.unload();
 	}
 
 	async loadSettings() {

@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
 		"paths": {
-			"plugin/*": ["./src/plugin/*"],
-			"properties/*": ["./src/properties/*"]
+			"plugin/*": ["./src/plugin/*"]
 		},
 		"inlineSourceMap": true,
 		"inlineSources": true,

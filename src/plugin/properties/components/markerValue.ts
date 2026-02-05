@@ -3,18 +3,17 @@ import { MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
 
 export class MarkerValueComponent extends ValueComponent<MarkerObject> {
-	private value: MarkerObject;
-
 	iconEl: HTMLDivElement;
 	tagEl: HTMLLIElement;
 	textEl: HTMLDivElement;
 
-	componentsContainerEl: HTMLElement;
-
 	onChangeCallback: (value: MarkerObject) => void = () => {};
 	onDeleteCallback: () => void = () => {};
 
-	constructor(containerEl: HTMLElement) {
+	constructor(
+		containerEl: HTMLElement,
+		private value: MarkerObject,
+	) {
 		super();
 
 		this.tagEl = document.createElement("li");

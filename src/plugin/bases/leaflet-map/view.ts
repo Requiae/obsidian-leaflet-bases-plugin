@@ -3,7 +3,7 @@ import { ViewRegistrationBuilder } from "../viewManager";
 import { MarkerManager } from "./marker";
 import { map, CRS, Map, imageOverlay, LatLngBoundsExpression, layerGroup } from "leaflet";
 import { ImageLoader } from "./imageLoader";
-import { SchemaValidator } from "properties/schemas";
+import { SchemaValidator } from "plugin/properties/schemas";
 import { clamp } from "plugin/util";
 import { MapObject } from "plugin/types";
 import { Constants as C } from "plugin/constants";
@@ -25,11 +25,11 @@ export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = () => 
 
 class LeafletMapView extends BasesView {
 	type = LeafletMapViewType;
-	private mapSettings: MapObject;
+	private mapSettings: MapObject | undefined;
 
 	private containerEl: HTMLElement;
 	private mapEl: HTMLElement;
-	private leafletMap: Map;
+	private leafletMap: Map | undefined;
 
 	// Managers
 	private markerManager: MarkerManager;
@@ -63,6 +63,8 @@ class LeafletMapView extends BasesView {
 	}
 
 	private async initialiseMap(): Promise<void> {
+		if (!this.mapSettings) throw new Error("Map settings not initialised");
+
 		const imageData = await this.imageLoader.getImageData(this.mapSettings.image);
 		if (!imageData) return;
 
@@ -89,10 +91,8 @@ class LeafletMapView extends BasesView {
 			layers: [markerLayer, overlay],
 		});
 
-		this.leafletMap.fitBounds(bounds);
-		this.leafletMap.setZoom(defaultZoom);
-		this.markerManager.setMap(this.leafletMap);
-		this.markerManager.setMarkerLayer(markerLayer, minZoom);
+		this.leafletMap.fitBounds(bounds).setZoom(defaultZoom);
+		this.markerManager.setMap(this.leafletMap, markerLayer, minZoom);
 	}
 
 	private initialiseMapSettings(): void {

@@ -14,7 +14,7 @@ import { Validator } from "../validators";
 
 export class MarkerModal extends Modal {
 	private value: MarkerObject;
-	private submitEnabledCallback: (isEnabled: boolean) => void;
+	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
 
 	constructor(app: App, onSubmit: (result: MarkerObject) => void, initialValue?: MarkerObject) {
 		super(app);
