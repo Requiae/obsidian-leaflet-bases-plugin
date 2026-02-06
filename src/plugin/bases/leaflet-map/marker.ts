@@ -80,7 +80,7 @@ export class MarkerManager {
 		this.markerLayer?.clearLayers();
 	}
 
-	addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
+	private addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
 		if (!this.map || !this.markerLayer) throw new Error("Map not properly initialised");
 
 		const tolerance = 0.00001; // We have to deal with floating point errors
@@ -103,7 +103,8 @@ export class MarkerManager {
 			.forEach((markerEntry) => {
 				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
 				// LatLng is y, x so we reverse the coordinates
-				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
+				const parsedCoordinates = parseCoordinates(markerEntry.coordinates);
+				const markerItem = marker([parsedCoordinates[1], parsedCoordinates[0]], options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
 
