@@ -62,27 +62,27 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 		this.updateChildren();
 	}
 
-	updateValueAtIndex(markerObject: MarkerObject, index: number) {
+	private updateValueAtIndex(markerObject: MarkerObject, index: number) {
 		// es2023 .toSplice() is not available so we copy, then splice
 		const copy = this.value.slice();
 		copy.splice(index, 1, markerObject);
 		this.setValue(copy);
 	}
 
-	removeValueAtIndex(index: number) {
+	private removeValueAtIndex(index: number) {
 		// es2023 .toSplice() is not available so we copy, then splice
 		const copy = this.value.slice();
 		copy.splice(index, 1);
 		this.setValue(copy);
 	}
 
-	updateChildren() {
+	private updateChildren() {
 		this.innerComponents.forEach((component) => component.unload());
 		this.innerComponents = [];
 		this.listComponent.replaceChildren();
 
 		for (const [index, markerObject] of this.value.entries()) {
-			const tagEl = new MarkerValueComponent(this.listComponent, markerObject);
+			const tagEl = new MarkerValueComponent(this.ctx.app, this.listComponent, markerObject);
 			tagEl.onChange((value) => this.updateValueAtIndex(value, index));
 			tagEl.onDelete(() => this.removeValueAtIndex(index));
 			this.innerComponents.push(tagEl);

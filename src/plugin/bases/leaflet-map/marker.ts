@@ -1,4 +1,4 @@
-import { App, BasesEntry, TFile, Value } from "obsidian";
+import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
 import {
 	divIcon,
 	DivIcon,
@@ -11,7 +11,7 @@ import {
 } from "leaflet";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
-import { getIconWithDefault } from "plugin/util";
+import { getIconWithDefault, parseCoordinates } from "plugin/util";
 import { Constants as C } from "plugin/constants";
 
 interface MarkerEntry extends MarkerObject {
@@ -24,36 +24,20 @@ function isProperEntry(entry: unknown): entry is { [key: string]: string } {
 	return Object.values(entry).every((property) => typeof property === "string");
 }
 
-function parseCoordinates(coordinates: string): [number, number] {
-	const parsedCoordinates = coordinates
-		.replace(/\s/g, "")
-		.split(",")
-		.map((coordinate) => parseInt(coordinate));
-	if (parsedCoordinates.length !== 2) throw new Error("Coordinates not properly validated");
-	return parsedCoordinates as [number, number];
-}
-
-function parseColour(colour: string): string {
-	return colour.toLowerCase();
-}
-
 function parseMarkerFromEntry(entry: unknown, name: string, link: string): MarkerEntry | null {
 	if (!isProperEntry(entry)) return null;
 
 	// The POJO cast messes with number properties, repair minZoom before validation
-	const minZoom = "minZoom" in entry ? parseFloat(entry.minZoom) : undefined;
-	if (!SchemaValidator.marker({ ...entry, minZoom })) return null;
-
-	if (!("coordinates" in entry)) throw new Error("Marker not properly validated");
+	const fixedPOJO = {
+		...entry,
+		minZoom: "minZoom" in entry ? parseFloat(entry.minZoom) : undefined,
+	};
+	if (!SchemaValidator.marker(fixedPOJO)) return null;
 
 	return {
-		mapName: entry.mapName,
+		...fixedPOJO,
 		name,
 		link,
-		coordinates: parseCoordinates(entry.coordinates),
-		icon: entry.icon,
-		colour: "colour" in entry ? parseColour(entry.colour) : undefined,
-		minZoom,
 	};
 }
 
@@ -119,7 +103,7 @@ export class MarkerManager {
 			.forEach((markerEntry) => {
 				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
 				// LatLng is y, x so we reverse the coordinates
-				const markerItem = marker([markerEntry.coordinates[1], markerEntry.coordinates[0]], options)
+				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
 
@@ -141,7 +125,7 @@ export class MarkerManager {
 		this.mapName = mapName;
 	}
 
-	private buildMarkerIcon(iconId: string | undefined, colour: string | undefined): DivIcon {
+	private buildMarkerIcon(iconId: IconName | undefined, colour: string | undefined): DivIcon {
 		const innerIcon = getIconWithDefault(iconId);
 		innerIcon.addClass("leaflet-marker-inner-icon");
 

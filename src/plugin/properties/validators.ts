@@ -1,35 +1,32 @@
+import { IconName } from "obsidian";
 import { Constants as C } from "plugin/constants";
-import { ValidatorFunction } from "plugin/types";
+import { Coordinates, Hex, ValidatorFunction, Wiki } from "plugin/types";
 
-function nameValidator(value: unknown): boolean {
+type ValidatedProperties = string | Wiki | number;
+
+function nameValidator(value: unknown): value is string {
 	return String.isString(value);
 }
 
-function sourcevalidator(value: unknown): boolean {
+function sourcevalidator(value: unknown): value is string | Wiki {
 	const preparedValue = typeof value === "string" ? value : value?.toString();
 	return !!preparedValue;
 }
 
-function numberValidator(value: unknown): boolean {
+function numberValidator(value: unknown): value is number {
 	return Number.isNumber(value);
 }
 
-function coordinatesValidator(value: unknown): boolean {
-	if (!String.isString(value)) return false;
-	const innerValues = value.replace(/\s/g, "").split(",");
-	return (
-		innerValues.length === 2 &&
-		innerValues.every((innerValue) => Number.isInteger(parseInt(innerValue)))
-	);
+function coordinatesValidator(value: unknown): value is Coordinates {
+	return String.isString(value) && C.regExp.coordinatesValidation.test(value);
 }
 
-function iconValidator(value: unknown): boolean {
+function iconValidator(value: unknown): value is IconName {
 	return String.isString(value) && C.regExp.iconValidation.test(value);
 }
 
-function colourValidator(value: unknown): boolean {
-	if (typeof value !== "string") return false;
-	return C.regExp.hexColourValidation.test(value);
+function colourValidator(value: unknown): value is Hex {
+	return String.isString(value) && C.regExp.hexColourValidation.test(value);
 }
 
 export const Validator = {
@@ -39,4 +36,4 @@ export const Validator = {
 	coordinates: coordinatesValidator,
 	icon: iconValidator,
 	colour: colourValidator,
-} as const satisfies Record<string, ValidatorFunction>;
+} as const satisfies Record<string, ValidatorFunction<ValidatedProperties>>;

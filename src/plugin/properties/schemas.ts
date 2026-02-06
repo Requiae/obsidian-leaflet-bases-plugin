@@ -1,7 +1,11 @@
 import { MapObject, MarkerObject, ValidatorFunction } from "plugin/types";
 import { Validator } from "./validators";
 
-type Schema<T extends string> = Record<T, { validator: ValidatorFunction; required?: boolean }>;
+type Schema<T extends string> = Record<
+	T,
+	{ validator: ValidatorFunction<unknown>; required?: boolean }
+>;
+type ValidatedSchemas = MarkerObject | MapObject;
 
 const markerSchema: Schema<keyof MarkerObject> = {
 	mapName: { validator: Validator.name },
@@ -19,13 +23,15 @@ const mapSchema: Schema<keyof MapObject> = {
 	zoomDelta: { validator: Validator.number },
 };
 
-function schemaValidatorFactory(schema: Schema<string>): ValidatorFunction {
-	return (value: unknown) => {
-		function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
-			if (!value || typeof value !== "object") return false;
-			return Object.keys.length > 0;
-		}
+function schemaValidatorFactory<T extends ValidatedSchemas>(
+	schema: Schema<string>,
+): ValidatorFunction<T> {
+	function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
+		if (!value || typeof value !== "object") return false;
+		return Object.keys.length > 0;
+	}
 
+	function schemaValidator(value: unknown): value is T {
 		if (!isNonEmptyObject(value)) return false;
 
 		return Object.entries(schema)
@@ -33,10 +39,11 @@ function schemaValidatorFactory(schema: Schema<string>): ValidatorFunction {
 				return (value[key] === undefined && !validate.required) || validate.validator(value[key]);
 			})
 			.every(Boolean);
-	};
+	}
+	return schemaValidator;
 }
 
 export const SchemaValidator = {
-	marker: schemaValidatorFactory(markerSchema),
-	map: schemaValidatorFactory(mapSchema),
-} as const satisfies Record<string, ValidatorFunction>;
+	marker: schemaValidatorFactory<MarkerObject>(markerSchema),
+	map: schemaValidatorFactory<MapObject>(mapSchema),
+} as const satisfies Record<string, ValidatorFunction<ValidatedSchemas>>;

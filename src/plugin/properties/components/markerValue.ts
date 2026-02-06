@@ -1,6 +1,7 @@
-import { ValueComponent } from "obsidian";
+import { App, ValueComponent } from "obsidian";
 import { MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
+import { MarkerModal } from "./markerModal";
 
 export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	iconEl: HTMLDivElement;
@@ -11,6 +12,7 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	onDeleteCallback: () => void = () => {};
 
 	constructor(
+		private app: App,
 		containerEl: HTMLElement,
 		private value: MarkerObject,
 	) {
@@ -26,13 +28,18 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 		this.textEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-text" });
 		const closeEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-close" });
 
+		this.updateElements();
+
 		this.tagEl.onClickEvent((event) => {
 			event.stopPropagation();
-			//console.log("modal");
-			// TODO: the whole modal thing
-
-			//this.setValue(newValue);
-			this.onChanged();
+			new MarkerModal(
+				this.app,
+				(result) => {
+					this.setValue(result);
+					this.onChanged();
+				},
+				this.value,
+			).open();
 		});
 		closeEl.onClickEvent((event) => {
 			event.stopPropagation();
@@ -52,9 +59,7 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 
 	setValue(value: MarkerObject): this {
 		this.value = value;
-		this.iconEl.replaceChildren(getIconWithDefault(value.icon));
-		this.textEl.textContent = `${value.mapName}: ${value.coordinates.toString()}`;
-
+		this.updateElements();
 		return this;
 	}
 
@@ -74,5 +79,10 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	onDelete(cb: () => void): this {
 		this.onDeleteCallback = cb;
 		return this;
+	}
+
+	private updateElements() {
+		this.iconEl.replaceChildren(getIconWithDefault(this.value.icon));
+		this.textEl.textContent = `${this.value.mapName}: ${this.value.coordinates}`;
 	}
 }

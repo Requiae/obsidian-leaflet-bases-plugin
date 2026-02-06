@@ -6,7 +6,6 @@ import {
 } from "plugin/settings";
 import { PropertyManager } from "plugin/properties/propertyManager";
 import { ViewManager } from "plugin/bases/viewManager";
-import { MarkerModal } from "plugin/properties/components/markerModal";
 
 export class BaseLeafletViewPlugin extends Plugin {
 	settings: BaseLeafletViewPluginSettings = DEFAULT_SETTINGS;
@@ -24,10 +23,6 @@ export class BaseLeafletViewPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new BaseLeafletViewPluginSettingTab(this.app, this));
-
-		this.addRibbonIcon("dice", "Modal", () =>
-			new MarkerModal(this.app, (result) => console.log(result)).open(),
-		);
 	}
 
 	onunload() {

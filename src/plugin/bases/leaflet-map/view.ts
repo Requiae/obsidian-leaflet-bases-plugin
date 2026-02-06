@@ -73,10 +73,10 @@ class LeafletMapView extends BasesView {
 			[imageData.dimensions.width, imageData.dimensions.height],
 		];
 
-		const minZoom = this.mapSettings.minZoom ?? C.map.minZoom;
-		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.maxZoom, minZoom);
+		const minZoom = this.mapSettings.minZoom ?? C.map.defaultMinZoom;
+		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.defaultMaxZoom, minZoom);
 		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
-		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.zoomDelta;
+		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.defaultZoomDelta;
 
 		const markerLayer = layerGroup();
 		const overlay = imageOverlay(imageData.url, bounds);
@@ -86,7 +86,7 @@ class LeafletMapView extends BasesView {
 			maxBounds: bounds,
 			minZoom,
 			maxZoom,
-			zoomSnap: C.map.zoomSnap,
+			zoomSnap: C.map.defaultZoomSnap,
 			zoomDelta,
 			layers: [markerLayer, overlay],
 		});

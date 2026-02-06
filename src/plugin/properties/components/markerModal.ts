@@ -20,7 +20,7 @@ export class MarkerModal extends Modal {
 		super(app);
 		this.setTitle("Edit marker");
 
-		this.value = initialValue ?? { coordinates: [-1, -1] };
+		this.value = initialValue ?? { coordinates: "-1, -1" };
 		const coordinatesValidator = Validator.coordinates;
 
 		new Setting(this.contentEl)
@@ -39,7 +39,7 @@ export class MarkerModal extends Modal {
 			.setName("Coordinates")
 			.setDesc("Required. Marker coordinates on the map.")
 			.addText((textField) => {
-				textField.setValue(this.value.coordinates.join(", ")).onChange((value) => {
+				textField.setValue(this.value.coordinates).onChange((value) => {
 					if (value === "") {
 						textField.inputEl.setCustomValidity("Value is required");
 						this.submitEnabledCallback(false);
@@ -76,8 +76,10 @@ export class MarkerModal extends Modal {
 			.addColorPicker((colourField) => {
 				colourComponent = colourField;
 				colourField.setValue(this.value.colour ?? C.marker.defaultColour).onChange((value) => {
-					this.value.colour = value;
-					dropdownComponent.setValue(value);
+					if (Validator.colour(value)) {
+						this.value.colour = value;
+						dropdownComponent.setValue(value);
+					}
 				});
 			})
 			.addDropdown((dropdownField) => {
@@ -86,8 +88,10 @@ export class MarkerModal extends Modal {
 					.addOptions(C.property.predefinedColours)
 					.setValue(this.value.colour ?? C.marker.defaultColour)
 					.onChange((value) => {
-						this.value.colour = value;
-						colourComponent.setValue(value);
+						if (Validator.colour(value)) {
+							this.value.colour = value;
+							colourComponent.setValue(value);
+						}
 					});
 			});
 

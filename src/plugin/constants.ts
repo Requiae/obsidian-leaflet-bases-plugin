@@ -2,10 +2,10 @@
 
 export const Constants = {
 	map: {
-		minZoom: 0,
-		maxZoom: 2,
-		zoomDelta: 0.5,
-		zoomSnap: 0.01,
+		defaultMinZoom: 0,
+		defaultMaxZoom: 2,
+		defaultZoomDelta: 0.5,
+		defaultZoomSnap: 0.01,
 	},
 	marker: {
 		defaultColour: "#21409a",
@@ -26,6 +26,7 @@ export const Constants = {
 	},
 	regExp: {
 		hexColourValidation: /([0-9A-F]{3}){1,2}$/i,
+		coordinatesValidation: /[0-9]+\s*,\s*[0-9]+/,
 		iconValidation: /([a-z]+:)?[a-z]+([\-][a-z]+)*/,
 		url: /https?:/,
 		arrayString: /^\[.*[\]]$/,
