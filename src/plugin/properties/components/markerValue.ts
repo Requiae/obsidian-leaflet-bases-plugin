@@ -2,6 +2,7 @@ import { App, ValueComponent } from "obsidian";
 import { MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
 import { MarkerModal } from "./markerModal";
+import { Constants as C } from "plugin/constants";
 
 export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	iconEl: HTMLDivElement;
@@ -21,12 +22,12 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 		this.tagEl = document.createElement("li");
 		this.tagEl.addClass("leaflet-map-property-tag-item");
 
-		// TODO: set colour to marker colour
-		this.tagEl.setCssStyles({ background: "#21409a" });
+		this.tagEl.setCssStyles({ background: value.colour ?? C.marker.defaultColour });
 
 		this.iconEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-icon" });
 		this.textEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-text" });
 		const closeEl = this.tagEl.createDiv({ cls: "leaflet-map-property-tag-item-close" });
+		this.createCloseButton(closeEl);
 
 		this.updateElements();
 
@@ -84,5 +85,27 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	private updateElements() {
 		this.iconEl.replaceChildren(getIconWithDefault(this.value.icon));
 		this.textEl.textContent = `${this.value.mapName}: ${this.value.coordinates}`;
+	}
+
+	private createCloseButton(closeEl: HTMLDivElement): void {
+		const cross = closeEl.createSvg("svg", {
+			attr: {
+				width: "14",
+				height: "14",
+				viewBox: "0 0 14 14",
+				stroke: "#ebebec",
+				"stroke-width": "1",
+				"stroke-linecap": "round",
+				"stroke-linejoin": "round",
+			},
+		});
+
+		const line1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		line1.setAttribute("d", "M3 11 11 3");
+		cross.appendChild(line1);
+
+		const line2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		line2.setAttribute("d", "M3 3 11 11");
+		cross.appendChild(line2);
 	}
 }
