@@ -58,7 +58,6 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	onFocus(): void {}
 
 	setValue(value: unknown): void {
-		console.log(value, validateMarkerPropertyValue(value));
 		if (!validateMarkerPropertyValue(value)) return;
 		this.value = value;
 		this.ctx.onChange(value);
