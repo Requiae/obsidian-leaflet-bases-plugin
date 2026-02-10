@@ -11,7 +11,7 @@ import {
 } from "leaflet";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
-import { getIconWithDefault, parseCoordinates } from "plugin/util";
+import { getIconWithDefault, isNonEmptyObject, parseCoordinates } from "plugin/util";
 import { Constants as C } from "plugin/constants";
 
 interface MarkerEntry extends MarkerObject {
@@ -20,7 +20,7 @@ interface MarkerEntry extends MarkerObject {
 }
 
 function isProperEntry(entry: unknown): entry is { [key: string]: string } {
-	if (!entry || typeof entry !== "object") return false;
+	if (!isNonEmptyObject(entry)) return false;
 	return Object.values(entry).every((property) => typeof property === "string");
 }
 

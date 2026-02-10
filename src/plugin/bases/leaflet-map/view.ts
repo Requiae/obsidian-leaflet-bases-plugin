@@ -4,12 +4,13 @@ import { MarkerManager } from "./marker";
 import { map, CRS, Map, imageOverlay, LatLngBoundsExpression, layerGroup } from "leaflet";
 import { ImageLoader } from "./imageLoader";
 import { SchemaValidator } from "plugin/properties/schemas";
-import { clamp } from "plugin/util";
+import { clamp, isNonEmptyObject } from "plugin/util";
 import { MapObject } from "plugin/types";
 import { Constants as C } from "plugin/constants";
+import { t } from "plugin/i10n/locale";
 
 function isValidMapSettings(value: unknown): value is MapObject {
-	if (!value || typeof value !== "object") return false;
+	if (!isNonEmptyObject(value)) return false;
 	return SchemaValidator.map(value);
 }
 
@@ -17,7 +18,7 @@ const LeafletMapViewType: string = "leaflet-map";
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = () => [
 	LeafletMapViewType,
 	{
-		name: "Leaflet Map",
+		name: t("view.name"),
 		icon: "lucide-map",
 		factory: (controller, parentEl) => new LeafletMapView(controller, parentEl),
 	},

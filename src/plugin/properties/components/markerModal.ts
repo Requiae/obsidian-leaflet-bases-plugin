@@ -1,54 +1,60 @@
-import {
-	AbstractInputSuggest,
-	App,
-	ColorComponent,
-	DropdownComponent,
-	getIconIds,
-	IconName,
-	Modal,
-	Setting,
-} from "obsidian";
+import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
 import { Constants as C } from "plugin/constants";
-import { MarkerObject } from "plugin/types";
+import { MarkerModalMode, MarkerObject } from "plugin/types";
 import { Validator } from "../validators";
+import { IconSuggest } from "./iconSuggest";
+import { t } from "plugin/i10n/locale";
+
+function buildColourOptionsObject(): Record<string, string> {
+	return Object.fromEntries(
+		Object.entries(C.property.predefinedColours).map(([key, value]) => [
+			key,
+			t(`modal.colour.predefined.${value}`),
+		]),
+	);
+}
 
 export class MarkerModal extends Modal {
 	private value: MarkerObject;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
 
-	constructor(app: App, onSubmit: (result: MarkerObject) => void, initialValue?: MarkerObject) {
+	constructor(
+		app: App,
+		onSubmit: (result: MarkerObject) => void,
+		initialValue: MarkerObject | undefined,
+		mode: MarkerModalMode,
+	) {
 		super(app);
-		this.setTitle("Edit marker");
+		this.setTitle(t(`modal.title.${mode}`));
 
 		this.value = initialValue ?? { coordinates: "-1, -1" };
 		const coordinatesValidator = Validator.coordinates;
 
 		new Setting(this.contentEl)
-			.setName("Map name")
-			.setDesc(
-				"Optional. Name of the map this marker is specific to, useful if you want to add this note as a marker to multiple different maps.",
-			)
+			.setName(t("modal.mapName.title"))
+			.setDesc(t("modal.mapName.description"))
 			.addText((textField) => {
 				textField
 					.setValue(this.value.mapName ?? "")
-					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
+					.onChange((value) => (this.value.mapName = value !== "" ? value : undefined));
 			});
 
 		// TODO: Add validation visibility, warning disappears on blur now
 		new Setting(this.contentEl)
-			.setName("Coordinates")
-			.setDesc("Required. Marker coordinates on the map.")
+			.setName(t("modal.coordinates.title"))
+			.setDesc(t("modal.coordinates.description"))
 			.addText((textField) => {
 				textField.setValue(this.value.coordinates).onChange((value) => {
 					if (value === "") {
-						textField.inputEl.setCustomValidity("Value is required");
+						textField.inputEl.setCustomValidity(t("modal.coordinates.error.required"));
 						this.submitEnabledCallback(false);
 					} else if (!coordinatesValidator(value)) {
-						textField.inputEl.setCustomValidity("Value not a valid coordinate");
+						textField.inputEl.setCustomValidity(t("modal.coordinates.error.invalid"));
 						this.submitEnabledCallback(false);
 					} else {
 						textField.inputEl.setCustomValidity("");
 						this.submitEnabledCallback(true);
+						this.value.coordinates = value;
 					}
 
 					textField.inputEl.reportValidity();
@@ -56,23 +62,21 @@ export class MarkerModal extends Modal {
 			});
 
 		new Setting(this.contentEl)
-			.setName("Icon")
-			.setDesc("Optional. The marker icon, defaults to a dot if left empty.")
+			.setName(t("modal.icon.title"))
+			.setDesc(t("modal.icon.description"))
 			.addSearch((searchField) => {
 				searchField
 					.setValue(this.value.icon ?? "")
-					.setPlaceholder("Search for an icon")
+					.setPlaceholder(t("modal.icon.placeholder"))
 					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
-				new IconSuggest(app, searchField.inputEl);
+				new IconSuggest(app, searchField);
 			});
 
 		let colourComponent: ColorComponent;
 		let dropdownComponent: DropdownComponent;
 		new Setting(this.contentEl)
-			.setName("Colour")
-			.setDesc(
-				"The marker colour. The dropdown menu has some default values, on custom values it is empty.",
-			)
+			.setName(t("modal.colour.title"))
+			.setDesc(t("modal.colour.description"))
 			.addColorPicker((colourField) => {
 				colourComponent = colourField;
 				colourField.setValue(this.value.colour ?? C.marker.defaultColour).onChange((value) => {
@@ -85,7 +89,7 @@ export class MarkerModal extends Modal {
 			.addDropdown((dropdownField) => {
 				dropdownComponent = dropdownField;
 				dropdownField
-					.addOptions(C.property.predefinedColours)
+					.addOptions(buildColourOptionsObject())
 					.setValue(this.value.colour ?? C.marker.defaultColour)
 					.onChange((value) => {
 						if (Validator.colour(value)) {
@@ -96,8 +100,8 @@ export class MarkerModal extends Modal {
 			});
 
 		new Setting(this.contentEl)
-			.setName("Minimal zoom")
-			.setDesc("Optional. Minimal zoom from which the marker becomes visible.")
+			.setName(t("modal.minZoom.title"))
+			.setDesc(t("modal.minZoom.description"))
 			.addText((textField) => {
 				textField.inputEl.type = "number";
 				textField
@@ -107,7 +111,7 @@ export class MarkerModal extends Modal {
 
 		new Setting(this.contentEl).addButton((button) => {
 			button
-				.setButtonText("Submit changes")
+				.setButtonText(t(`modal.submit.${mode}`))
 				.setCta()
 				.onClick(() => {
 					this.close();
@@ -121,32 +125,5 @@ export class MarkerModal extends Modal {
 
 	private setSubmitEnabledCallback(cb: (isEnabled: boolean) => void): void {
 		this.submitEnabledCallback = cb;
-	}
-}
-
-class IconSuggest extends AbstractInputSuggest<string> {
-	private content: IconName[];
-
-	constructor(
-		app: App,
-		private inputEl: HTMLInputElement,
-	) {
-		super(app, inputEl);
-		this.content = getIconIds();
-	}
-
-	protected getSuggestions(input: string): string[] {
-		const lowerCaseInput = input.toLocaleLowerCase();
-		return this.content.filter((content) => content.toLocaleLowerCase().contains(lowerCaseInput));
-	}
-
-	renderSuggestion(value: string, el: HTMLElement): void {
-		el.setText(value);
-	}
-
-	selectSuggestion(value: string, _evt: MouseEvent | KeyboardEvent): void {
-		this.inputEl.value = value;
-		this.inputEl.blur();
-		this.close();
 	}
 }

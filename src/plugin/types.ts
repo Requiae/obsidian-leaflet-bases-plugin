@@ -22,3 +22,8 @@ export interface MapObject {
 }
 
 export type ValidatorFunction<T> = (value: unknown) => value is T;
+
+export enum MarkerModalMode {
+	Add = "add",
+	Edit = "edit",
+}

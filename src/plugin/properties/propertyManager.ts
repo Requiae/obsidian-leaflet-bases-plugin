@@ -12,6 +12,7 @@ export class PropertyManager {
 	}
 
 	private load() {
+		// TODO: marker is not a const
 		this.metadataTypeManager.registeredTypeWidgets["marker"] = markerWidget;
 
 		this.plugin.registerEvent(

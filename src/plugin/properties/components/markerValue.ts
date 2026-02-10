@@ -1,5 +1,5 @@
 import { App, ValueComponent } from "obsidian";
-import { MarkerObject } from "plugin/types";
+import { MarkerModalMode, MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
 import { MarkerModal } from "./markerModal";
 import { Constants as C } from "plugin/constants";
@@ -13,7 +13,7 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	onDeleteCallback: () => void = () => {};
 
 	constructor(
-		private app: App,
+		app: App,
 		containerEl: HTMLElement,
 		private value: MarkerObject,
 	) {
@@ -34,12 +34,13 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 		this.tagEl.onClickEvent((event) => {
 			event.stopPropagation();
 			new MarkerModal(
-				this.app,
+				app,
 				(result) => {
 					this.setValue(result);
 					this.onChanged();
 				},
 				this.value,
+				MarkerModalMode.Edit,
 			).open();
 		});
 		closeEl.onClickEvent((event) => {
@@ -84,7 +85,7 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 
 	private updateElements() {
 		this.iconEl.replaceChildren(getIconWithDefault(this.value.icon));
-		this.textEl.textContent = `${this.value.mapName}: ${this.value.coordinates}`;
+		this.textEl.textContent = `${this.value.mapName ? `${this.value.mapName}: ` : ""}${this.value.coordinates}`;
 	}
 
 	private createCloseButton(closeEl: HTMLDivElement): void {

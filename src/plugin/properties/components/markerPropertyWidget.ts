@@ -6,6 +6,8 @@ import {
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
 import { MarkerValueComponent } from "./markerValue";
+import { MarkerAddComponent } from "./markerAdd";
+import { isNonEmptyObject } from "plugin/util";
 
 export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 	type: "marker",
@@ -23,7 +25,7 @@ export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 
 function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is MarkerObject[] {
 	const arrayValue = Array.isArray(propertyValue) ? propertyValue : [propertyValue];
-	if (arrayValue.some((element) => typeof element !== "object" || element === null)) return false;
+	if (arrayValue.some((element) => !isNonEmptyObject(element))) return false;
 	return arrayValue.every((element) => SchemaValidator.marker(element));
 }
 
@@ -33,6 +35,7 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 
 	listComponent: HTMLUListElement;
 	innerComponents: MarkerValueComponent[] = [];
+	addComponent: MarkerAddComponent | undefined;
 
 	constructor(
 		public element: HTMLElement,
@@ -55,11 +58,18 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	onFocus(): void {}
 
 	setValue(value: unknown): void {
+		console.log(value, validateMarkerPropertyValue(value));
 		if (!validateMarkerPropertyValue(value)) return;
 		this.value = value;
 		this.ctx.onChange(value);
 
 		this.updateChildren();
+	}
+
+	private pushValue(markerObject: MarkerObject) {
+		const copy = this.value.slice();
+		copy.push(markerObject);
+		this.setValue(copy);
 	}
 
 	private updateValueAtIndex(markerObject: MarkerObject, index: number) {
@@ -80,6 +90,7 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 		this.innerComponents.forEach((component) => component.unload());
 		this.innerComponents = [];
 		this.listComponent.replaceChildren();
+		this.addComponent?.unload();
 
 		for (const [index, markerObject] of this.value.entries()) {
 			const tagEl = new MarkerValueComponent(this.ctx.app, this.listComponent, markerObject);
@@ -87,5 +98,8 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 			tagEl.onDelete(() => this.removeValueAtIndex(index));
 			this.innerComponents.push(tagEl);
 		}
+
+		this.addComponent = new MarkerAddComponent(this.ctx.app, this.listComponent);
+		this.addComponent.onChange((value) => this.pushValue(value));
 	}
 }

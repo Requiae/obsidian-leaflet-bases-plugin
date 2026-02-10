@@ -26,3 +26,8 @@ export function parseCoordinates(coordinates: Coordinates): [number, number] {
 	if (parsedCoordinates.length !== 2) throw new Error("Coordinates not properly validated");
 	return parsedCoordinates as [number, number];
 }
+
+export function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
+	if (!value || typeof value !== "object") return false;
+	return Object.keys.length > 0;
+}

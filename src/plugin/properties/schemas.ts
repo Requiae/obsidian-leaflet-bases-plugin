@@ -1,5 +1,6 @@
 import { MapObject, MarkerObject, ValidatorFunction } from "plugin/types";
 import { Validator } from "./validators";
+import { isNonEmptyObject } from "plugin/util";
 
 type Schema<T extends string> = Record<
 	T,
@@ -26,11 +27,6 @@ const mapSchema: Schema<keyof MapObject> = {
 function schemaValidatorFactory<T extends ValidatedSchemas>(
 	schema: Schema<string>,
 ): ValidatorFunction<T> {
-	function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
-		if (!value || typeof value !== "object") return false;
-		return Object.keys.length > 0;
-	}
-
 	function schemaValidator(value: unknown): value is T {
 		if (!isNonEmptyObject(value)) return false;
 
