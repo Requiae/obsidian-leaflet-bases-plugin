@@ -1,13 +1,13 @@
+import { CRS, LatLngBoundsExpression, Map, imageOverlay, layerGroup, map } from "leaflet";
 import { BasesView, QueryController } from "obsidian";
-import { ViewRegistrationBuilder } from "../viewManager";
-import { MarkerManager } from "./marker";
-import { map, CRS, Map, imageOverlay, LatLngBoundsExpression, layerGroup } from "leaflet";
-import { ImageLoader } from "./imageLoader";
-import { SchemaValidator } from "plugin/properties/schemas";
-import { clamp, isNonEmptyObject } from "plugin/util";
-import { MapObject } from "plugin/types";
 import { Constants as C } from "plugin/constants";
-import { t } from "plugin/i10n/locale";
+import { t } from "plugin/i18n/locale";
+import { SchemaValidator } from "plugin/properties/schemas";
+import { MapObject } from "plugin/types";
+import { clamp, isNonEmptyObject } from "plugin/util";
+import { ViewRegistrationBuilder } from "../viewManager";
+import { ImageLoader } from "./imageLoader";
+import { MarkerManager } from "./marker";
 
 function isValidMapSettings(value: unknown): value is MapObject {
 	if (!isNonEmptyObject(value)) return false;
@@ -74,10 +74,10 @@ class LeafletMapView extends BasesView {
 			[imageData.dimensions.width, imageData.dimensions.height],
 		];
 
-		const minZoom = this.mapSettings.minZoom ?? C.map.defaultMinZoom;
-		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.defaultMaxZoom, minZoom);
+		const minZoom = this.mapSettings.minZoom ?? C.map.default.minZoom;
+		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.default.maxZoom, minZoom);
 		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
-		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.defaultZoomDelta;
+		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.default.zoomDelta;
 
 		const markerLayer = layerGroup();
 		const overlay = imageOverlay(imageData.url, bounds);
@@ -87,7 +87,7 @@ class LeafletMapView extends BasesView {
 			maxBounds: bounds,
 			minZoom,
 			maxZoom,
-			zoomSnap: C.map.defaultZoomSnap,
+			zoomSnap: C.map.default.zoomSnap,
 			zoomDelta,
 			layers: [markerLayer, overlay],
 		});

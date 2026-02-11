@@ -1,8 +1,8 @@
 import { App, ValueComponent } from "obsidian";
+import { Constants as C } from "plugin/constants";
 import { MarkerModalMode, MarkerObject } from "plugin/types";
 import { getIconWithDefault } from "plugin/util";
 import { MarkerModal } from "./markerModal";
-import { Constants as C } from "plugin/constants";
 
 export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	iconEl: HTMLDivElement;

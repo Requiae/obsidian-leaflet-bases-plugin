@@ -3,16 +3,18 @@ import {
 	PropertyWidget,
 	PropertyWidgetComponentBase,
 } from "obsidian-typings";
+import { Constants as C } from "plugin/constants";
+import { t } from "plugin/i18n/locale";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
-import { MarkerValueComponent } from "./markerValue";
-import { MarkerAddComponent } from "./markerAdd";
 import { isNonEmptyObject } from "plugin/util";
+import { MarkerAddComponent } from "./markerAdd";
+import { MarkerValueComponent } from "./markerValue";
 
 export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
-	type: "marker",
-	name: () => "Marker",
-	icon: "lucide-map-pin",
+	type: C.property.marker.identifier,
+	name: () => t("marker.name"),
+	icon: C.property.marker.icon,
 	validate: validateMarkerPropertyValue,
 	render: (element: HTMLElement, value: unknown, ctx: PropertyRenderContext) =>
 		new MarkerPropertyWidgetComponent(
@@ -20,7 +22,7 @@ export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 			validateMarkerPropertyValue(value) ? value : [],
 			ctx,
 		),
-	reservedKeys: ["marker"],
+	reservedKeys: [C.property.marker.identifier],
 };
 
 function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is MarkerObject[] {
@@ -31,7 +33,7 @@ function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is M
 
 class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	containerEl: HTMLElement;
-	type = "marker" as const;
+	type = C.property.marker.identifier;
 
 	listComponent: HTMLUListElement;
 	innerComponents: MarkerValueComponent[] = [];

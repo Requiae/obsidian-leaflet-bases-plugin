@@ -1,4 +1,5 @@
 import { MetadataTypeManager } from "obsidian-typings";
+import { Constants as C } from "plugin/constants";
 import { BaseLeafletViewPlugin } from "plugin/plugin";
 import { markerWidget } from "./components/markerPropertyWidget";
 
@@ -12,17 +13,10 @@ export class PropertyManager {
 	}
 
 	private load() {
-		// TODO: marker is not a const
-		this.metadataTypeManager.registeredTypeWidgets["marker"] = markerWidget;
-
-		this.plugin.registerEvent(
-			this.metadataTypeManager.on("changed", (property) => {
-				// console.log(property);
-			}),
-		);
+		this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier] = markerWidget;
 	}
 
 	unload() {
-		delete this.metadataTypeManager.registeredTypeWidgets["marker"];
+		delete this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier];
 	}
 }

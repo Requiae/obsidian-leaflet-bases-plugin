@@ -1,18 +1,18 @@
-import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
 import {
-	divIcon,
 	DivIcon,
 	LayerGroup,
 	LeafletMouseEvent,
 	LeafletMouseEventHandlerFn,
 	Map,
-	marker,
 	Marker,
+	divIcon,
+	marker,
 } from "leaflet";
+import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
+import { Constants as C } from "plugin/constants";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
 import { getIconWithDefault, isNonEmptyObject, parseCoordinates } from "plugin/util";
-import { Constants as C } from "plugin/constants";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
@@ -59,7 +59,7 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 
 	if (!Array.isArray(markerEntries)) return null;
 	return markerEntries
-		.map((markerEntry) => parseMarkerFromEntry(markerEntry, file.name, file.path))
+		.map((markerEntry) => parseMarkerFromEntry(markerEntry, file.basename, file.path))
 		.filter((marker) => marker !== null);
 }
 

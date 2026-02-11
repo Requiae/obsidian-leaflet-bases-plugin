@@ -1,11 +1,11 @@
 import { App, Plugin, PluginManifest } from "obsidian";
-import {
-	DEFAULT_SETTINGS,
-	BaseLeafletViewPluginSettings,
-	BaseLeafletViewPluginSettingTab,
-} from "plugin/settings";
-import { PropertyManager } from "plugin/properties/propertyManager";
 import { ViewManager } from "plugin/bases/viewManager";
+import { PropertyManager } from "plugin/properties/propertyManager";
+import {
+	BaseLeafletViewPluginSettingTab,
+	BaseLeafletViewPluginSettings,
+	DEFAULT_SETTINGS,
+} from "plugin/settings";
 
 export class BaseLeafletViewPlugin extends Plugin {
 	settings: BaseLeafletViewPluginSettings = DEFAULT_SETTINGS;

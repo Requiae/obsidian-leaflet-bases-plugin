@@ -2,15 +2,21 @@
 
 export const Constants = {
 	map: {
-		defaultMinZoom: 0,
-		defaultMaxZoom: 2,
-		defaultZoomDelta: 0.5,
-		defaultZoomSnap: 0.01,
+		default: {
+			minZoom: 0,
+			maxZoom: 2,
+			zoomDelta: 0.5,
+			zoomSnap: 0.01,
+		},
 	},
 	marker: {
 		defaultColour: "#21409a",
 	},
 	property: {
+		marker: {
+			identifier: "marker",
+			icon: "lucide-map-pin",
+		},
 		predefinedColours: {
 			"#039c4b": "green",
 			"#66d313": "lime",

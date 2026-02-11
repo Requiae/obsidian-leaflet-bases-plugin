@@ -1,6 +1,6 @@
 import { MapObject, MarkerObject, ValidatorFunction } from "plugin/types";
-import { Validator } from "./validators";
 import { isNonEmptyObject } from "plugin/util";
+import { Validator } from "./validators";
 
 type Schema<T extends string> = Record<
 	T,

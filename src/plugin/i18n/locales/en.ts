@@ -53,4 +53,7 @@ export default {
 			description: "Optional. Minimal zoom from which the marker becomes visible.",
 		},
 	},
+	marker: {
+		name: "Marker",
+	},
 };
