@@ -31,3 +31,7 @@ export function isNonEmptyObject(value: unknown): value is { [key: string]: unkn
 	if (!value || typeof value !== "object") return false;
 	return Object.keys.length > 0;
 }
+
+export function isNotNull<T>(value: T | null): value is T {
+	return value !== null;
+}
