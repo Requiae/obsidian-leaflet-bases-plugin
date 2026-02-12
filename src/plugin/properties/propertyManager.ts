@@ -9,10 +9,6 @@ export class PropertyManager {
 	constructor(public plugin: BaseLeafletViewPlugin) {
 		this.metadataTypeManager = plugin.app.metadataTypeManager;
 
-		this.load();
-	}
-
-	private load() {
 		this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier] = markerWidget;
 	}
 

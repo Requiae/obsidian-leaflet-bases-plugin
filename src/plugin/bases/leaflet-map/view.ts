@@ -6,6 +6,7 @@ import { SchemaValidator } from "plugin/properties/schemas";
 import { MapObject } from "plugin/types";
 import { clamp, isNonEmptyObject } from "plugin/util";
 import { ViewRegistrationBuilder } from "../viewManager";
+import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
 import { MarkerManager } from "./marker";
 
@@ -35,6 +36,7 @@ class LeafletMapView extends BasesView {
 	// Managers
 	private markerManager: MarkerManager;
 	private imageLoader: ImageLoader;
+	private controls: ControlContainer;
 
 	constructor(controller: QueryController, parentEl: HTMLElement) {
 		super(controller);
@@ -44,6 +46,7 @@ class LeafletMapView extends BasesView {
 
 		this.markerManager = new MarkerManager(this.app);
 		this.imageLoader = new ImageLoader(this.app);
+		this.controls = new ControlContainer();
 	}
 
 	onDataUpdated(): void {
@@ -52,6 +55,7 @@ class LeafletMapView extends BasesView {
 
 	unload(): void {
 		this.markerManager?.unload();
+		this.controls.onRemove(this.leafletMap);
 		this.leafletMap?.clearAllEventListeners();
 		this.leafletMap?.remove();
 	}
@@ -92,6 +96,7 @@ class LeafletMapView extends BasesView {
 			layers: [markerLayer, overlay],
 		});
 
+		this.controls.addTo(this.leafletMap);
 		this.leafletMap.fitBounds(bounds).setZoom(defaultZoom);
 		this.markerManager.setMap(this.leafletMap, markerLayer, minZoom);
 	}
