@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS: BaseLeafletViewPluginSettings = {
 };
 
 export class BaseLeafletViewPluginSettingTab extends PluginSettingTab {
-	plugin: BaseLeafletViewPlugin;
+	override plugin: BaseLeafletViewPlugin;
 
 	constructor(app: App, plugin: BaseLeafletViewPlugin) {
 		super(app, plugin);

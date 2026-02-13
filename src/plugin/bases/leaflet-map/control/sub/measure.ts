@@ -1,22 +1,12 @@
-import { DomEvent, DomUtil, LeafletMouseEvent } from "leaflet";
+import { LeafletMouseEvent } from "leaflet";
 import { SubControl } from "../subControl";
 
 export class MeasureControl extends SubControl {
-	onAdd(containerEl: HTMLElement): void {
-		this.button = DomUtil.create("button", "leaflet-control-button", containerEl);
-		this.button.textContent = "Kaas";
-
-		this.button.addEventListener("click", (event) => {
-			console.log(event);
-		});
-		DomEvent.disableClickPropagation(containerEl);
+	override onAdded(): void {
+		// this.button?.textContent = "Kaas";
 	}
 
-	onRemove(): void {
-		this.button?.removeEventListener("click", (_event) => {});
-	}
-
-	mapClicked(_event: LeafletMouseEvent): void {
+	override mapClicked(_event: LeafletMouseEvent): void {
 		throw new Error("Not implemented");
 	}
 

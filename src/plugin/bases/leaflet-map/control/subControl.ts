@@ -1,4 +1,4 @@
-import { LeafletMouseEvent, Map } from "leaflet";
+import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
 
 interface SubControlOptions {
 	index: number;
@@ -9,7 +9,7 @@ export class SubControl {
 	readonly index: number;
 	readonly map: Map;
 
-	protected onSelectCallback: (index: number, isSelected: boolean) => void = () => {};
+	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
 
 	private _isSelected: boolean = false;
@@ -22,7 +22,7 @@ export class SubControl {
 		this.map = options.map;
 	}
 
-	onSelect(cb: (index: number, isSelected: boolean) => void): this {
+	onSelect(cb: (index: number) => void): this {
 		this.onSelectCallback = cb;
 		return this;
 	}
@@ -38,11 +38,24 @@ export class SubControl {
 		}
 	}
 
-	onAdd(_containerEl: HTMLElement): void {
+	onAdd(containerEl: HTMLElement): void {
+		this.button = DomUtil.create("button", "leaflet-control-button", containerEl);
+		this.button.addEventListener("click", () => this.onSelectCallback(this.index));
+		DomEvent.disableClickPropagation(containerEl);
+		this.onAdded();
+	}
+
+	onRemove(): void {
+		this.onRemoved();
+		this.button?.removeEventListener("click", () => {});
+		this.button?.replaceChildren();
+	}
+
+	protected onAdded(): void {
 		throw new Error("Not implemented");
 	}
 
-	onRemove(): void {}
+	protected onRemoved(): void {}
 
 	mapClicked(_event: LeafletMouseEvent): void {
 		throw new Error("Not implemented");

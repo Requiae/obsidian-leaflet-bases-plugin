@@ -18,14 +18,14 @@ export class BaseLeafletViewPlugin extends Plugin {
 		this.viewManager = new ViewManager(this);
 	}
 
-	async onload() {
+	override async onload() {
 		await this.loadSettings();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new BaseLeafletViewPluginSettingTab(this.app, this));
 	}
 
-	onunload() {
+	override onunload() {
 		this.propertyManager?.unload();
 		this.viewManager?.unload();
 	}

@@ -10,7 +10,7 @@ export class ControlContainer extends Control {
 		super({ position: "topleft" });
 	}
 
-	onAdd(map: Map): HTMLElement {
+	override onAdd(map: Map): HTMLElement {
 		this.registerSubControl(PanControl, map);
 		this.registerSubControl(MeasureControl, map);
 		this.registerSubControl(CopyControl, map);
@@ -27,7 +27,7 @@ export class ControlContainer extends Control {
 		return containerEl;
 	}
 
-	onRemove(map: Map | undefined): void {
+	override onRemove(map: Map | undefined): void {
 		map?.removeEventListener("click");
 
 		this.controls.forEach((control) => control.onRemove());

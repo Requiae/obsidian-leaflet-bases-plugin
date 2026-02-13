@@ -53,7 +53,7 @@ class LeafletMapView extends BasesView {
 		void this.updateData();
 	}
 
-	unload(): void {
+	override unload(): void {
 		this.markerManager?.unload();
 		this.controls.onRemove(this.leafletMap);
 		this.leafletMap?.clearAllEventListeners();

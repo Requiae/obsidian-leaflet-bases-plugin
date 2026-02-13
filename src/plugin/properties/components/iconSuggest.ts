@@ -20,7 +20,7 @@ export class IconSuggest extends AbstractInputSuggest<string> {
 		el.setText(value);
 	}
 
-	selectSuggestion(value: string, _evt: MouseEvent | KeyboardEvent): void {
+	override selectSuggestion(value: string, _evt: MouseEvent | KeyboardEvent): void {
 		this.searchComponent.setValue(value).onChanged();
 		this.close();
 	}
