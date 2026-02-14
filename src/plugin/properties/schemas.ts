@@ -18,6 +18,7 @@ const markerSchema: Schema<keyof MarkerObject> = {
 const mapSchema: Schema<keyof MapObject> = {
 	name: { validator: Validator.name },
 	image: { validator: Validator.source, required: true },
+	height: { validator: Validator.number },
 	minZoom: { validator: Validator.number },
 	maxZoom: { validator: Validator.number },
 	defaultZoom: { validator: Validator.number },

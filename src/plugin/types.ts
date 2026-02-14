@@ -1,4 +1,6 @@
-import { IconName } from "obsidian";
+import { BasesViewRegistration, IconName } from "obsidian";
+
+export type ViewRegistrationBuilder = () => [string, BasesViewRegistration];
 
 export type Wiki = string[][]; // Wiki links take the shape of string[][]
 export type Coordinates = `${number}, ${number}`;
@@ -15,6 +17,7 @@ export interface MarkerObject {
 export interface MapObject {
 	name?: string;
 	image: string | Wiki;
+	height?: number;
 	minZoom?: number;
 	maxZoom?: number;
 	defaultZoom?: number;

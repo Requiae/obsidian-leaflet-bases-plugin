@@ -1,11 +1,10 @@
 import { CRS, LatLngBoundsExpression, Map, imageOverlay, layerGroup, map } from "leaflet";
-import { BasesView, QueryController } from "obsidian";
+import { BasesView, QueryController, ViewOption } from "obsidian";
 import { Constants as C } from "plugin/constants";
 import { t } from "plugin/i18n/locale";
 import { SchemaValidator } from "plugin/properties/schemas";
-import { MapObject } from "plugin/types";
+import { MapObject, ViewRegistrationBuilder } from "plugin/types";
 import { clamp, isNonEmptyObject } from "plugin/util";
-import { ViewRegistrationBuilder } from "../viewManager";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
 import { MarkerManager } from "./marker";
@@ -15,18 +14,18 @@ function isValidMapSettings(value: unknown): value is MapObject {
 	return SchemaValidator.map(value);
 }
 
-const LeafletMapViewType: string = "leaflet-map";
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = () => [
-	LeafletMapViewType,
+	C.view.type,
 	{
 		name: t("view.name"),
-		icon: "lucide-map",
+		icon: C.view.icon,
 		factory: (controller, parentEl) => new LeafletMapView(controller, parentEl),
+		options: () => LeafletMapView.getViewOptions(),
 	},
 ];
 
 class LeafletMapView extends BasesView {
-	type = LeafletMapViewType;
+	type = C.view.type;
 	private mapSettings: MapObject | undefined;
 
 	private containerEl: HTMLElement;
@@ -78,10 +77,13 @@ class LeafletMapView extends BasesView {
 			[imageData.dimensions.width, imageData.dimensions.height],
 		];
 
+		const height = this.mapSettings.height ?? C.map.default.height;
 		const minZoom = this.mapSettings.minZoom ?? C.map.default.minZoom;
 		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.default.maxZoom, minZoom);
 		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
 		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.default.zoomDelta;
+
+		this.mapEl.style.height = `${height.toFixed(0)}px`;
 
 		const markerLayer = layerGroup();
 		const overlay = imageOverlay(imageData.url, bounds);
@@ -105,17 +107,76 @@ class LeafletMapView extends BasesView {
 		if (this.mapSettings) return;
 
 		const settings = {
-			name: this.config.get("mapName"),
-			image: this.config.get("image"),
-			minZoom: this.config.get("minZoom"),
-			maxZoom: this.config.get("maxZoom"),
-			defaultZoom: this.config.get("defaultZoom"),
-			zoomDelta: this.config.get("zoomDelta"),
+			name: this.config.get(C.view.obsidianIdentifiers.mapName),
+			image: this.config.get(C.view.obsidianIdentifiers.image),
+			height: this.config.get(C.view.obsidianIdentifiers.height),
+			minZoom: this.config.get(C.view.obsidianIdentifiers.minZoom),
+			maxZoom: this.config.get(C.view.obsidianIdentifiers.maxZoom),
+			defaultZoom: this.config.get(C.view.obsidianIdentifiers.defaultZoom),
+			zoomDelta: this.config.get(C.view.obsidianIdentifiers.zoomDelta),
 		};
 
 		if (isValidMapSettings(settings)) {
 			this.mapSettings = settings;
 			this.markerManager.setMapName(settings.name);
 		}
+	}
+
+	static getViewOptions(): ViewOption[] {
+		return [
+			{
+				displayName: t("view.options.image"),
+				type: "file",
+				key: C.view.obsidianIdentifiers.image,
+				filter: (file) => (C.map.imageTypes as readonly string[]).includes(file.extension),
+			},
+			{
+				displayName: t("view.options.height"),
+				type: "slider",
+				key: C.view.obsidianIdentifiers.height,
+				default: C.map.default.height,
+				...C.view.config.height,
+			},
+			{
+				displayName: t("view.options.mapname.title"),
+				type: "text",
+				key: C.view.obsidianIdentifiers.mapName,
+				placeholder: t("view.options.mapname.placeholder"),
+			},
+			{
+				displayName: t("view.options.zoom.header"),
+				type: "group",
+				items: [
+					{
+						displayName: t("view.options.zoom.default"),
+						type: "slider",
+						key: C.view.obsidianIdentifiers.defaultZoom,
+						default: C.map.default.minZoom,
+						...C.view.config.zoom.base,
+					},
+					{
+						displayName: t("view.options.zoom.min"),
+						type: "slider",
+						key: C.view.obsidianIdentifiers.minZoom,
+						default: C.map.default.minZoom,
+						...C.view.config.zoom.base,
+					},
+					{
+						displayName: t("view.options.zoom.max"),
+						type: "slider",
+						key: C.view.obsidianIdentifiers.maxZoom,
+						default: C.map.default.maxZoom,
+						...C.view.config.zoom.base,
+					},
+					{
+						displayName: t("view.options.zoom.delta"),
+						type: "slider",
+						key: C.view.obsidianIdentifiers.zoomDelta,
+						default: C.map.default.zoomDelta,
+						...C.view.config.zoom.delta,
+					},
+				],
+			},
+		];
 	}
 }

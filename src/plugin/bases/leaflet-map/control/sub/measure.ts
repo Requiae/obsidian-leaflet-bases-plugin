@@ -1,13 +1,15 @@
 import { LeafletMouseEvent } from "leaflet";
+import { Constants as C } from "plugin/constants";
+import { getIconWithDefault } from "plugin/util";
 import { SubControl } from "../subControl";
 
 export class MeasureControl extends SubControl {
 	override onAdded(): void {
-		// this.button?.textContent = "Kaas";
+		this.button?.appendChild(getIconWithDefault(C.map.controlIcons.measure));
 	}
 
 	override mapClicked(_event: LeafletMouseEvent): void {
-		throw new Error("Not implemented");
+		//throw new Error("Not implemented");
 	}
 
 	/* Drawing measure lines

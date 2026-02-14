@@ -3,6 +3,21 @@ import { MarkerModalMode } from "plugin/types";
 export default {
 	view: {
 		name: "Leaflet Map",
+		options: {
+			image: "Image",
+			height: "Embedded height",
+			mapname: {
+				title: "Map name",
+				placeholder: "Optional",
+			},
+			zoom: {
+				header: "Zoom",
+				default: "Default zoom",
+				min: "Minimum zoom",
+				max: "Maximum zoom",
+				delta: "Zoom stepsize",
+			},
+		},
 	},
 	modal: {
 		title: {
