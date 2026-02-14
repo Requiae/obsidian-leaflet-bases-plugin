@@ -31,7 +31,7 @@ export default {
 		mapName: {
 			title: "Map name",
 			description:
-				"Optional. Name of the map this marker is specific to, useful if you want to add this note as a marker to multiple different maps.",
+				"Optional. Name of the map this marker is specific to. Useful if you want to add this note as a marker to multiple different maps.",
 		},
 		coordinates: {
 			title: "Coordinates",
