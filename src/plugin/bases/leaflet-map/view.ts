@@ -1,12 +1,10 @@
-import { CRS, LatLngBoundsExpression, Map, imageOverlay, layerGroup, map } from "leaflet";
 import { BasesView, QueryController, ViewOption } from "obsidian";
 import { Constants as C } from "plugin/constants";
 import { t } from "plugin/i18n/locale";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MapObject, ViewRegistrationBuilder } from "plugin/types";
 import { clamp, isNonEmptyObject } from "plugin/util";
-import { ControlContainer } from "./control/container";
-import { ImageLoader } from "./imageLoader";
+import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
 
 function isValidMapSettings(value: unknown): value is MapObject {
@@ -28,24 +26,21 @@ class LeafletMapView extends BasesView {
 	type = C.view.type;
 	private mapSettings: MapObject | undefined;
 
-	private containerEl: HTMLElement;
-	private mapEl: HTMLElement;
-	private leafletMap: Map | undefined;
-
 	// Managers
+	private mapManager: MapManager;
 	private markerManager: MarkerManager;
-	private imageLoader: ImageLoader;
-	private controls: ControlContainer;
 
 	constructor(controller: QueryController, parentEl: HTMLElement) {
 		super(controller);
 
-		this.containerEl = parentEl.createDiv("bases-leaflet-map-container");
-		this.mapEl = this.containerEl.createDiv("bases-leaflet-map");
+		const containerEl = parentEl.createDiv("bases-leaflet-map-container");
 
-		this.markerManager = new MarkerManager(this.app);
-		this.imageLoader = new ImageLoader(this.app);
-		this.controls = new ControlContainer();
+		this.mapManager = new MapManager(this.app, containerEl);
+		this.markerManager = new MarkerManager(
+			this.app,
+			this.mapManager.leafletMap,
+			this.mapManager.markerLayer,
+		);
 	}
 
 	onDataUpdated(): void {
@@ -53,57 +48,16 @@ class LeafletMapView extends BasesView {
 	}
 
 	override unload(): void {
-		this.markerManager?.unload();
-		this.controls.onRemove(this.leafletMap);
-		this.leafletMap?.clearAllEventListeners();
-		this.leafletMap?.remove();
+		this.markerManager.unload();
+		this.mapManager.unload();
 	}
 
 	private async updateData(): Promise<void> {
-		if (!this.mapSettings) this.initialiseMapSettings();
-		if (!this.leafletMap) await this.initialiseMap();
-
+		void this.updateMapSettings();
 		this.markerManager.updateMarkers(this.data);
 	}
 
-	private async initialiseMap(): Promise<void> {
-		if (!this.mapSettings) throw new Error("Map settings not initialised");
-
-		const imageData = await this.imageLoader.getImageData(this.mapSettings.image);
-		if (!imageData) return;
-
-		const bounds: LatLngBoundsExpression = [
-			[0, 0],
-			[imageData.dimensions.width, imageData.dimensions.height],
-		];
-
-		const height = this.mapSettings.height ?? C.map.default.height;
-		const minZoom = this.mapSettings.minZoom ?? C.map.default.minZoom;
-		const maxZoom = Math.max(this.mapSettings.maxZoom ?? C.map.default.maxZoom, minZoom);
-		const defaultZoom = clamp(this.mapSettings.defaultZoom ?? minZoom, minZoom, maxZoom);
-		const zoomDelta = this.mapSettings.zoomDelta ?? C.map.default.zoomDelta;
-
-		this.mapEl.style.height = `${height.toFixed(0)}px`;
-
-		const markerLayer = layerGroup();
-		const overlay = imageOverlay(imageData.url, bounds);
-
-		this.leafletMap = map(this.mapEl, {
-			crs: CRS.Simple,
-			maxBounds: bounds,
-			minZoom,
-			maxZoom,
-			zoomSnap: C.map.default.zoomSnap,
-			zoomDelta,
-			layers: [markerLayer, overlay],
-		});
-
-		this.controls.addTo(this.leafletMap);
-		this.leafletMap.fitBounds(bounds).setZoom(defaultZoom);
-		this.markerManager.setMap(this.leafletMap, markerLayer, minZoom);
-	}
-
-	private initialiseMapSettings(): void {
+	private async updateMapSettings(): Promise<void> {
 		if (this.mapSettings) return;
 
 		const settings = {
@@ -116,10 +70,20 @@ class LeafletMapView extends BasesView {
 			zoomDelta: this.config.get(C.view.obsidianIdentifiers.zoomDelta),
 		};
 
-		if (isValidMapSettings(settings)) {
-			this.mapSettings = settings;
-			this.markerManager.setMapName(settings.name);
-		}
+		if (!isValidMapSettings(settings)) return;
+
+		const minZoom = settings.minZoom ?? C.map.default.minZoom;
+		const maxZoom = Math.max(settings.maxZoom ?? C.map.default.maxZoom, minZoom);
+
+		this.markerManager.updateSettings(settings.name, minZoom);
+		await this.mapManager.updateSettings({
+			...settings,
+			height: settings.height ?? C.map.default.height,
+			minZoom,
+			maxZoom,
+			defaultZoom: clamp(settings.defaultZoom ?? minZoom, minZoom, maxZoom),
+			zoomDelta: settings.zoomDelta ?? C.map.default.zoomDelta,
+		});
 	}
 
 	static getViewOptions(): ViewOption[] {

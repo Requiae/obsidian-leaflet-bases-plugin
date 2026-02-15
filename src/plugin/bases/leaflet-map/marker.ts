@@ -73,22 +73,21 @@ export class MarkerManager {
 	private xmlSerializer: XMLSerializer;
 
 	private mapName: string | undefined;
-	private map: Map | undefined;
-	private markerLayer: LayerGroup | undefined;
 	private mapMinZoom: number = 0;
 
-	constructor(public app: App) {
+	constructor(
+		private app: App,
+		private map: Map,
+		private markerLayer: LayerGroup,
+	) {
 		this.xmlSerializer = new XMLSerializer();
 	}
 
 	unload(): void {
-		this.map?.clearAllEventListeners();
-		this.markerLayer?.clearLayers();
+		this.markerLayer.clearLayers();
 	}
 
 	private addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
-		if (!this.map || !this.markerLayer) throw new Error("Map not properly initialised");
-
 		const tolerance = 0.00001; // We have to deal with floating point errors
 		if (this.map.getZoom() >= markerZoom - tolerance) {
 			markerItem.addTo(this.markerLayer);
@@ -98,7 +97,7 @@ export class MarkerManager {
 	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
-		this.markerLayer?.clearLayers();
+		this.markerLayer.clearLayers();
 
 		data.data
 			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker"), entry.file))
@@ -114,21 +113,15 @@ export class MarkerManager {
 					.on("click", this.getMarkerOnClick(markerEntry.link));
 
 				this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom);
-				this.map?.on("zoomend", () =>
+				this.map.on("zoomend", () =>
 					this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom),
 				);
 			});
 	}
 
-	setMap(map: Map, markerLayer: LayerGroup, mapMinZoom: number) {
-		this.map = map;
-		this.markerLayer?.clearLayers();
-		this.markerLayer = markerLayer;
-		this.mapMinZoom = mapMinZoom;
-	}
-
-	setMapName(mapName: string | undefined) {
+	updateSettings(mapName: string | undefined, mapMinZoom: number) {
 		this.mapName = mapName;
+		this.mapMinZoom = mapMinZoom;
 	}
 
 	private buildMarkerIcon(iconId: IconName | undefined, colour: string | undefined): DivIcon {

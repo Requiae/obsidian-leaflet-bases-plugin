@@ -5,9 +5,10 @@ export default BaseLeafletViewPlugin;
 // Remaining
 // TODO: Copy tool: right-click map get coordinates
 // TODO: Measure tool
-// TODO: Reinitialise map when map settings are changed
 // TODO: Be able set the marker property identifier from settings
-// BUG: Map zoom using scroll uses steps of 1, disregarding zoomDelta
+// TODO: Map tool tooltips
+// TODO: Invalid map settings error (image not found)
+// BUG: Map zoom using scroll uses steps of 1, disregarding zoomDelta. Zoomdelta can't changed after init!?
 
 // Maybe
 // TODO: Pin tool: Right click map create note with marker?
