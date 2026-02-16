@@ -1,13 +1,4 @@
-import {
-	CRS,
-	ImageOverlay,
-	LatLngBoundsExpression,
-	LayerGroup,
-	Map,
-	imageOverlay,
-	layerGroup,
-	map,
-} from "leaflet";
+import { CRS, ImageOverlay, LayerGroup, Map, imageOverlay, layerGroup, map } from "leaflet";
 import { App } from "obsidian";
 import { Constants as C } from "plugin/constants";
 import { MapObject, Wiki } from "plugin/types";
@@ -65,6 +56,10 @@ export class MapManager {
 		this.updateZoom(settings);
 		this.updateCss(settings);
 
+		// This cleans up all sorts of remaining data from the leaflet map and fixes issues
+		// caused by making changes to the image overlay and container size
+		this._leafletMap.invalidateSize();
+
 		this.settings = settings;
 	}
 
@@ -74,15 +69,13 @@ export class MapManager {
 		const imageData = await this.imageLoader.getImageData(image);
 		if (!imageData) return;
 
-		const bounds: LatLngBoundsExpression = [
-			[0, 0],
-			[imageData.dimensions.width, imageData.dimensions.height],
-		];
-
 		if (this.imageOverlay) this._leafletMap.removeLayer(this.imageOverlay);
-		this.imageOverlay = imageOverlay(imageData.url, bounds);
+		this.imageOverlay = imageOverlay(imageData.url, imageData.bounds);
 
-		this._leafletMap.addLayer(this.imageOverlay).setMaxBounds(bounds).fitBounds(bounds);
+		this._leafletMap
+			.addLayer(this.imageOverlay)
+			.setMaxBounds(imageData.bounds)
+			.fitBounds(imageData.bounds);
 	}
 
 	private updateZoom(settings: DefaultedMapObject): void {
@@ -96,7 +89,5 @@ export class MapManager {
 
 	private updateCss(settings: DefaultedMapObject): void {
 		this.mapEl.style.height = `${settings.height.toFixed(0)}px`;
-
-		this._leafletMap.invalidateSize();
 	}
 }

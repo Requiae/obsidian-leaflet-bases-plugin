@@ -3,7 +3,6 @@ import { BaseLeafletViewPlugin } from "plugin/plugin";
 export default BaseLeafletViewPlugin;
 
 // Remaining
-// TODO: Copy tool: right-click map get coordinates
 // TODO: Measure tool
 // TODO: Invalid map settings error (image not found)
 // BUG: Map zoom using scroll uses steps of 1, disregarding zoomDelta. Zoomdelta can't be changed after init!?

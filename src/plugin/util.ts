@@ -5,10 +5,6 @@ export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
 }
 
-export function transpose(value: [number, number]): [number, number] {
-	return [value[1], value[0]];
-}
-
 export function getIconWithDefault(iconId: string | undefined): SVGSVGElement {
 	if (iconId) {
 		const icon = getIcon(iconId);

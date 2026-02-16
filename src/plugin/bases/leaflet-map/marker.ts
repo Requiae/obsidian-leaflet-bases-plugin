@@ -12,13 +12,7 @@ import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
 import { Constants as C } from "plugin/constants";
 import { SchemaValidator } from "plugin/properties/schemas";
 import { MarkerObject } from "plugin/types";
-import {
-	getIconWithDefault,
-	isNonEmptyObject,
-	isNotNull,
-	parseCoordinates,
-	transpose,
-} from "plugin/util";
+import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "plugin/util";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
@@ -108,7 +102,7 @@ export class MarkerManager {
 			.forEach((markerEntry) => {
 				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
 				// LatLng is y, x so we reverse the coordinates
-				const markerItem = marker(transpose(parseCoordinates(markerEntry.coordinates)), options)
+				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
 

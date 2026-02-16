@@ -1,8 +1,9 @@
+import { LatLngBoundsExpression } from "leaflet";
 import { App } from "obsidian";
 import { Constants as C } from "plugin/constants";
 
 interface ImageData {
-	dimensions: { width: number; height: number };
+	bounds: LatLngBoundsExpression;
 	url: string;
 }
 
@@ -13,21 +14,22 @@ export class ImageLoader {
 		const url = this.getFileUrl(file);
 		if (!url) return null;
 
-		const dimensions = await new Promise<{ width: number; height: number } | null>(
-			(resolve, _reject) => {
-				const image = new Image();
-				image.onload = () => {
-					const { width, height } = image;
-					image.detach();
-					resolve({ width, height });
-				};
-				image.onerror = () => resolve(null);
-				image.src = url;
-			},
-		);
-		if (!dimensions) return null;
+		const bounds = await new Promise<LatLngBoundsExpression | null>((resolve, _reject) => {
+			const image = new Image();
+			image.onload = () => {
+				const { width, height } = image;
+				image.detach();
+				resolve([
+					[0, 0],
+					[height, width],
+				]);
+			};
+			image.onerror = () => resolve(null);
+			image.src = url;
+		});
+		if (!bounds) return null;
 
-		return { dimensions, url };
+		return { bounds, url };
 	}
 
 	private getFileUrl(file: unknown): string | null {

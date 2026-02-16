@@ -71,8 +71,16 @@ export default {
 	map: {
 		controls: {
 			measure: "Measure",
-			pan: "Pan",
-			copy: "Copy coordinates",
+			pan: {
+				label: "Pan",
+			},
+			copy: {
+				label: "Copy coordinates",
+				notice: {
+					success: "Coordinates copied to clipboard",
+					failure: "Failed copying coordinates to clipboard",
+				},
+			},
 		},
 	},
 	marker: {

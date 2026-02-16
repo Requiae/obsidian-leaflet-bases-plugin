@@ -12,7 +12,7 @@ export class MeasureControl extends SubControl {
 		}
 	}
 
-	override mapClicked(_event: LeafletMouseEvent): void {
+	override mapClicked(event: LeafletMouseEvent): void {
 		//throw new Error("Not implemented");
 	}
 

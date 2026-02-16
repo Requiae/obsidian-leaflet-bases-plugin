@@ -8,11 +8,11 @@ export class PanControl extends SubControl {
 	override onAdded(): void {
 		if (this.button) {
 			this.button.appendChild(getIconWithDefault(C.map.controlIcons.pan));
-			this.button.ariaLabel = t("map.controls.pan");
+			this.button.ariaLabel = t("map.controls.pan.label");
 		}
 	}
 
 	override mapClicked(_event: LeafletMouseEvent): void {
-		//throw new Error("Not implemented");
+		// Just pass, map panning is default leaflet behaviour
 	}
 }

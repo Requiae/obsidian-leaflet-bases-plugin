@@ -3,6 +3,7 @@ import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
 interface SubControlOptions {
 	index: number;
 	map: Map;
+	onSelectCallback: (index: number) => void;
 }
 
 export class SubControl {
@@ -20,11 +21,7 @@ export class SubControl {
 	constructor(options: SubControlOptions) {
 		this.index = options.index;
 		this.map = options.map;
-	}
-
-	onSelect(cb: (index: number) => void): this {
-		this.onSelectCallback = cb;
-		return this;
+		this.onSelectCallback = options.onSelectCallback;
 	}
 
 	setSelected(isSelected: boolean): void {

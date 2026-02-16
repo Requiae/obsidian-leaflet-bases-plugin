@@ -18,6 +18,8 @@ export class ControlContainer extends Control {
 		const containerEl = DomUtil.create("div", "leaflet-bar leaflet-control");
 
 		this.controls.forEach((control) => control.onAdd(containerEl));
+		this.controls[0]?.setSelected(true);
+
 		map.on("click", (event) =>
 			this.controls.forEach((control) => {
 				if (control.isSelected) control.mapClicked(event);
@@ -35,12 +37,12 @@ export class ControlContainer extends Control {
 	}
 
 	private registerSubControl(control: typeof SubControl, map: Map): void {
-		const selectCallback = (controlIndex: number) => {
+		const onSelectCallback = (controlIndex: number) => {
 			this.controls.forEach((control, loopIndex) =>
 				control.setSelected(loopIndex === controlIndex),
 			);
 		};
-		const options = { index: this.controls.length, map: map };
-		this.controls.push(new control(options).onSelect(selectCallback));
+		const options = { index: this.controls.length, map, onSelectCallback };
+		this.controls.push(new control(options));
 	}
 }
