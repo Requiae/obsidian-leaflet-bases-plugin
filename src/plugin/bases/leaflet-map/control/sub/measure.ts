@@ -1,11 +1,15 @@
 import { LeafletMouseEvent } from "leaflet";
 import { Constants as C } from "plugin/constants";
+import { t } from "plugin/i18n/locale";
 import { getIconWithDefault } from "plugin/util";
 import { SubControl } from "../subControl";
 
 export class MeasureControl extends SubControl {
 	override onAdded(): void {
-		this.button?.appendChild(getIconWithDefault(C.map.controlIcons.measure));
+		if (this.button) {
+			this.button.appendChild(getIconWithDefault(C.map.controlIcons.measure));
+			this.button.ariaLabel = t("map.controls.measure");
+		}
 	}
 
 	override mapClicked(_event: LeafletMouseEvent): void {

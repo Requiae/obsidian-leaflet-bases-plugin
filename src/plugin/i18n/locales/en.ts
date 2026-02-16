@@ -68,6 +68,13 @@ export default {
 			description: "Optional. Minimal zoom from which the marker becomes visible.",
 		},
 	},
+	map: {
+		controls: {
+			measure: "Measure",
+			pan: "Pan",
+			copy: "Copy coordinates",
+		},
+	},
 	marker: {
 		name: "Marker",
 	},
