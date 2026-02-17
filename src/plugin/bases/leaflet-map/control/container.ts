@@ -1,5 +1,5 @@
 import { Control, DomUtil, Map } from "leaflet";
-import { CopyControl, MeasureControl, PanControl } from "./sub";
+import { ControlOptions, CopyControl, MeasureControl, PanControl } from "./sub";
 import { SubControl } from "./subControl";
 
 export class ControlContainer extends Control {
@@ -34,6 +34,10 @@ export class ControlContainer extends Control {
 
 		this.controls.forEach((control) => control.onRemove());
 		this.controls = [];
+	}
+
+	updateSettings(options: ControlOptions): void {
+		this.controls.forEach((control) => control.updateSettings(options));
 	}
 
 	private registerSubControl(control: typeof SubControl, map: Map): void {

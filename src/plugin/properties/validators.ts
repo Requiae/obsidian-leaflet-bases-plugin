@@ -4,7 +4,7 @@ import { Coordinates, Hex, ValidatorFunction, Wiki } from "plugin/types";
 
 type ValidatedProperties = string | Wiki | number;
 
-function nameValidator(value: unknown): value is string {
+function stringValidator(value: unknown): value is string {
 	return String.isString(value);
 }
 
@@ -14,7 +14,7 @@ function sourcevalidator(value: unknown): value is string | Wiki {
 }
 
 function numberValidator(value: unknown): value is number {
-	return Number.isNumber(value);
+	return Number.isFinite(value);
 }
 
 function coordinatesValidator(value: unknown): value is Coordinates {
@@ -30,7 +30,7 @@ function colourValidator(value: unknown): value is Hex {
 }
 
 export const Validator = {
-	name: nameValidator,
+	string: stringValidator,
 	source: sourcevalidator,
 	number: numberValidator,
 	coordinates: coordinatesValidator,

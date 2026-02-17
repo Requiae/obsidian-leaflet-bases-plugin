@@ -22,6 +22,8 @@ export interface MapObject {
 	maxZoom?: number;
 	defaultZoom?: number;
 	zoomDelta?: number;
+	scale?: number;
+	unit?: string;
 }
 
 export type ValidatorFunction<T> = (value: unknown) => value is T;

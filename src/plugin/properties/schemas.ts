@@ -9,20 +9,22 @@ type Schema<T extends string> = Record<
 type ValidatedSchemas = MarkerObject | MapObject;
 
 const markerSchema: Schema<keyof MarkerObject> = {
-	mapName: { validator: Validator.name },
+	mapName: { validator: Validator.string },
 	coordinates: { validator: Validator.coordinates, required: true },
 	icon: { validator: Validator.icon },
 	colour: { validator: Validator.colour },
 	minZoom: { validator: Validator.number },
 };
 const mapSchema: Schema<keyof MapObject> = {
-	name: { validator: Validator.name },
+	name: { validator: Validator.string },
 	image: { validator: Validator.source, required: true },
 	height: { validator: Validator.number },
 	minZoom: { validator: Validator.number },
 	maxZoom: { validator: Validator.number },
 	defaultZoom: { validator: Validator.number },
 	zoomDelta: { validator: Validator.number },
+	scale: { validator: Validator.number },
+	unit: { validator: Validator.string },
 };
 
 function schemaValidatorFactory<T extends ValidatedSchemas>(

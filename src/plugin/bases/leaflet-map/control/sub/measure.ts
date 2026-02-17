@@ -12,16 +12,22 @@ export class MeasureControl extends SubControl {
 		}
 	}
 
-	override mapClicked(event: LeafletMouseEvent): void {
-		//throw new Error("Not implemented");
+	override onSelected(): void {
+		/* Add control that shows distance */
+	}
+	override onDeselected(): void {
+		/* Remove control that shows distance */
 	}
 
-	/* Drawing measure lines
-	polyLine = new Polyline([
-		[100, 100],
-		[100, 200],
-		[200, 200],
-	]).addTo(this.leafletMap);
-    */
-	//polyLine.remove();
+	override mapClicked(event: LeafletMouseEvent): void {
+		//throw new Error("Not implemented");
+		/* Drawing measure lines
+		polyLine = new Polyline([
+			[100, 100],
+			[100, 200],
+			[200, 200],
+		]).addTo(this.leafletMap);
+    	*/
+		//polyLine.remove();
+	}
 }

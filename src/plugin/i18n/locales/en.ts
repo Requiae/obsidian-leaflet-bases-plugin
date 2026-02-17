@@ -17,6 +17,14 @@ export default {
 				max: "Maximum zoom",
 				delta: "Zoom stepsize",
 			},
+			measure: {
+				header: "Measure",
+				scale: "Scale",
+				unit: {
+					title: "Unit",
+					placeholder: "Unit of measurement",
+				},
+			},
 		},
 	},
 	modal: {

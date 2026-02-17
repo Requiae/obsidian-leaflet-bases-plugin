@@ -8,6 +8,8 @@ export const Constants = {
 			zoomDelta: 0.5,
 			zoomSnap: 0.01,
 			height: 600,
+			scale: 1,
+			unit: "",
 		},
 		controlIcons: {
 			copy: "pin",
@@ -55,6 +57,8 @@ export const Constants = {
 			maxZoom: "maxZoom",
 			defaultZoom: "defaultZoom",
 			zoomDelta: "zoomDelta",
+			scale: "scale",
+			unit: "unit",
 		},
 		config: {
 			height: {

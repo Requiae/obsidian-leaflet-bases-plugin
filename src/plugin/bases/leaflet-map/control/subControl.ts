@@ -1,4 +1,5 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
+import { MapObject } from "plugin/types";
 
 interface SubControlOptions {
 	index: number;
@@ -12,6 +13,7 @@ export class SubControl {
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
+	protected options: MapObject;
 
 	private _isSelected: boolean = false;
 	get isSelected(): boolean {
@@ -30,8 +32,10 @@ export class SubControl {
 		this._isSelected = isSelected;
 		if (isSelected) {
 			this.button?.addClass("selected");
+			this.onSelected();
 		} else {
 			this.button?.removeClass("selected");
+			this.onDeselected();
 		}
 	}
 
@@ -48,11 +52,17 @@ export class SubControl {
 		this.button?.replaceChildren();
 	}
 
+	updateSettings(options: MapObject): void {
+		this.options = { ...this.options, ...options };
+	}
+
 	protected onAdded(): void {
 		throw new Error("Not implemented");
 	}
 
 	protected onRemoved(): void {}
+	protected onSelected(): void {}
+	protected onDeselected(): void {}
 
 	mapClicked(_event: LeafletMouseEvent): void {
 		throw new Error("Not implemented");

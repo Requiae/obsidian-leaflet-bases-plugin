@@ -68,7 +68,13 @@ class LeafletMapView extends BasesView {
 			maxZoom: this.config.get(C.view.obsidianIdentifiers.maxZoom),
 			defaultZoom: this.config.get(C.view.obsidianIdentifiers.defaultZoom),
 			zoomDelta: this.config.get(C.view.obsidianIdentifiers.zoomDelta),
+			scale: this.config.get(C.view.obsidianIdentifiers.scale),
+			unit: this.config.get(C.view.obsidianIdentifiers.unit),
 		};
+
+		// Obsidian view options doesn't have a text based number input and type slider is impractical
+		// If view options is used we always get a string instead of number, so we fix that
+		if (typeof settings.scale === "string") settings.scale = parseFloat(settings.scale);
 
 		if (!isValidMapSettings(settings)) return;
 
@@ -83,6 +89,8 @@ class LeafletMapView extends BasesView {
 			maxZoom,
 			defaultZoom: clamp(settings.defaultZoom ?? minZoom, minZoom, maxZoom),
 			zoomDelta: settings.zoomDelta ?? C.map.default.zoomDelta,
+			scale: settings.scale ?? C.map.default.scale,
+			unit: settings.unit ?? C.map.default.unit,
 		});
 	}
 
@@ -138,6 +146,24 @@ class LeafletMapView extends BasesView {
 						key: C.view.obsidianIdentifiers.zoomDelta,
 						default: C.map.default.zoomDelta,
 						...C.view.config.zoom.delta,
+					},
+				],
+			},
+			{
+				displayName: t("view.options.measure.header"),
+				type: "group",
+				items: [
+					{
+						displayName: t("view.options.measure.scale"),
+						type: "text",
+						key: C.view.obsidianIdentifiers.scale,
+						default: C.map.default.scale.toString(),
+					},
+					{
+						displayName: t("view.options.measure.unit.title"),
+						type: "text",
+						key: C.view.obsidianIdentifiers.unit,
+						placeholder: t("view.options.measure.unit.placeholder"),
 					},
 				],
 			},
