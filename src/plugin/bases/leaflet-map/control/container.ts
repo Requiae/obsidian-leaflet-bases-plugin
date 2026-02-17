@@ -1,5 +1,6 @@
 import { Control, DomUtil, Map } from "leaflet";
-import { ControlOptions, CopyControl, MeasureControl, PanControl } from "./sub";
+import { MapObject } from "plugin/types";
+import { CopyControl, MeasureControl, PanControl } from "./sub";
 import { SubControl } from "./subControl";
 
 export class ControlContainer extends Control {
@@ -36,7 +37,7 @@ export class ControlContainer extends Control {
 		this.controls = [];
 	}
 
-	updateSettings(options: ControlOptions): void {
+	updateSettings(options: MapObject): void {
 		this.controls.forEach((control) => control.updateSettings(options));
 	}
 

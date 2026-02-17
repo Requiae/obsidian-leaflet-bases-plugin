@@ -6,12 +6,12 @@ import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
 
 // Set all properties of MapObject to required except name
-type DefaultedMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
+type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
 
 export class MapManager {
 	private mapEl: HTMLElement;
 	private _leafletMap: Map;
-	private settings: DefaultedMapObject | undefined = undefined;
+	private settings: RequiredMapObject | undefined = undefined;
 
 	// Layers
 	private _markerLayer: LayerGroup;
@@ -51,10 +51,12 @@ export class MapManager {
 		this._leafletMap.remove();
 	}
 
-	async updateSettings(settings: DefaultedMapObject): Promise<void> {
+	async updateSettings(settings: RequiredMapObject): Promise<void> {
 		await this.updateImageOverlay(settings.image);
 		this.updateZoom(settings);
 		this.updateCss(settings);
+
+		this.controls.updateSettings(settings);
 
 		// This cleans up all sorts of remaining data from the leaflet map and fixes issues
 		// caused by making changes to the image overlay and container size
@@ -78,7 +80,7 @@ export class MapManager {
 			.fitBounds(imageData.bounds);
 	}
 
-	private updateZoom(settings: DefaultedMapObject): void {
+	private updateZoom(settings: RequiredMapObject): void {
 		this._leafletMap.setMinZoom(settings.minZoom);
 		this._leafletMap.setMaxZoom(settings.maxZoom);
 
@@ -87,7 +89,7 @@ export class MapManager {
 		// TODO: Zoom delta is fucked apparently
 	}
 
-	private updateCss(settings: DefaultedMapObject): void {
+	private updateCss(settings: RequiredMapObject): void {
 		this.mapEl.style.height = `${settings.height.toFixed(0)}px`;
 	}
 }
