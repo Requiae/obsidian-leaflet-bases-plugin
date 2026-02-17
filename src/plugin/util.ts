@@ -1,8 +1,13 @@
+import { LatLng } from "leaflet";
 import { getIcon } from "obsidian";
 import { Coordinates } from "./types";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
+}
+
+export function distance(a: LatLng, b: LatLng): number {
+	return Math.sqrt(Math.square(a.lat - b.lat) + Math.square(a.lng - b.lng));
 }
 
 export function getIconWithDefault(iconId: string | undefined): SVGSVGElement {

@@ -1,12 +1,9 @@
 import { CRS, ImageOverlay, LayerGroup, Map, imageOverlay, layerGroup, map } from "leaflet";
 import { App } from "obsidian";
 import { Constants as C } from "plugin/constants";
-import { MapObject, Wiki } from "plugin/types";
+import { RequiredMapObject, Wiki } from "plugin/types";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
-
-// Set all properties of MapObject to required except name
-type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
 
 export class MapManager {
 	private mapEl: HTMLElement;

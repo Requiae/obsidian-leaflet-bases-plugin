@@ -26,6 +26,9 @@ export interface MapObject {
 	unit?: string;
 }
 
+// Set all properties of MapObject to required except name
+export type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
+
 export type ValidatorFunction<T> = (value: unknown) => value is T;
 
 export enum MarkerModalMode {

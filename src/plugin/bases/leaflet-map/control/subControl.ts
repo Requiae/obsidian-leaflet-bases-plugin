@@ -1,5 +1,5 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
-import { MapObject } from "plugin/types";
+import { RequiredMapObject } from "plugin/types";
 
 interface SubControlOptions {
 	index: number;
@@ -13,7 +13,7 @@ export class SubControl {
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
-	protected options: MapObject;
+	protected options: RequiredMapObject;
 
 	private _isSelected: boolean = false;
 	get isSelected(): boolean {
@@ -52,7 +52,7 @@ export class SubControl {
 		this.button?.replaceChildren();
 	}
 
-	updateSettings(options: MapObject): void {
+	updateSettings(options: RequiredMapObject): void {
 		this.options = { ...this.options, ...options };
 	}
 
