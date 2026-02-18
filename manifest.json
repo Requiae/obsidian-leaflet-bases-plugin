@@ -1,5 +1,5 @@
 {
-	"id": "leaflet-base-plugin",
+	"id": "leaflet-bases-plugin",
 	"name": "Leaflet bases",
 	"description": "Interactive map view inside your bases",
 	"version": "1.0.0",

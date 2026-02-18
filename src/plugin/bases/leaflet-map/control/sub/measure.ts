@@ -110,7 +110,11 @@ export class MeasureControl extends SubControl {
 		this.updatePolyline(this.previewLine, [lastCoordinate, mouseCoordinate]);
 		this.previewTooltip = this.previewTooltip
 			?.setLatLng(mouseCoordinate)
-			.setContent(this.getContent(this.distance + distance(lastCoordinate, mouseCoordinate)));
+			.setContent(
+				this.getContent(
+					this.distance + distance(lastCoordinate, mouseCoordinate) * this.options.scale,
+				),
+			);
 	}
 
 	private resetPath(): void {

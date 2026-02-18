@@ -1,90 +1,132 @@
-# Obsidian Sample Plugin
+# Leaflet Bases
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+![preview](docs/preview.png)
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+This plugin for [Obsidian](https://obsidian.md) adds a new bases view: 'Leaflet Map' and a new type of property: 'marker'
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+> Leaflet Bases is still in the testing phase. While you can be confident that no current features will be dramatically changed, you should expect the occasional bug.
+> Please report any issues you encounter [here](https://github.com/Requiae/obsidian-leaflet-bases-plugin/issues).
 
-## First time developing plugins?
+Leaflet bases was developed for three reasons:
 
-Quick starting guide for new plugin devs:
+- To leverage the versatility of [Obsidian bases](https://help.obsidian.md/bases)
+- Marker data is part of the note it belongs to, not of the map it is shown on
+- To have your maps be available in your online garden using [Quartz](https://quartz.jzhao.xyz/)
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+> For use with Quartz you'll need the appropiate Quartz plugin, which is currently still under development.
 
-## Releasing new releases
+## Installation
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+This plugin currently requires Obsidian v1.11.4 or later to work.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+### Install via BRAT
 
-## Adding your plugin to the community plugin list
+1. Install the [BRAT plugin](https://obsidian.md/plugins?search=BRAT) under Community Plugins.
+2. Open BRAT settings and click "Add beta plugin".
+3. Enter the URL of this repository: `https://github.com/Requiae/obsidian-leaflet-bases-plugin`.
+4. Under "Select a version", choose the Latest version.
+5. Click "Add plugin".
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+### Install via Community Plugins
 
-## How to use
+Leaflet Bases is not yet available under Community Plugins. It is currently still in the testing phase.
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+## Usage
 
-## Manually installing the plugin
+### Adding a map
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+#### Using configurations
 
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
+1. First you need a [base](https://help.obsidian.md/bases) and add a 'Leaflet Map' view.
+   ![add map](docs/add-map.png)
+2. Change the settings as you wish.
 
-## Funding URL
+#### Using a code block
 
-You can include funding URLs where people who use your plugin can financially support it.
+You can also embed the base:
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
+````markdown
+```base
+views:
+  - type: leaflet-map
+    name: Map
+    mapName: test
+    image: assets/Locke.png
+    height: 400
+    minZoom: -1.5
+    maxZoom: 2
+    defaultZoom: -1.5
+    zoomDelta: 0.25
+    scale: "0.2"
+    unit: km
+```
+````
 
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+| Setting       |             | What it does                                                                            |
+| ------------- | ----------- | --------------------------------------------------------------------------------------- |
+| Layout        | type        | The type of base, don't change this (from Obsidian bases)                               |
+| -             | name        | What the view is called (from Obsidian bases)                                           |
+| Image         | image       | The image the map should show. It also accepts wiki links.                              |
+| Map name      | mapName     | Optional identifier for the map. Useful if you want to reuse a note across several maps |
+| Default zoom  | defaultZoom | The zoom value the map opens with                                                       |
+| Minimum zoom  | minZoom     | How far you can zoom out                                                                |
+| maximum zoom  | maxZoom     | How far you can zoom in                                                                 |
+| Zoom stepsize | zoomDelta   | How much you zoom (⚠️ currently broken)                                                 |
+| Scale         | scale       | How much to scale the result of the measure tool                                        |
+| Unit          | unit        | The unit the measure tool uses (think km, mi, hours)                                    |
+
+> Technically only 'type', 'name', and 'image' are required for the map view to work. However you'll likely end up using most of the other settings.
+
+### Adding a marker
+
+#### Using UI
+
+1. Add a new marker property to the note you want to have a marker.
+   ![add marker property](docs/add-marker-property.png)
+2. Add a marker using the '+' button that appeared. Fill in the form in the modal and click 'Create marker'.
+   ![add marker modal](docs/add-marker-modal.png)
+3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
+   ![edit marker modal](docs/add-marker-edit.png)
+
+#### Using source code frontmatter
+
+Ensure that the frontmatter block is the first thing in your note.
+
+```markdown
+---
+marker:
+  - coordinates: 100, 300
+    icon: lucide-tree-pine
+    colour: "#039c4b"
+    minZoom: 1
+  - coordinates: 5, 5
+    mapName: mapName
+    colour: "#bdf123"
+---
 ```
 
-If you have multiple URLs, you can also do:
+| Setting      |             | What it does                                                                                |
+| ------------ | ----------- | ------------------------------------------------------------------------------------------- |
+| Map name     | mapName     | If you want this marker to only show for a certain map, set this to the mapname of that map |
+| Coordinates  | coordinates | Where the marker is placed on the map                                                       |
+| Icon         | icon        | Which icon to use for the marker. Can be any [lucide icon](https://lucide.dev/icons/).      |
+| Colour       | colour      | Which colour the marker will be                                                             |
+| Minimal zoom | minZoom     | How far zoomed in the map should be before the marker becomes visible                       |
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
+> Technically only 'coordinates' is required for the marker to be valid. However you'll likely end up using most of the other settings.
 
-## API Documentation
+> Coordinates can easily be obtained using the 'copy' (📌) tool in the map. Clicking a spot on the map automatically copies the coordinates to your clipboard.
 
-See https://docs.obsidian.md
+## Alternatives
+
+### Leaflet ([link](https://github.com/javalent/obsidian-leaflet))
+
+The OG for Obsidian fantasy maps has to be mentioned. It is no longer under active development and has been in maintenance mode for years.
+
+### Zoom map ([link](https://github.com/Jareika/zoom-map))
+
+This plugin is awesome, comprehensive, and feature rich. If you do not wish to use Obsidian bases, your markers to be saved in your notes, nor to host your garden using Quartz then I highly recommend you to take a look at this plugin!
+
+### Map view ([link](https://help.obsidian.md/bases/views/map))
+
+My inspiration and my frustration, for it does not allow images to be used for your maps, and the workarounds are difficult, not accessible, and tend to break GitHub ToS.
