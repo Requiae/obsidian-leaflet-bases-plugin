@@ -83,7 +83,8 @@ export class MapManager {
 
 		this._leafletMap.setZoom(settings.defaultZoom);
 
-		// TODO: Zoom delta is fucked apparently
+		// Zoom delta is fucked apparently
+		// BUG: Map zoom using scroll uses steps of 1, disregarding zoomDelta. Zoomdelta can't be changed after init!?
 	}
 
 	private updateCss(settings: RequiredMapObject): void {
