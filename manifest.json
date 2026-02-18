@@ -2,7 +2,7 @@
 	"id": "leaflet-base-plugin",
 	"name": "Leaflet bases",
 	"description": "Interactive map view inside your bases",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"minAppVersion": "1.11.4",
 	"author": "Sara Lilith Slootmaker",
 	"authorUrl": "https://github.com/Requiae",
