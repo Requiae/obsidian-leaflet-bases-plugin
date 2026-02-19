@@ -33,6 +33,8 @@ Leaflet Bases is not yet available under Community Plugins. It is currently stil
 
 ## Usage
 
+> You can find an example vault [here](https://github.com/Requiae/obsidian-leaflet-bases-plugin-example).
+
 ### Adding a map
 
 #### Using configurations
