@@ -71,7 +71,7 @@ views:
 | Default zoom  | defaultZoom | The zoom value the map opens with                                                       |
 | Minimum zoom  | minZoom     | How far you can zoom out                                                                |
 | maximum zoom  | maxZoom     | How far you can zoom in                                                                 |
-| Zoom stepsize | zoomDelta   | How much you zoom (⚠️ currently broken)                                                 |
+| Zoom stepsize | zoomDelta   | How much you zoom                                                                       |
 | Scale         | scale       | How much to scale the result of the measure tool                                        |
 | Unit          | unit        | The unit the measure tool uses (think km, mi, hours)                                    |
 

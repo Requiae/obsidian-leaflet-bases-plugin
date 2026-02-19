@@ -17,6 +17,10 @@ function numberValidator(value: unknown): value is number {
 	return Number.isFinite(value);
 }
 
+function positiveNumberValidator(value: unknown): value is number {
+	return numberValidator(value) && value > 0;
+}
+
 function coordinatesValidator(value: unknown): value is Coordinates {
 	return String.isString(value) && C.regExp.coordinatesValidation.test(value);
 }
@@ -33,6 +37,7 @@ export const Validator = {
 	string: stringValidator,
 	source: sourcevalidator,
 	number: numberValidator,
+	positiveNumber: positiveNumberValidator,
 	coordinates: coordinatesValidator,
 	icon: iconValidator,
 	colour: colourValidator,

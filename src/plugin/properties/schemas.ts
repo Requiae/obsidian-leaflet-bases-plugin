@@ -22,7 +22,7 @@ const mapSchema: Schema<keyof MapObject> = {
 	minZoom: { validator: Validator.number },
 	maxZoom: { validator: Validator.number },
 	defaultZoom: { validator: Validator.number },
-	zoomDelta: { validator: Validator.number },
+	zoomDelta: { validator: Validator.positiveNumber },
 	scale: { validator: Validator.number },
 	unit: { validator: Validator.string },
 };

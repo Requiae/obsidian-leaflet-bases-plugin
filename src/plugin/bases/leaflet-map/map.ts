@@ -83,8 +83,14 @@ export class MapManager {
 
 		this._leafletMap.setZoom(settings.defaultZoom);
 
-		// Zoom delta is fucked apparently
-		// BUG: Map zoom using scroll uses steps of 1, disregarding zoomDelta. Zoomdelta can't be changed after init!?
+		// No clue why there are no setting functions for this but mehh, this works
+		this._leafletMap.options = {
+			...this._leafletMap.options,
+			zoomDelta: settings.zoomDelta,
+			// wheelPxPerZoomLevel defaults to 60, but the actual amount is dependent on the user's scroll device
+			// This is therefore just an approximation based on the default value
+			wheelPxPerZoomLevel: 60 / settings.zoomDelta,
+		};
 	}
 
 	private updateCss(settings: RequiredMapObject): void {
