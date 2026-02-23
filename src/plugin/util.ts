@@ -34,7 +34,7 @@ export function parseCoordinates(coordinates: Coordinates): [number, number] {
 
 export function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
 	if (!value || typeof value !== "object") return false;
-	return Object.keys.length > 0;
+	return Object.keys(value).length > 0;
 }
 
 export function isNotNull<T>(value: T | null): value is T {
