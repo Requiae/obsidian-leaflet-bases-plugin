@@ -27,8 +27,8 @@ export class MeasureControl extends SubControl {
 	private pathItems: LatLng[] = [];
 	private distance: number = 0;
 
-	private lineLayer: LayerGroup;
-	private pointLayer: LayerGroup;
+	private lineLayer: LayerGroup | undefined;
+	private pointLayer: LayerGroup | undefined;
 	private pathLine: Polyline | undefined;
 	private previewLine: Polyline | undefined;
 	private previewTooltip: Tooltip | undefined;
@@ -63,6 +63,7 @@ export class MeasureControl extends SubControl {
 	}
 
 	override mapClicked(event: LeafletMouseEvent): void {
+		if (!this.lineLayer) throw new Error("Line layer not initialised");
 		switch (this.state) {
 			case MeasureState.Ready:
 			case MeasureState.Measuring: {
@@ -121,7 +122,7 @@ export class MeasureControl extends SubControl {
 		this.pathItems = [];
 		this.distance = 0;
 		this.cleanLastElement();
-		this.pointLayer.clearLayers();
+		this.pointLayer?.clearLayers();
 		this.updatePolyline(this.pathLine, []);
 		this.updatePolyline(this.previewLine, []);
 		this.previewTooltip?.remove();
@@ -142,6 +143,7 @@ export class MeasureControl extends SubControl {
 	}
 
 	private getCircleMarker(coordinate: LatLng): CircleMarker {
+		if (!this.pointLayer) throw new Error("Point layer not initialised");
 		return circleMarker(coordinate, { radius: 4, fill: true, fillColor: "#3388ff", fillOpacity: 1 })
 			.addTo(this.pointLayer)
 			.addEventListener("click", () => (this.state = MeasureState.Finishing));

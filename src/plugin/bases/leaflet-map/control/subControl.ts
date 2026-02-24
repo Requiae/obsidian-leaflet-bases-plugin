@@ -1,5 +1,6 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
 import { RequiredMapObject } from "plugin/types";
+import { Constants as C } from "plugin/constants";
 
 interface SubControlOptions {
 	index: number;
@@ -13,7 +14,11 @@ export class SubControl {
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
-	protected options: RequiredMapObject;
+	protected options: RequiredMapObject = {
+		...C.map.default,
+		defaultZoom: C.map.default.minZoom,
+		image: "",
+	};
 
 	private _isSelected: boolean = false;
 	get isSelected(): boolean {
