@@ -11,9 +11,9 @@ Leaflet bases was developed for three reasons:
 
 - To leverage the versatility of [Obsidian bases](https://help.obsidian.md/bases)
 - Marker data is part of the note it belongs to, not of the map it is shown on
-- To have your maps be available in your online garden using [Quartz](https://quartz.jzhao.xyz/)
+- To have your maps be available in your online garden using [Quartz](https://quartz.jzhao.xyz/), the is a [separate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin) for that.
 
-> For use with Quartz you'll need the appropiate Quartz plugin, which is currently still under development.
+> For use with Quartz you'll need the [appropiate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin). Quartz does not support bases yet, but the developers are working hard and a beta is expected sometime in the coming months.
 
 ## Installation
 
