@@ -1,4 +1,4 @@
-import { BasesView, QueryController, ViewOption } from "obsidian";
+import { BasesView, QueryController, BasesAllOptions } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { SchemaValidator } from "@plugin/properties/schemas";
@@ -94,7 +94,7 @@ class LeafletMapView extends BasesView {
 		});
 	}
 
-	static getViewOptions(): ViewOption[] {
+	static getViewOptions(): BasesAllOptions[] {
 		return [
 			{
 				displayName: t("view.options.image"),
