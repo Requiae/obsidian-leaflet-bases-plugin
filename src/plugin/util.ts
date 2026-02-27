@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates } from "./types";
+import { Coordinates } from "@plugin/types";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);

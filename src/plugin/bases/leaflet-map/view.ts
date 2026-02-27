@@ -1,9 +1,9 @@
 import { BasesView, QueryController, ViewOption } from "obsidian";
-import { Constants as C } from "plugin/constants";
-import { t } from "plugin/i18n/locale";
-import { SchemaValidator } from "plugin/properties/schemas";
-import { MapObject, ViewRegistrationBuilder } from "plugin/types";
-import { clamp, isNonEmptyObject } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { t } from "@plugin/i18n/locale";
+import { SchemaValidator } from "@plugin/properties/schemas";
+import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
+import { clamp, isNonEmptyObject } from "@plugin/util";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
 

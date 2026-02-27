@@ -1,7 +1,7 @@
 import { App, ValueComponent } from "obsidian";
-import { Constants as C } from "plugin/constants";
-import { MarkerModalMode, MarkerObject } from "plugin/types";
-import { getIconWithDefault } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { MarkerModalMode, MarkerObject } from "@plugin/types";
+import { getIconWithDefault } from "@plugin/util";
 import { MarkerModal } from "./markerModal";
 
 export class MarkerValueComponent extends ValueComponent<MarkerObject> {

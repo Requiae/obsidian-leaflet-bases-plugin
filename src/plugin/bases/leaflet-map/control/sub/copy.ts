@@ -1,8 +1,8 @@
 import { LatLng, LeafletMouseEvent, Tooltip, tooltip } from "leaflet";
 import { Notice } from "obsidian";
-import { Constants as C } from "plugin/constants";
-import { t } from "plugin/i18n/locale";
-import { getIconWithDefault } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { t } from "@plugin/i18n/locale";
+import { getIconWithDefault } from "@plugin/util";
 import { SubControl } from "../subControl";
 
 export class CopyControl extends SubControl {

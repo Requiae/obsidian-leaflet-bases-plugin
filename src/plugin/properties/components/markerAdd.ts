@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { MarkerModalMode, MarkerObject } from "plugin/types";
+import { MarkerModalMode, MarkerObject } from "@plugin/types";
 import { MarkerModal } from "./markerModal";
 
 export class MarkerAddComponent {

@@ -1,6 +1,6 @@
 import { MetadataTypeManager } from "obsidian-typings";
-import { Constants as C } from "plugin/constants";
-import { BaseLeafletViewPlugin } from "plugin/plugin";
+import { Constants as C } from "@plugin/constants";
+import { BaseLeafletViewPlugin } from "@plugin/plugin";
 import { markerWidget } from "./components/markerPropertyWidget";
 
 export class PropertyManager {

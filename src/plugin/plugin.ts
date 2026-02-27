@@ -1,6 +1,6 @@
 import { App, Plugin, PluginManifest } from "obsidian";
-import { ViewManager } from "plugin/bases/viewManager";
-import { PropertyManager } from "plugin/properties/propertyManager";
+import { ViewManager } from "@plugin/bases/viewManager";
+import { PropertyManager } from "@plugin/properties/propertyManager";
 
 export class BaseLeafletViewPlugin extends Plugin {
 	propertyManager: PropertyManager;

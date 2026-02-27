@@ -1,5 +1,5 @@
 import { getLanguage } from "obsidian";
-import { isNonEmptyObject } from "plugin/util";
+import { isNonEmptyObject } from "@plugin/util";
 import en from "./locales/en";
 
 const localeMap: { [k: string]: Partial<typeof en> } = {

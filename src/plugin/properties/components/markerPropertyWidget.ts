@@ -3,11 +3,11 @@ import {
 	PropertyWidget,
 	PropertyWidgetComponentBase,
 } from "obsidian-typings";
-import { Constants as C } from "plugin/constants";
-import { t } from "plugin/i18n/locale";
-import { SchemaValidator } from "plugin/properties/schemas";
-import { MarkerObject } from "plugin/types";
-import { isNonEmptyObject } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { t } from "@plugin/i18n/locale";
+import { SchemaValidator } from "@plugin/properties/schemas";
+import { MarkerObject } from "@plugin/types";
+import { isNonEmptyObject } from "@plugin/util";
 import { MarkerAddComponent } from "./markerAdd";
 import { MarkerValueComponent } from "./markerValue";
 
