@@ -10,6 +10,9 @@ export default tseslint.config(
 				...globals.browser,
 			},
 			parserOptions: {
+				env: {
+					jest: true,
+				},
 				projectService: {
 					allowDefaultProject: ["eslint.config.js", "manifest.json"],
 				},
@@ -26,6 +29,8 @@ export default tseslint.config(
 		"eslint.config.js",
 		"version-bump.mjs",
 		"versions.json",
+		"jest.config.js",
+		"vitest.config.js",
 		"main.js",
 	]),
 );
