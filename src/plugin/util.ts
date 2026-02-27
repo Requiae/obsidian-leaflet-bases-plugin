@@ -28,12 +28,16 @@ export function parseCoordinates(coordinates: Coordinates): [number, number] {
 		.replace(/\s/g, "")
 		.split(",")
 		.map((coordinate) => parseInt(coordinate));
-	if (parsedCoordinates.length !== 2) throw new Error("Coordinates not properly validated");
+
+	if (parsedCoordinates.length !== 2 || parsedCoordinates.some((value) => Number.isNaN(value))) {
+		throw new Error("Coordinates not properly validated");
+	}
+
 	return parsedCoordinates as [number, number];
 }
 
 export function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
-	if (!value || typeof value !== "object") return false;
+	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
 	return Object.keys(value).length > 0;
 }
 

@@ -1,6 +1,7 @@
 import { test, expect, describe } from "vitest";
 import { LatLngLiteral } from "leaflet";
-import { clamp, distance } from "@plugin/util";
+import { clamp, distance, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
+import { Coordinates } from "@plugin/types";
 
 describe("Clamp function", () => {
 	const minimum = 2;
@@ -28,7 +29,7 @@ describe("Clamp function", () => {
 	});
 });
 
-describe("Distance method", () => {
+describe("Distance function", () => {
 	const origin: LatLngLiteral = { lat: 0, lng: 0 };
 	const pointA: LatLngLiteral = { lat: 3, lng: 4 };
 	const pointB: LatLngLiteral = { lat: -3, lng: 4 };
@@ -65,5 +66,114 @@ describe("Distance method", () => {
 		expect(distance(pointD, pointB)).toEqual(8);
 		expect(distance(pointD, pointC)).toEqual(6);
 		expect(distance(pointD, pointD)).toEqual(0);
+	});
+});
+
+describe("Parse coordinates function", () => {
+	test("parses valid values correctly", () => {
+		expect(parseCoordinates("0, 0")).toEqual([0, 0]);
+		expect(parseCoordinates("1, 0")).toEqual([1, 0]);
+		expect(parseCoordinates("0, 4")).toEqual([0, 4]);
+		expect(parseCoordinates("-1, -5")).toEqual([-1, -5]);
+	});
+
+	test("throws error on invalid values", () => {
+		expect(() => parseCoordinates("" as Coordinates)).toThrow();
+		expect(() => parseCoordinates("1" as Coordinates)).toThrow();
+		expect(() => parseCoordinates(",1" as Coordinates)).toThrow();
+		expect(() => parseCoordinates("1, 1, 1" as Coordinates)).toThrow();
+		expect(() => parseCoordinates("asdfe" as Coordinates)).toThrow();
+	});
+});
+
+describe("Is not empty object type guard", () => {
+	test("is true on non empty objects", () => {
+		expect(isNonEmptyObject({ 1: 1 })).toEqual(true);
+		expect(isNonEmptyObject({ a: 1 })).toEqual(true);
+		expect(isNonEmptyObject({ 1: "aaa" })).toEqual(true);
+		expect(isNonEmptyObject({ a: "aaa" })).toEqual(true);
+		expect(isNonEmptyObject({ 1: {} })).toEqual(true);
+		expect(isNonEmptyObject({ a: {} })).toEqual(true);
+	});
+
+	describe("is false on", () => {
+		test("empty objects", () => {
+			expect(isNonEmptyObject({})).toEqual(false);
+		});
+
+		test("null values", () => {
+			expect(isNonEmptyObject(null)).toEqual(false);
+		});
+
+		test("undefined values", () => {
+			expect(isNonEmptyObject(undefined)).toEqual(false);
+		});
+
+		test("number values", () => {
+			expect(isNonEmptyObject(0)).toEqual(false);
+			expect(isNonEmptyObject(1)).toEqual(false);
+		});
+
+		test("boolean values", () => {
+			expect(isNonEmptyObject(true)).toEqual(false);
+			expect(isNonEmptyObject(false)).toEqual(false);
+		});
+
+		test("string values", () => {
+			expect(isNonEmptyObject("a")).toEqual(false);
+		});
+
+		test("array values", () => {
+			expect(isNonEmptyObject([])).toEqual(false);
+			expect(isNonEmptyObject([1, 2])).toEqual(false);
+			expect(isNonEmptyObject(["a", "b"])).toEqual(false);
+		});
+
+		test("function values", () => {
+			expect(isNonEmptyObject(() => {})).toEqual(false);
+			expect(isNonEmptyObject((a: number) => a + 1)).toEqual(false);
+		});
+	});
+});
+
+describe("Is not null type guard", () => {
+	describe("is true on", () => {
+		test("undefined values", () => {
+			expect(isNotNull(undefined)).toEqual(true);
+		});
+
+		test("object values", () => {
+			expect(isNotNull({})).toEqual(true);
+			expect(isNotNull({ 1: "aaa" })).toEqual(true);
+		});
+
+		test("number values", () => {
+			expect(isNotNull(0)).toEqual(true);
+			expect(isNotNull(1)).toEqual(true);
+		});
+
+		test("boolean values", () => {
+			expect(isNotNull(true)).toEqual(true);
+			expect(isNotNull(false)).toEqual(true);
+		});
+
+		test("string values", () => {
+			expect(isNotNull("a")).toEqual(true);
+		});
+
+		test("array values", () => {
+			expect(isNotNull([])).toEqual(true);
+			expect(isNotNull([1, 2])).toEqual(true);
+			expect(isNotNull(["a", "b"])).toEqual(true);
+		});
+
+		test("function values", () => {
+			expect(isNotNull(() => {})).toEqual(true);
+			expect(isNotNull((a: number) => a + 1)).toEqual(true);
+		});
+	});
+
+	test("is false on null values", () => {
+		expect(isNotNull(null)).toEqual(false);
 	});
 });
