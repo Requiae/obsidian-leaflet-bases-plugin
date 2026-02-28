@@ -40,9 +40,9 @@ export const Constants = {
 		},
 	},
 	regExp: {
-		hexColourValidation: /([0-9A-F]{3}){1,2}$/i,
-		coordinatesValidation: /[0-9]+\s*,\s*[0-9]+/,
-		iconValidation: /([a-z]+:)?[a-z]+([\-][a-z]+)*/,
+		hexColourValidation: /^#([0-9A-F]{3}){1,2}$$/i,
+		coordinatesValidation: /^\s*[0-9]+\s*,\s*[0-9]+\s*$/,
+		iconValidation: /^[a-z]+([\-][a-z]+)*$/,
 		url: /https?:/,
 		arrayString: /^\[.*[\]]$/,
 	},

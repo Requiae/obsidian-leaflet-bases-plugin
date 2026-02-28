@@ -5,16 +5,18 @@ import { Coordinates, Hex, ValidatorFunction, Wiki } from "@plugin/types";
 type ValidatedProperties = string | Wiki | number;
 
 function stringValidator(value: unknown): value is string {
-	return String.isString(value);
+	return typeof value === "string";
 }
 
 function sourcevalidator(value: unknown): value is string | Wiki {
-	const preparedValue = typeof value === "string" ? value : value?.toString();
-	return !!preparedValue;
+	if (stringValidator(value)) return value.length > 0;
+	if (Array.isArray(value) && Array.isArray(value[0]) && stringValidator(value[0][0]))
+		return value[0][0].length > 0;
+	return false;
 }
 
 function numberValidator(value: unknown): value is number {
-	return Number.isFinite(value);
+	return typeof value === "number" && isFinite(value) && !isNaN(value);
 }
 
 function positiveNumberValidator(value: unknown): value is number {
@@ -22,15 +24,15 @@ function positiveNumberValidator(value: unknown): value is number {
 }
 
 function coordinatesValidator(value: unknown): value is Coordinates {
-	return String.isString(value) && C.regExp.coordinatesValidation.test(value);
+	return typeof value === "string" && C.regExp.coordinatesValidation.test(value);
 }
 
 function iconValidator(value: unknown): value is IconName {
-	return String.isString(value) && C.regExp.iconValidation.test(value);
+	return typeof value === "string" && C.regExp.iconValidation.test(value);
 }
 
 function colourValidator(value: unknown): value is Hex {
-	return String.isString(value) && C.regExp.hexColourValidation.test(value);
+	return typeof value === "string" && C.regExp.hexColourValidation.test(value);
 }
 
 export const Validator = {

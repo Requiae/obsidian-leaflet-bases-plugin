@@ -70,14 +70,14 @@ describe("Distance function", () => {
 });
 
 describe("Parse coordinates function", () => {
-	test("parses valid values correctly", () => {
+	test("parses valid string values correctly", () => {
 		expect(parseCoordinates("0, 0")).toEqual([0, 0]);
 		expect(parseCoordinates("1, 0")).toEqual([1, 0]);
 		expect(parseCoordinates("0, 4")).toEqual([0, 4]);
 		expect(parseCoordinates("-1, -5")).toEqual([-1, -5]);
 	});
 
-	test("throws error on invalid values", () => {
+	test("throws error on invalid string values", () => {
 		expect(() => parseCoordinates("" as Coordinates)).toThrow();
 		expect(() => parseCoordinates("1" as Coordinates)).toThrow();
 		expect(() => parseCoordinates(",1" as Coordinates)).toThrow();
