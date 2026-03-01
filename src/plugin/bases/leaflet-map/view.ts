@@ -3,14 +3,9 @@ import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { SchemaValidator } from "@plugin/properties/schemas";
 import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
-import { clamp, isNonEmptyObject } from "@plugin/util";
+import { clamp } from "@plugin/util";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
-
-function isValidMapSettings(value: unknown): value is MapObject {
-	if (!isNonEmptyObject(value)) return false;
-	return SchemaValidator.map(value);
-}
 
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = () => [
 	C.view.type,
@@ -76,7 +71,7 @@ class LeafletMapView extends BasesView {
 		// If view options is used we always get a string instead of number, so we fix that
 		if (typeof settings.scale === "string") settings.scale = parseFloat(settings.scale);
 
-		if (!isValidMapSettings(settings)) return;
+		if (!SchemaValidator.map(settings)) return;
 
 		const minZoom = settings.minZoom ?? C.map.default.minZoom;
 		const maxZoom = Math.max(settings.maxZoom ?? C.map.default.maxZoom, minZoom);
