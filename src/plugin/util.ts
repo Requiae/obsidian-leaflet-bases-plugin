@@ -29,7 +29,7 @@ export function parseCoordinates(coordinates: Coordinates): [number, number] {
 		.split(",")
 		.map((coordinate) => parseInt(coordinate));
 
-	if (parsedCoordinates.length !== 2 || parsedCoordinates.some((value) => Number.isNaN(value))) {
+	if (parsedCoordinates.length !== 2 || parsedCoordinates.some((value) => isNaN(value))) {
 		throw new Error("Coordinates not properly validated");
 	}
 
