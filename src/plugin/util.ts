@@ -39,7 +39,6 @@ export function parseCoordinates(coordinates: Coordinates): LatLngTuple {
 export function isLatLngTuple(value: unknown): value is LatLngTuple {
 	return (
 		!!value &&
-		typeof value === "object" &&
 		Array.isArray(value) &&
 		value.length === 2 &&
 		value.every((value) => typeof value === "number" && !isNaN(value))
