@@ -1,6 +1,13 @@
 import { test, expect, describe } from "vitest";
 import { LatLngLiteral } from "leaflet";
-import { clamp, distance, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
+import {
+	clamp,
+	distance,
+	isLatLngTuple,
+	isNonEmptyObject,
+	isNotNull,
+	parseCoordinates,
+} from "@plugin/util";
 import { Coordinates } from "@plugin/types";
 
 describe("Clamp function", () => {
@@ -83,6 +90,31 @@ describe("Parse coordinates function", () => {
 		expect(() => parseCoordinates(",1" as Coordinates)).toThrow();
 		expect(() => parseCoordinates("1, 1, 1" as Coordinates)).toThrow();
 		expect(() => parseCoordinates("asdfe" as Coordinates)).toThrow();
+	});
+});
+
+describe("Is latitude longitude tuple type guard", () => {
+	test("returns true on LatLngTuple values", () => {
+		expect(isLatLngTuple([0, 0])).toEqual(true);
+		expect(isLatLngTuple([1, 0])).toEqual(true);
+		expect(isLatLngTuple([0, 4])).toEqual(true);
+		expect(isLatLngTuple([-1, -5])).toEqual(true);
+	});
+
+	test("returns false on non-LatLngTuple value", () => {
+		expect(isLatLngTuple("")).toEqual(false);
+		expect(isLatLngTuple(true)).toEqual(false);
+		expect(isLatLngTuple(false)).toEqual(false);
+		expect(isLatLngTuple({})).toEqual(false);
+		expect(isLatLngTuple({ kaas: 1 })).toEqual(false);
+		expect(isLatLngTuple(() => {})).toEqual(false);
+		expect(isLatLngTuple(null)).toEqual(false);
+		expect(isLatLngTuple(undefined)).toEqual(false);
+		expect(isLatLngTuple([])).toEqual(false);
+		expect(isLatLngTuple([1])).toEqual(false);
+		expect(isLatLngTuple([NaN, 1])).toEqual(false);
+		expect(isLatLngTuple([1, 1, 1])).toEqual(false);
+		expect(isLatLngTuple(["", ""])).toEqual(false);
 	});
 });
 

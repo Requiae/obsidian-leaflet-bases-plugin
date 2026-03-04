@@ -1,4 +1,4 @@
-import { LatLngLiteral } from "leaflet";
+import { LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
 import { Coordinates } from "@plugin/types";
 
@@ -23,17 +23,27 @@ export function getIconWithDefault(iconId: string | undefined): SVGSVGElement {
 	return defaultIcon;
 }
 
-export function parseCoordinates(coordinates: Coordinates): [number, number] {
+export function parseCoordinates(coordinates: Coordinates): LatLngTuple {
 	const parsedCoordinates = coordinates
 		.replace(/\s/g, "")
 		.split(",")
 		.map((coordinate) => parseInt(coordinate));
 
-	if (parsedCoordinates.length !== 2 || parsedCoordinates.some((value) => isNaN(value))) {
+	if (!isLatLngTuple(parsedCoordinates)) {
 		throw new Error("Coordinates not properly validated");
 	}
 
-	return parsedCoordinates as [number, number];
+	return parsedCoordinates;
+}
+
+export function isLatLngTuple(value: unknown): value is LatLngTuple {
+	return (
+		!!value &&
+		typeof value === "object" &&
+		Array.isArray(value) &&
+		value.length === 2 &&
+		value.every((value) => typeof value === "number" && !isNaN(value))
+	);
 }
 
 export function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
