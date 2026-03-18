@@ -47,7 +47,7 @@ Leaflet Bases is not yet available under Community Plugins. It is currently stil
 
 You can also embed the base:
 
-````markdown
+````yaml
 ```base
 views:
   - type: leaflet-map
@@ -79,6 +79,18 @@ views:
 
 > Technically only 'type', 'name', and 'image' are required for the map view to work. However you'll likely end up using most of the other settings.
 
+> Instead of setting `mapName` in the base, you can also use a bases filter;
+>
+> ```yaml
+> views:
+>   - type: leaflet-map
+>     name: Map
+>     image: assets/Locke.png
+>     filters:
+>       and:
+>         - '!marker.filter(value.mapName == "MAP_NAME").isEmpty()'
+> ```
+
 ### Adding a marker
 
 #### Using UI
@@ -94,7 +106,7 @@ views:
 
 Ensure that the frontmatter block is the first thing in your note.
 
-```markdown
+```yaml
 ---
 marker:
   - coordinates: 100, 300
@@ -106,6 +118,8 @@ marker:
     colour: "#bdf123"
 ---
 ```
+
+> Keep in mind that markers are arrays, many code editors automatically add an `-` when you start a new line. Ensure you only have the dashes where a new marker entry starts.
 
 | Setting      |             | What it does                                                                                |
 | ------------ | ----------- | ------------------------------------------------------------------------------------------- |
