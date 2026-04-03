@@ -2,7 +2,7 @@ import { BasesViewRegistration, IconName } from "obsidian";
 
 export type ViewRegistrationBuilder = () => [string, BasesViewRegistration];
 
-export type Wiki = string[][]; // Wiki links take the shape of string[][]
+export type Wiki = [[string]]; // Wiki links take the shape of string[][]
 export type Coordinates = `${number}, ${number}`;
 export type Hex = `#${string}`;
 

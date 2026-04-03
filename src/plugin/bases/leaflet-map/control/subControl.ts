@@ -1,6 +1,6 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
-import { RequiredMapObject } from "plugin/types";
-import { Constants as C } from "plugin/constants";
+import { RequiredMapObject } from "@plugin/types";
+import { Constants as C } from "@plugin/constants";
 
 interface SubControlOptions {
 	index: number;

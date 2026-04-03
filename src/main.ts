@@ -1,3 +1,3 @@
-import { BaseLeafletViewPlugin } from "plugin/plugin";
+import { BaseLeafletViewPlugin } from "@plugin/plugin";
 
 export default BaseLeafletViewPlugin;

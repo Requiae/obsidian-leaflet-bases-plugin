@@ -1,6 +1,6 @@
 import { LatLngBoundsExpression } from "leaflet";
 import { App } from "obsidian";
-import { Constants as C } from "plugin/constants";
+import { Constants as C } from "@plugin/constants";
 
 interface ImageData {
 	bounds: LatLngBoundsExpression;

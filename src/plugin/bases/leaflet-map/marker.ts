@@ -9,10 +9,10 @@ import {
 	marker,
 } from "leaflet";
 import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
-import { Constants as C } from "plugin/constants";
-import { SchemaValidator } from "plugin/properties/schemas";
-import { MarkerObject } from "plugin/types";
-import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { SchemaValidator } from "@plugin/properties/schemas";
+import { MarkerObject } from "@plugin/types";
+import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;

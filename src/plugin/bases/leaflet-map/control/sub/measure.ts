@@ -10,9 +10,9 @@ import {
 	polyline,
 	tooltip,
 } from "leaflet";
-import { Constants as C } from "plugin/constants";
-import { t } from "plugin/i18n/locale";
-import { distance, getIconWithDefault } from "plugin/util";
+import { Constants as C } from "@plugin/constants";
+import { t } from "@plugin/i18n/locale";
+import { distance, getIconWithDefault } from "@plugin/util";
 import { SubControl } from "../subControl";
 
 enum MeasureState {

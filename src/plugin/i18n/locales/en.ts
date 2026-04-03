@@ -1,4 +1,4 @@
-import { MarkerModalMode } from "plugin/types";
+import { MarkerModalMode } from "@plugin/types";
 
 export default {
 	view: {

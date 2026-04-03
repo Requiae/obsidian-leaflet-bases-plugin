@@ -1,5 +1,5 @@
 import { Control, DomUtil, Map } from "leaflet";
-import { RequiredMapObject } from "plugin/types";
+import { RequiredMapObject } from "@plugin/types";
 import { CopyControl, MeasureControl, PanControl } from "./sub";
 import { SubControl } from "./subControl";
 

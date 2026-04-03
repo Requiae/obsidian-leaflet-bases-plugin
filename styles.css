@@ -36,6 +36,10 @@
 
 	color: #ebebec;
 }
+.leaflet-marker-icon svg path {
+	stroke: unset !important;
+	stroke-width: unset !important;
+}
 
 .leaflet-map-property-tag-list {
 	margin: 0 !important;

@@ -1,4 +1,4 @@
-import { BaseLeafletViewPlugin } from "plugin/plugin";
+import { BaseLeafletViewPlugin } from "@plugin/plugin";
 import { LeafletMapViewRegistrationBuilder } from "./leaflet-map/view";
 
 export class ViewManager {
