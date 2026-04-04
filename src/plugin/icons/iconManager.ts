@@ -5,6 +5,7 @@ import { addIcon, removeIcon } from "obsidian";
 
 export class IconManager {
 	constructor(public plugin: BaseLeafletViewPlugin) {
+		// TODO: register only sets enabled by settings
 		this.registerIconSet(gameIcons);
 	}
 

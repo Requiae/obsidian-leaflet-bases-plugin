@@ -2,7 +2,7 @@ import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject } from "@plugin/types";
-import { Validator } from "../validators";
+import { Validator } from "@plugin/validation/validators";
 import { IconSuggest } from "./iconSuggest";
 
 function buildColourOptionsObject(): Record<string, string> {

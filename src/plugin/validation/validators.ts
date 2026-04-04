@@ -1,8 +1,8 @@
-import { IconName } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { Coordinates, Hex, ValidatorFunction, Wiki } from "@plugin/types";
+import { IconName } from "obsidian";
 
-type ValidatedProperties = string | Wiki | number;
+type ValidatedProperties = string | Wiki | number | boolean | undefined;
 
 function stringValidator(value: unknown): value is string {
 	return typeof value === "string";
@@ -35,6 +35,14 @@ function colourValidator(value: unknown): value is Hex {
 	return typeof value === "string" && C.regExp.hexColourValidation.test(value);
 }
 
+function booleanValidator(value: unknown): value is boolean {
+	return typeof value === "boolean";
+}
+
+function ignoreValidator(_value: unknown): _value is undefined {
+	return true;
+}
+
 export const Validator = {
 	string: stringValidator,
 	source: sourcevalidator,
@@ -43,4 +51,6 @@ export const Validator = {
 	coordinates: coordinatesValidator,
 	icon: iconValidator,
 	colour: colourValidator,
+	boolean: booleanValidator,
+	ignore: ignoreValidator,
 } as const satisfies Record<string, ValidatorFunction<ValidatedProperties>>;

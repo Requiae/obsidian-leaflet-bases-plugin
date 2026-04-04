@@ -10,7 +10,7 @@ import {
 } from "leaflet";
 import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { SchemaValidator } from "@plugin/properties/schemas";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MarkerObject } from "@plugin/types";
 import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
 

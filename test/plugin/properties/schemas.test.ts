@@ -1,4 +1,4 @@
-import { SchemaValidator } from "@plugin/properties/schemas";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { test, expect, describe } from "vitest";
 
 describe("Marker schema validator", () => {

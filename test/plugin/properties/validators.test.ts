@@ -1,4 +1,4 @@
-import { Validator } from "@plugin/properties/validators";
+import { Validator } from "@plugin/validation/validators";
 import { test, expect, describe } from "vitest";
 
 describe("String validator", () => {
