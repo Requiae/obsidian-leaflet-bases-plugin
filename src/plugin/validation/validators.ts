@@ -1,6 +1,6 @@
+import { IconName } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { Coordinates, Hex, ValidatorFunction, Wiki } from "@plugin/types";
-import { IconName } from "obsidian";
 
 type ValidatedProperties = string | Wiki | number | boolean | undefined;
 

@@ -1,5 +1,5 @@
+import { describe, expect, test } from "vitest";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
-import { test, expect, describe } from "vitest";
 
 describe("Marker schema validator", () => {
 	const validator = SchemaValidator.marker;

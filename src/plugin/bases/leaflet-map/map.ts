@@ -1,4 +1,4 @@
-import { CRS, ImageOverlay, LayerGroup, Map, imageOverlay, layerGroup, map } from "leaflet";
+import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
 import { App } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import type { RequiredMapObject, Wiki } from "@plugin/types";

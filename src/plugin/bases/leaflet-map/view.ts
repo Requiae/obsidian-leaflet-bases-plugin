@@ -1,9 +1,9 @@
-import { BasesView, QueryController, BasesAllOptions } from "obsidian";
+import { BasesAllOptions, BasesView, QueryController } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
 import { clamp } from "@plugin/util";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
 

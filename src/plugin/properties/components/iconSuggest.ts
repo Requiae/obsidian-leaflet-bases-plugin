@@ -1,4 +1,4 @@
-import { AbstractInputSuggest, App, IconName, SearchComponent, getIconIds } from "obsidian";
+import { AbstractInputSuggest, App, getIconIds, IconName, SearchComponent } from "obsidian";
 
 export class IconSuggest extends AbstractInputSuggest<string> {
 	private content: IconName[];

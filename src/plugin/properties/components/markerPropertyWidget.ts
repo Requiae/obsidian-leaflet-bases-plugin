@@ -5,8 +5,8 @@ import {
 } from "obsidian-typings";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MarkerObject } from "@plugin/types";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MarkerAddComponent } from "./markerAdd";
 import { MarkerValueComponent } from "./markerValue";
 

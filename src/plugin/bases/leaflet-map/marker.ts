@@ -1,18 +1,18 @@
 import {
 	DivIcon,
+	divIcon,
 	LayerGroup,
 	LeafletMouseEvent,
 	LeafletMouseEventHandlerFn,
 	Map,
 	Marker,
-	divIcon,
 	marker,
 } from "leaflet";
 import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MarkerObject } from "@plugin/types";
 import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;

@@ -3,5 +3,7 @@
 	"quoteProps": "as-needed",
 	"trailingComma": "all",
 	"tabWidth": 2,
-	"semi": true
+	"semi": true,
+	"plugins": ["@ianvs/prettier-plugin-sort-imports"],
+	"importOrder": ["<BUILTIN_MODULES>", "^w", "<THIRD_PARTY_MODULES>", "^@", "^[.]"]
 }

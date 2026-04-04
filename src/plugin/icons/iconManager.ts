@@ -1,7 +1,7 @@
-import { icons as gameIcons } from "@iconify-json/game-icons";
-import BaseLeafletViewPlugin from "../../main";
-import { IconifyJSON } from "@iconify/types";
 import { addIcon, removeIcon } from "obsidian";
+import { icons as gameIcons } from "@iconify-json/game-icons";
+import { IconifyJSON } from "@iconify/types";
+import BaseLeafletViewPlugin from "../../main";
 
 export class IconManager {
 	constructor(public plugin: BaseLeafletViewPlugin) {
