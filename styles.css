@@ -9,6 +9,14 @@
 	margin: 0 !important;
 }
 
+.bases-leaflet-view-search-icon-span {
+	display: flex;
+}
+.bases-leaflet-view-search-icon-span div {
+	display: inline-block;
+	margin-inline-start: 0.5rem;
+}
+
 .leaflet-control-button {
 	background: var(--tab-container-background);
 }
