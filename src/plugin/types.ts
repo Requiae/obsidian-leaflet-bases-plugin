@@ -2,7 +2,9 @@ import { BasesViewRegistration, IconName } from "obsidian";
 import { IconifyJSONIconsData } from "@iconify/types";
 import { BasesLeafletViewPlugin } from "./plugin";
 
-export type ViewRegistrationBuilder = () => [string, BasesViewRegistration];
+export type ViewRegistrationBuilder = (
+	plugin: BasesLeafletViewPlugin,
+) => [string, BasesViewRegistration];
 
 export type Wiki = [[string]]; // Wiki links take the shape of string[][]
 export type Coordinates = `${number}, ${number}`;
@@ -48,6 +50,12 @@ export abstract class Manager {
 	constructor(public plugin: BasesLeafletViewPlugin) {}
 	abstract load(): Promise<void>;
 	abstract unload(): void;
+}
+
+export interface BasesLeafletViewSettings {
+	enableMeasureTool: boolean;
+	enableCopyTool: boolean;
+	iconData: IconifyJSONIconsObject[];
 }
 
 export enum MarkerModalMode {

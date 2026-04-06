@@ -46,6 +46,12 @@ export const Constants = {
 		url: /https?:/,
 		arrayString: /^\[.*[\]]$/,
 	},
+	settings: {
+		default: {
+			enableMeasureTool: true,
+			enableCopyTool: true,
+		},
+	},
 	view: {
 		type: "leaflet-map",
 		icon: "lucide-map",

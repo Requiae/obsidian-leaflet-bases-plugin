@@ -1,6 +1,19 @@
 import { MarkerModalMode } from "@plugin/types";
 
 export default {
+	settings: {
+		tools: {
+			title: "Map tools",
+			measure: {
+				title: "Enable measure tool",
+				description: "Enable tool that allows you to measure distances",
+			},
+			copy: {
+				title: "Enable copy tool",
+				description: "Enable tool that allows you to copy coordinated to your clipboard",
+			},
+		},
+	},
 	view: {
 		name: "Leaflet Map",
 		options: {

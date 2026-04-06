@@ -3,7 +3,7 @@ import { LeafletMapViewRegistrationBuilder } from "./leaflet-map/view";
 
 export class ViewManager extends Manager {
 	async load(): Promise<void> {
-		this.plugin.registerBasesView(...LeafletMapViewRegistrationBuilder());
+		this.plugin.registerBasesView(...LeafletMapViewRegistrationBuilder(this.plugin));
 	}
 
 	unload(): void {}

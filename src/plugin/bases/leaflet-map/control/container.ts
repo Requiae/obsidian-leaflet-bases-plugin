@@ -1,5 +1,5 @@
 import { Control, DomUtil, Map } from "leaflet";
-import { RequiredMapObject } from "@plugin/types";
+import { BasesLeafletViewSettings, RequiredMapObject } from "@plugin/types";
 import { CopyControl, MeasureControl, PanControl } from "./sub";
 import { SubControl } from "./subControl";
 
@@ -8,14 +8,14 @@ export class ControlContainer extends Control {
 	private controls: SubControl[] = [];
 	private activeIndex: number = 0;
 
-	constructor() {
+	constructor(private pluginSettings: BasesLeafletViewSettings) {
 		super({ position: "topleft" });
 	}
 
 	override onAdd(map: Map): HTMLElement {
 		this.registerSubControl(PanControl, map);
-		this.registerSubControl(MeasureControl, map);
-		this.registerSubControl(CopyControl, map);
+		if (this.pluginSettings.enableMeasureTool) this.registerSubControl(MeasureControl, map);
+		if (this.pluginSettings.enableCopyTool) this.registerSubControl(CopyControl, map);
 
 		const containerEl = DomUtil.create("div", "leaflet-bar leaflet-control");
 
