@@ -1,19 +1,19 @@
 import { addIcon, removeIcon } from "obsidian";
 import { icons as gameIcons } from "@iconify-json/game-icons";
 import { IconifyJSON } from "@iconify/types";
-import BaseLeafletViewPlugin from "../../main";
+import { Manager } from "@plugin/types";
 
-export class IconManager {
-	constructor(public plugin: BaseLeafletViewPlugin) {
+export class IconManager extends Manager {
+	async load(): Promise<void> {
 		// TODO: register only sets enabled by settings
 		this.registerIconSet(gameIcons);
 	}
 
-	unload() {
+	unload(): void {
 		this.removeIconSet(gameIcons);
 	}
 
-	private registerIconSet(iconSet: IconifyJSON) {
+	private registerIconSet(iconSet: IconifyJSON): void {
 		for (const [key, icon] of Object.entries(iconSet.icons)) {
 			if (icon.body && !icon.hidden) {
 				const width = icon.width ?? iconSet.width ?? 24;
@@ -25,7 +25,7 @@ export class IconManager {
 		}
 	}
 
-	private removeIconSet(iconSet: IconifyJSON) {
+	private removeIconSet(iconSet: IconifyJSON): void {
 		for (const key in iconSet.icons) {
 			removeIcon(`${iconSet.prefix}-${key}`);
 		}

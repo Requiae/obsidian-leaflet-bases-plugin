@@ -1,5 +1,6 @@
 import { BasesViewRegistration, IconName } from "obsidian";
 import { IconifyJSONIconsData } from "@iconify/types";
+import { BasesLeafletViewPlugin } from "./plugin";
 
 export type ViewRegistrationBuilder = () => [string, BasesViewRegistration];
 
@@ -42,6 +43,12 @@ export type Schema<T extends keyof StringMap> = Record<
 	T,
 	{ validator: ValidatorFunction<unknown>; required?: boolean }
 >;
+
+export abstract class Manager {
+	constructor(public plugin: BasesLeafletViewPlugin) {}
+	abstract load(): Promise<void>;
+	abstract unload(): void;
+}
 
 export enum MarkerModalMode {
 	Add = "add",
