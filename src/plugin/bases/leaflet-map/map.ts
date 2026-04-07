@@ -1,7 +1,7 @@
 import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject, Wiki } from "@plugin/types";
-import BasesLeafletViewPlugin from "../../../main";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
 

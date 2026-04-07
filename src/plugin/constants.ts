@@ -51,6 +51,10 @@ export const Constants = {
 			enableMeasureTool: true,
 			enableCopyTool: true,
 		},
+		links: {
+			preview: "https://icon-sets.iconify.design/",
+			github: "https://github.com/iconify/icon-sets/tree/master/json",
+		},
 	},
 	view: {
 		type: "leaflet-map",

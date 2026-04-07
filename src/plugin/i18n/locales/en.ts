@@ -13,6 +13,20 @@ export default {
 				description: "Enable tool that allows you to copy coordinated to your clipboard",
 			},
 		},
+		icons: {
+			title: "Additional icon sets",
+			add: {
+				title: "Add iconify icon set",
+				description: {
+					start: "Additional",
+					previewLink: "Iconify icon sets",
+					middle: "can be downloaded as .json files at the",
+					githubLink: "Iconify GitHub repository",
+					end: "",
+					warning: "Adding too many icons can negatively impact the performance of your device",
+				},
+			},
+		},
 	},
 	view: {
 		name: "Leaflet Map",

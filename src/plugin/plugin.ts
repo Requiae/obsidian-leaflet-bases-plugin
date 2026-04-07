@@ -8,19 +8,23 @@ export class BasesLeafletViewPlugin extends Plugin {
 	iconManager = new IconManager(this);
 	propertyManager = new PropertyManager(this);
 	viewManager = new ViewManager(this);
+
+	/* Ensure that this is loaded first and unloaded last as other managers might depend on it */
 	settingsManager = new SettingsManager(this);
 
 	override async onload(): Promise<void> {
+		await this.settingsManager.load();
+
 		await this.iconManager.load();
 		await this.propertyManager.load();
 		await this.viewManager.load();
-		await this.settingsManager.load();
 	}
 
 	override onunload() {
 		this.iconManager.unload();
 		this.propertyManager.unload();
 		this.viewManager.unload();
+
 		this.settingsManager.unload();
 	}
 }

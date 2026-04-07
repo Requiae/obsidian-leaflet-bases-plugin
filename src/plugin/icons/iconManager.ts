@@ -27,7 +27,7 @@ export class IconManager extends Manager {
 
 	private removeIconSet(iconSet: IconifyJSON): void {
 		for (const key in iconSet.icons) {
-			removeIcon(`${iconSet.prefix}-${key}`);
+			removeIcon(`${iconSet.prefix}:${key}`);
 		}
 	}
 }

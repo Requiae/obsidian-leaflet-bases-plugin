@@ -1,10 +1,10 @@
 import { BasesAllOptions, BasesView, QueryController } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
 import { clamp } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
-import BasesLeafletViewPlugin from "../../../main";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
 
