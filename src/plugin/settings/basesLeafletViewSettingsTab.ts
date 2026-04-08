@@ -1,16 +1,17 @@
-import { PluginSettingTab, SettingGroup } from "obsidian";
+import { Notice, PluginSettingTab, SettingGroup } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
+import { IconifyJSONIconsObject } from "@plugin/types";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { SettingsManager } from "./settingsManager";
 
 export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 	constructor(
-		plugin: BasesLeafletViewPlugin,
+		public override plugin: BasesLeafletViewPlugin,
 		private manager: SettingsManager,
 	) {
 		super(plugin.app, plugin);
-		this.plugin = plugin;
 	}
 
 	override display(): void {
@@ -24,8 +25,7 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 					.setDesc(t("settings.tools.measure.description"))
 					.addToggle((toggle) =>
 						toggle.setValue(this.manager.settings.enableMeasureTool).onChange(async (value) => {
-							this.manager.settings.enableMeasureTool = value;
-							await this.manager.saveSettings();
+							await this.manager.updateSettings({ enableMeasureTool: value });
 						}),
 					);
 			})
@@ -35,8 +35,7 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 					.setDesc(t("settings.tools.copy.description"))
 					.addToggle((toggle) =>
 						toggle.setValue(this.manager.settings.enableCopyTool).onChange(async (value) => {
-							this.manager.settings.enableCopyTool = value;
-							await this.manager.saveSettings();
+							await this.manager.updateSettings({ enableCopyTool: value });
 						}),
 					);
 			});
@@ -62,11 +61,32 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 			setting
 				.setName("Add iconify icon set")
 				.setDesc(fragment)
-				.addButton((button) =>
-					button.setButtonText("Add iconset").onClick((event) => {
-						console.log(event);
-					}),
-				);
+				.addButton(async (button) => {
+					const input = button.buttonEl.createEl("input", {
+						type: "file",
+						attr: { accept: ".json", style: "display: none;" },
+					});
+					input.onchange = async () => {
+						if (!input.files?.length) return;
+
+						try {
+							const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
+							for (let file of Array.from(input.files)) {
+								const json: unknown = JSON.parse(await file.text());
+								if (SchemaValidator.icon(json)) data.push(json);
+							}
+							await this.manager.updateSettings({ iconData: data });
+							await this.plugin.iconManager.reload();
+						} catch (error) {
+							new Notice("There was an error loading your icon set(s)");
+							console.error(error);
+						}
+					};
+					button.setButtonText("Add iconset").onClick(() => {
+						input.click();
+					});
+				});
 		});
+		// TODO: Add list of, and way to remove, icon sets
 	}
 }

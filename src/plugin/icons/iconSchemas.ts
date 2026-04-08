@@ -4,7 +4,7 @@ import {
 	IconifyIcons,
 	IconifyTransformations,
 } from "@iconify/types";
-import { IconifyJSONIconsObject, Schema } from "@plugin/types";
+import { IconifyJSONIconsObject, ReducedIconifyInfo, Schema } from "@plugin/types";
 import { isNonEmptyObject } from "@plugin/util";
 import { schemaValidatorFactory } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
@@ -37,10 +37,28 @@ const iconifyIconSchema: Schema<keyof ExtendedIconifyIcon> = {
 	...iconifyTransformationsSchema,
 };
 
+const iconifyAuthorSchema: Schema<keyof ReducedIconifyInfo["author"]> = {
+	name: { validator: Validator.string, required: true },
+	url: { validator: Validator.url },
+};
+
+const iconifyLicenseSchema: Schema<keyof ReducedIconifyInfo["license"]> = {
+	title: { validator: Validator.string, required: true },
+	spdx: { validator: Validator.string },
+	url: { validator: Validator.url },
+};
+
+const iconifyInfoSchema: Schema<keyof ReducedIconifyInfo> = {
+	name: { validator: Validator.string, required: true },
+	author: { validator: schemaValidatorFactory(iconifyAuthorSchema), required: true },
+	license: { validator: schemaValidatorFactory(iconifyLicenseSchema), required: true },
+};
+
 export const iconifyJsonSchema: Schema<keyof IconifyJSONIconsObject> = {
 	prefix: { validator: Validator.string, required: true },
 	provider: { validator: Validator.string },
 	icons: { validator: iconifyIconsValidator, required: true },
 	aliases: { validator: Validator.ignore },
 	...iconifyDimensionsSchema,
+	info: { validator: schemaValidatorFactory(iconifyInfoSchema) },
 };

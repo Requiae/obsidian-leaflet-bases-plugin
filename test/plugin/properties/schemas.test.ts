@@ -108,6 +108,18 @@ describe("Icon schema validator", () => {
 				top: 0,
 				width: 24,
 				height: 24,
+				info: {
+					name: "name",
+					author: {
+						name: "Author Mc Author",
+						url: "https://author.com/",
+					},
+					license: {
+						title: "licensy title",
+						spdx: "spdx",
+						url: "https://license.com/",
+					},
+				},
 			}),
 		).toEqual(true);
 	});
@@ -160,6 +172,44 @@ describe("Icon schema validator", () => {
 		expect(validator({ prefix: "prefix", icons: { icon: { body: "body" } }, height: "a" })).toEqual(
 			false,
 		);
+		expect(validator({ prefix: "prefix", icons: { icon: { body: "body" } }, info: {} })).toEqual(
+			false,
+		);
+		expect(
+			validator({
+				prefix: "prefix",
+				icons: { icon: { body: "body" } },
+				info: { author: { name: "Author Mc Author" }, license: { title: "licensy title" } },
+			}),
+		).toEqual(false);
+		expect(
+			validator({
+				prefix: "prefix",
+				icons: { icon: { body: "body" } },
+				info: { name: "name", license: { title: "licensy title" } },
+			}),
+		).toEqual(false);
+		expect(
+			validator({
+				prefix: "prefix",
+				icons: { icon: { body: "body" } },
+				info: { name: "name", author: { name: "Author Mc Author" } },
+			}),
+		).toEqual(false);
+		expect(
+			validator({
+				prefix: "prefix",
+				icons: { icon: { body: "body" } },
+				info: { name: "name", author: {}, license: { title: "licensy title" } },
+			}),
+		).toEqual(false);
+		expect(
+			validator({
+				prefix: "prefix",
+				icons: { icon: { body: "body" } },
+				info: { name: "name", author: { name: "Author Mc Author" }, license: {} },
+			}),
+		).toEqual(false);
 		expect(validator(undefined)).toEqual(false);
 		expect(validator(null)).toEqual(false);
 		expect(validator("aaaa")).toEqual(false);

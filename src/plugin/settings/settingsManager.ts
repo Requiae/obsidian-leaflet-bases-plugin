@@ -19,7 +19,8 @@ export class SettingsManager extends Manager {
 		this.settings = Object.assign({}, defaultData, loadedData);
 	}
 
-	async saveSettings(): Promise<void> {
+	async updateSettings(settings: Partial<BasesLeafletViewSettings>): Promise<void> {
+		this.settings = Object.assign(this.settings, settings);
 		await this.plugin.saveData(this.settings);
 	}
 }

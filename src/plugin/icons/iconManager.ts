@@ -13,6 +13,11 @@ export class IconManager extends Manager {
 		this.removeIconSet(gameIcons);
 	}
 
+	async reload(): Promise<void> {
+		this.unload();
+		await this.reload();
+	}
+
 	private registerIconSet(iconSet: IconifyJSON): void {
 		for (const [key, icon] of Object.entries(iconSet.icons)) {
 			if (icon.body && !icon.hidden) {

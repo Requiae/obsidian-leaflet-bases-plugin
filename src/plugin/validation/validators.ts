@@ -1,6 +1,6 @@
 import { IconName } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { Coordinates, Hex, ValidatorFunction, Wiki } from "@plugin/types";
+import { Coordinates, Hex, Url, ValidatorFunction, Wiki } from "@plugin/types";
 
 type ValidatedProperties = string | Wiki | number | boolean | undefined;
 
@@ -13,6 +13,10 @@ function sourcevalidator(value: unknown): value is string | Wiki {
 	if (Array.isArray(value) && Array.isArray(value[0]) && stringValidator(value[0][0]))
 		return value[0][0].length > 0;
 	return false;
+}
+
+function urlValidator(value: unknown): value is Url {
+	return stringValidator(value) && C.regExp.url.test(value);
 }
 
 function numberValidator(value: unknown): value is number {
@@ -38,7 +42,6 @@ function colourValidator(value: unknown): value is Hex {
 function booleanValidator(value: unknown): value is boolean {
 	return typeof value === "boolean";
 }
-
 function ignoreValidator(_value: unknown): _value is undefined {
 	return true;
 }
@@ -52,5 +55,6 @@ export const Validator = {
 	icon: iconValidator,
 	colour: colourValidator,
 	boolean: booleanValidator,
+	url: urlValidator,
 	ignore: ignoreValidator,
 } as const satisfies Record<string, ValidatorFunction<ValidatedProperties>>;
