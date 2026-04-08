@@ -25,6 +25,8 @@ export default {
 					end: "",
 					warning: "Adding too many icons can negatively impact the performance of your device",
 				},
+				buttonText: "Add iconset",
+				error: "There was an error loading your icon set(s)",
 			},
 		},
 	},

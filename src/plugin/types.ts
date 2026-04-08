@@ -36,7 +36,7 @@ export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license"
 // Reconstruct interface as type to avoid "Index signature is missing" error
 export type IconifyJSONIconsObject = {
 	[Properties in keyof IconifyJSONIconsData]: IconifyJSONIconsData[Properties];
-} & { info: ReducedIconifyInfo };
+} & { info?: ReducedIconifyInfo };
 
 // Set all properties of MapObject to required except name
 export type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };

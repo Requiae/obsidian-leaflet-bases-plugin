@@ -24,8 +24,8 @@ export class IconSuggest extends AbstractInputSuggest<string> {
 	}
 
 	renderSuggestion(value: string, el: HTMLElement): void {
-		const icon = getIcon(value);
 		el.createDiv({ cls: "bases-leaflet-view-search-icon-span" }, (div) => {
+			const icon = getIcon(value);
 			if (icon) div.append(icon);
 			div.createDiv({ text: value });
 		});

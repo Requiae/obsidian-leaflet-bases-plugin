@@ -4,6 +4,7 @@ import { t } from "@plugin/i18n/locale";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { IconifyJSONIconsObject } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { LoadedIconSetsComponent } from "./loadedIconSetsComponent";
 import { SettingsManager } from "./settingsManager";
 
 export class BasesLeafletViewSettingsTab extends PluginSettingTab {
@@ -16,7 +17,11 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 
 	override display(): void {
 		this.containerEl.empty();
+		this.addToolsGroup();
+		this.addIconsGroup();
+	}
 
+	private addToolsGroup(): void {
 		new SettingGroup(this.containerEl)
 			.setHeading(t("settings.tools.title"))
 			.addSetting((setting) => {
@@ -39,57 +44,69 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 						}),
 					);
 			});
+	}
 
-		new SettingGroup(this.containerEl).setHeading("Additional icon sets").addSetting((setting) => {
-			const fragment = new DocumentFragment();
-			fragment.createSpan({ text: "" }, (span) => {
-				span.append(`${t("settings.icons.add.description.start")} `);
-				span.createEl("a", {
-					text: t("settings.icons.add.description.previewLink"),
-					href: C.settings.links.preview,
-				});
-				span.append(` ${t("settings.icons.add.description.middle")} `);
-				span.createEl("a", {
-					text: t("settings.icons.add.description.githubLink"),
-					href: C.settings.links.github,
-				});
-				span.append(` ${t("settings.icons.add.description.end")}`);
-				span.createEl("br");
-				span.createEl("br");
-				span.createEl("i", { text: t("settings.icons.add.description.warning") });
-			});
-			setting
-				.setName("Add iconify icon set")
-				.setDesc(fragment)
-				.addButton(async (button) => {
-					const input = button.buttonEl.createEl("input", {
-						type: "file",
-						attr: { accept: ".json", style: "display: none;" },
+	private addIconsGroup(): void {
+		let loadedIcons: LoadedIconSetsComponent;
+		new SettingGroup(this.containerEl)
+			.setHeading("Additional icon sets")
+			.addSetting((setting) => {
+				const fragment = new DocumentFragment();
+				fragment.createSpan({ text: "" }, (span) => {
+					span.append(`${t("settings.icons.add.description.start")} `);
+					span.createEl("a", {
+						text: t("settings.icons.add.description.previewLink"),
+						href: C.settings.links.preview,
 					});
-					input.onchange = async () => {
-						if (!input.files?.length) return;
+					span.append(` ${t("settings.icons.add.description.middle")} `);
+					span.createEl("a", {
+						text: t("settings.icons.add.description.githubLink"),
+						href: C.settings.links.github,
+					});
+					span.append(` ${t("settings.icons.add.description.end")}`);
+					span.createEl("br");
+					span.createEl("br");
+					span.createEl("i", { text: t("settings.icons.add.description.warning") });
+				});
+				setting
+					.setName("Add iconify icon set")
+					.setDesc(fragment)
+					.addButton(async (button) => {
+						const input = button.buttonEl.createEl("input", {
+							type: "file",
+							attr: { accept: ".json", style: "display: none;" },
+						});
+						input.onchange = async () => {
+							if (!input.files?.length) return;
 
-						this.plugin.iconManager.unload();
+							this.plugin.iconManager.unload();
 
-						const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
-						try {
-							for (let file of Array.from(input.files)) {
-								const json: unknown = JSON.parse(await file.text());
-								if (SchemaValidator.icon(json)) data.push(json);
+							const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
+							try {
+								for (let file of Array.from(input.files)) {
+									const text = await file.text();
+									const json: unknown = JSON.parse(text);
+									if (SchemaValidator.icon(json)) data.push(json);
+									else throw new Error(`Invalid IconSet: ${text}`);
+								}
+							} catch (error) {
+								new Notice(t("settings.icons.add.error"));
+								console.error(error);
 							}
-						} catch (error) {
-							new Notice("There was an error loading your icon set(s)");
-							console.error(error);
-						}
 
-						await this.manager.updateSettings({ iconData: data });
-						await this.plugin.iconManager.load();
-					};
-					button.setButtonText("Add iconset").onClick(() => {
-						input.click();
+							input.value = "";
+							await this.manager.updateSettings({ iconData: data });
+							await this.plugin.iconManager.load();
+							loadedIcons?.render();
+						};
+						button.setButtonText(t("settings.icons.add.buttonText")).onClick(() => {
+							input.click();
+						});
 					});
-				});
-		});
-		// TODO: Add list of, and way to remove, icon sets
+			})
+			.addSetting((setting) => {
+				setting.setClass("bases-leaflet-view-setting-empty");
+				loadedIcons = new LoadedIconSetsComponent(setting.settingEl, this.plugin);
+			});
 	}
 }

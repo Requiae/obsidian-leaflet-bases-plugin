@@ -18,6 +18,7 @@ export class IconManager extends Manager {
 	private registerIconSet(iconSet: IconifyJSON): void {
 		for (const [key, icon] of Object.entries(iconSet.icons)) {
 			if (icon.body && !icon.hidden) {
+				// TODO: Something is horribly off here
 				const width = icon.width ?? iconSet.width ?? 24;
 				const height = icon.height ?? iconSet.height ?? 24;
 				const scale = `scale(${100 / width} ${100 / height})`;

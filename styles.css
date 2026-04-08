@@ -17,6 +17,13 @@
 	margin-inline-start: 0.5rem;
 }
 
+.bases-leaflet-view-setting-empty {
+	display: block;
+}
+.bases-leaflet-view-setting-empty .setting-items {
+	padding: 0;
+}
+
 .leaflet-control-button {
 	background: var(--tab-container-background);
 }
