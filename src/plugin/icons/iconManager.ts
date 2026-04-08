@@ -1,21 +1,18 @@
 import { addIcon, removeIcon } from "obsidian";
-import { icons as gameIcons } from "@iconify-json/game-icons";
 import { IconifyJSON } from "@iconify/types";
 import { Manager } from "@plugin/types";
 
 export class IconManager extends Manager {
 	async load(): Promise<void> {
-		// TODO: register only sets enabled by settings
-		this.registerIconSet(gameIcons);
+		for (let iconSet of this.plugin.settingsManager.settings.iconData) {
+			this.registerIconSet(iconSet);
+		}
 	}
 
 	unload(): void {
-		this.removeIconSet(gameIcons);
-	}
-
-	async reload(): Promise<void> {
-		this.unload();
-		await this.reload();
+		for (let iconSet of this.plugin.settingsManager.settings.iconData) {
+			this.removeIconSet(iconSet);
+		}
 	}
 
 	private registerIconSet(iconSet: IconifyJSON): void {

@@ -36,7 +36,6 @@
 		"vitest": "^4.0.18"
 	},
 	"dependencies": {
-		"@iconify-json/game-icons": "^1.2.3",
 		"leaflet": "^1.9.4"
 	}
 }

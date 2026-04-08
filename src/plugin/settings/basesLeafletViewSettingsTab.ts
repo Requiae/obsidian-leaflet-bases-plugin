@@ -69,18 +69,21 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 					input.onchange = async () => {
 						if (!input.files?.length) return;
 
+						this.plugin.iconManager.unload();
+
+						const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
 						try {
-							const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
 							for (let file of Array.from(input.files)) {
 								const json: unknown = JSON.parse(await file.text());
 								if (SchemaValidator.icon(json)) data.push(json);
 							}
-							await this.manager.updateSettings({ iconData: data });
-							await this.plugin.iconManager.reload();
 						} catch (error) {
 							new Notice("There was an error loading your icon set(s)");
 							console.error(error);
 						}
+
+						await this.manager.updateSettings({ iconData: data });
+						await this.plugin.iconManager.load();
 					};
 					button.setButtonText("Add iconset").onClick(() => {
 						input.click();
