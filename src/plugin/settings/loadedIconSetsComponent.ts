@@ -52,9 +52,9 @@ export class LoadedIconSetsComponent {
 					const copy = this.settingsManager.settings.iconData.slice();
 					copy.splice(index, 1);
 
-					this.iconManager.unload();
-					await this.settingsManager.updateSettings({ iconData: copy });
-					await this.iconManager.load();
+					await this.iconManager.reload(async () => {
+						await this.settingsManager.updateSettings({ iconData: copy });
+					});
 
 					this.render();
 				};

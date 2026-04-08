@@ -79,25 +79,24 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 						input.onchange = async () => {
 							if (!input.files?.length) return;
 
-							this.plugin.iconManager.unload();
-
-							const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
-							try {
-								for (let file of Array.from(input.files)) {
-									const text = await file.text();
-									const json: unknown = JSON.parse(text);
-									if (SchemaValidator.icon(json)) data.push(json);
-									else throw new Error(`Invalid IconSet: ${text}`);
+							await this.plugin.iconManager.reload(async () => {
+								const data: IconifyJSONIconsObject[] = this.manager.settings.iconData;
+								try {
+									for (let file of Array.from(input.files ?? [])) {
+										const text = await file.text();
+										const json: unknown = JSON.parse(text);
+										if (SchemaValidator.icon(json)) data.push(json);
+										else throw new Error(`Invalid IconSet: ${text}`);
+									}
+								} catch (error) {
+									new Notice(t("settings.icons.add.error"));
+									console.error(error);
 								}
-							} catch (error) {
-								new Notice(t("settings.icons.add.error"));
-								console.error(error);
-							}
 
-							input.value = "";
-							await this.manager.updateSettings({ iconData: data });
-							await this.plugin.iconManager.load();
-							loadedIcons?.render();
+								input.value = "";
+								await this.manager.updateSettings({ iconData: data });
+								loadedIcons?.render();
+							});
 						};
 						button.setButtonText(t("settings.icons.add.buttonText")).onClick(() => {
 							input.click();

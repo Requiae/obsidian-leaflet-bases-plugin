@@ -15,6 +15,12 @@ export class IconManager extends Manager {
 		}
 	}
 
+	async reload(wrappedFunction: () => Promise<void> = async () => {}): Promise<void> {
+		this.unload();
+		await wrappedFunction();
+		await this.load();
+	}
+
 	private registerIconSet(iconSet: IconifyJSON): void {
 		for (const [key, icon] of Object.entries(iconSet.icons)) {
 			if (icon.body && !icon.hidden) {
