@@ -57,11 +57,12 @@
 }
 
 .leaflet-map-property-tag-list {
-	margin: 0 !important;
-	padding: 2px;
+	margin: 0 8px !important;
+	padding: 2px !important;
 	gap: 0.3rem;
 	display: flex;
 	color: #ebebec;
+	flex-wrap: wrap;
 }
 .leaflet-map-property-tag-item {
 	display: flex;
