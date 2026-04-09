@@ -1,6 +1,6 @@
-import { CRS, ImageOverlay, LayerGroup, Map, imageOverlay, layerGroup, map } from "leaflet";
-import { App } from "obsidian";
+import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject, Wiki } from "@plugin/types";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
@@ -16,11 +16,11 @@ export class MapManager {
 
 	// Managers
 	private imageLoader: ImageLoader;
-	private controls: ControlContainer;
+	private controls: ControlContainer | undefined;
 
-	constructor(app: App, containerEl: HTMLElement) {
+	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement) {
 		this.mapEl = containerEl.createDiv("bases-leaflet-map");
-		this.imageLoader = new ImageLoader(app);
+		this.imageLoader = new ImageLoader(plugin.app);
 
 		// Map initialisation
 		this._markerLayer = layerGroup();
@@ -30,8 +30,13 @@ export class MapManager {
 			layers: [this._markerLayer],
 		});
 
-		this.controls = new ControlContainer();
-		this.controls.addTo(this._leafletMap);
+		if (
+			plugin.settingsManager.settings.enableMeasureTool ||
+			plugin.settingsManager.settings.enableCopyTool
+		) {
+			this.controls = new ControlContainer(plugin.settingsManager.settings);
+			this.controls.addTo(this._leafletMap);
+		}
 	}
 
 	get leafletMap(): Map {
@@ -43,7 +48,7 @@ export class MapManager {
 	}
 
 	unload(): void {
-		this.controls.onRemove(this._leafletMap);
+		this.controls?.onRemove(this._leafletMap);
 		this._leafletMap.clearAllEventListeners();
 		this._leafletMap.remove();
 	}
@@ -53,7 +58,7 @@ export class MapManager {
 		this.updateZoom(settings);
 		this.updateCss(settings);
 
-		this.controls.updateSettings(settings);
+		this.controls?.updateSettings(settings);
 
 		// This cleans up all sorts of remaining data from the leaflet map and fixes issues
 		// caused by making changes to the image overlay and container size

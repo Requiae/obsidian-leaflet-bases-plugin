@@ -1,18 +1,18 @@
 import { MetadataTypeManager } from "obsidian-typings";
 import { Constants as C } from "@plugin/constants";
-import { BaseLeafletViewPlugin } from "@plugin/plugin";
+import { Manager } from "@plugin/types";
 import { markerWidget } from "./components/markerPropertyWidget";
 
-export class PropertyManager {
-	private metadataTypeManager: MetadataTypeManager;
+export class PropertyManager extends Manager {
+	private metadataTypeManager: MetadataTypeManager | null;
 
-	constructor(public plugin: BaseLeafletViewPlugin) {
-		this.metadataTypeManager = plugin.app.metadataTypeManager;
-
+	async load(): Promise<void> {
+		this.metadataTypeManager = this.plugin.app.metadataTypeManager;
 		this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier] = markerWidget;
 	}
 
-	unload() {
-		delete this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier];
+	unload(): void {
+		delete this.metadataTypeManager?.registeredTypeWidgets[C.property.marker.identifier];
+		this.metadataTypeManager = null;
 	}
 }

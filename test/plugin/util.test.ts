@@ -1,5 +1,6 @@
-import { test, expect, describe } from "vitest";
 import { LatLngLiteral } from "leaflet";
+import { describe, expect, test } from "vitest";
+import { Coordinates } from "@plugin/types";
 import {
 	clamp,
 	distance,
@@ -8,7 +9,6 @@ import {
 	isNotNull,
 	parseCoordinates,
 } from "@plugin/util";
-import { Coordinates } from "@plugin/types";
 
 describe("Clamp function", () => {
 	const minimum = 2;

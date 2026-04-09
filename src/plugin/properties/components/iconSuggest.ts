@@ -1,4 +1,11 @@
-import { AbstractInputSuggest, App, IconName, SearchComponent, getIconIds } from "obsidian";
+import {
+	AbstractInputSuggest,
+	App,
+	getIcon,
+	getIconIds,
+	IconName,
+	SearchComponent,
+} from "obsidian";
 
 export class IconSuggest extends AbstractInputSuggest<string> {
 	private content: IconName[];
@@ -17,7 +24,11 @@ export class IconSuggest extends AbstractInputSuggest<string> {
 	}
 
 	renderSuggestion(value: string, el: HTMLElement): void {
-		el.setText(value);
+		el.createDiv({ cls: "bases-leaflet-view-search-icon-span" }, (div) => {
+			const icon = getIcon(value);
+			if (icon) div.append(icon);
+			div.createDiv({ text: value });
+		});
 	}
 
 	override selectSuggestion(value: string, _evt: MouseEvent | KeyboardEvent): void {

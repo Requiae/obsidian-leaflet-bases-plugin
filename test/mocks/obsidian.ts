@@ -1,4 +1,4 @@
-import { Workspace, Vault, MetadataCache, FileManager, UserEvent } from "obsidian";
+import { FileManager, MetadataCache, UserEvent, Vault, Workspace } from "obsidian";
 
 export class App {
 	/** @public */

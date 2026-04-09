@@ -1,6 +1,6 @@
 import { LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates } from "@plugin/types";
+import { Coordinates, StringMap } from "@plugin/types";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
@@ -45,7 +45,7 @@ export function isLatLngTuple(value: unknown): value is LatLngTuple {
 	);
 }
 
-export function isNonEmptyObject(value: unknown): value is { [key: string]: unknown } {
+export function isNonEmptyObject(value: unknown): value is StringMap {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
 	return Object.keys(value).length > 0;
 }

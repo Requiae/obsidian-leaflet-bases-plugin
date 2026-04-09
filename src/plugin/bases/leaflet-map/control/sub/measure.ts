@@ -1,13 +1,13 @@
 import {
 	CircleMarker,
+	circleMarker,
 	LatLng,
 	LayerGroup,
+	layerGroup,
 	LeafletMouseEvent,
 	Polyline,
-	Tooltip,
-	circleMarker,
-	layerGroup,
 	polyline,
+	Tooltip,
 	tooltip,
 } from "leaflet";
 import { Constants as C } from "@plugin/constants";

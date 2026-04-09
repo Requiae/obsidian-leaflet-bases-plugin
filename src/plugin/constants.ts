@@ -42,9 +42,19 @@ export const Constants = {
 	regExp: {
 		hexColourValidation: /^#([0-9A-F]{3}){1,2}$$/i,
 		coordinatesValidation: /^\s*[0-9]+\s*,\s*[0-9]+\s*$/,
-		iconValidation: /^[a-z]+([\-][a-z]+)*$/,
+		iconValidation: /^([a-z]+([\-][a-z]+)*:)?[a-z]+([\-][a-z]+)*$/,
 		url: /https?:/,
 		arrayString: /^\[.*[\]]$/,
+	},
+	settings: {
+		default: {
+			enableMeasureTool: true,
+			enableCopyTool: true,
+		},
+		links: {
+			preview: "https://icon-sets.iconify.design/",
+			github: "https://github.com/iconify/icon-sets/tree/master/json",
+		},
 	},
 	view: {
 		type: "leaflet-map",

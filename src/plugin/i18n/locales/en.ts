@@ -1,6 +1,35 @@
 import { MarkerModalMode } from "@plugin/types";
 
 export default {
+	settings: {
+		tools: {
+			title: "Map tools",
+			measure: {
+				title: "Enable measure tool",
+				description: "Enable tool that allows you to measure distances",
+			},
+			copy: {
+				title: "Enable copy tool",
+				description: "Enable tool that allows you to copy coordinated to your clipboard",
+			},
+		},
+		icons: {
+			title: "Additional icon sets",
+			add: {
+				title: "Add iconify icon set",
+				description: {
+					start: "Additional",
+					previewLink: "Iconify icon sets",
+					middle: "can be downloaded as .json files at the",
+					githubLink: "Iconify GitHub repository",
+					end: "",
+					warning: "Adding too many icons can negatively impact the performance of your device",
+				},
+				buttonText: "Add iconset",
+				error: "There was an error loading your icon set(s)",
+			},
+		},
+	},
 	view: {
 		name: "Leaflet Map",
 		options: {

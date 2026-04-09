@@ -133,6 +133,20 @@ marker:
 
 > Coordinates can easily be obtained using the 'copy' (📌) tool in the map. Clicking a spot on the map automatically copies the coordinates to your clipboard.
 
+### Adding icons to Obsidian
+
+> Any icons added to Obsidian using another plugin should work just fine as long as their icons stick to Obsidian's design limitations. However, these icons likely won't work with Quartz.
+
+1. Go to the [Iconify website](https://icon-sets.iconify.design/) and find the iconset you want.
+2. Select any icon and find the set prefix. In the image this is `game-icons`
+   ![find iconset prefix](docs/add-icon-prefix.png)
+3. Now go to the [Iconify Github](https://github.com/iconify/icon-sets/tree/master/json) and find the json file that corresponds to your chosen set. Open it.
+   ![find iconset file](docs/add-icon-json.png)
+4. Download the raw file
+   ![download iconset file](docs/add-icon-download.png)
+5. Open Obsidian. The open your vault settings. Under community plugins, go to `Leaflet bases`
+6. Under `Additional icon sets`, find the option to add iconsets and click the button. It will open a prompt where you can select the file you just downloaded. Press `open` and the iconset has been added!
+
 ## Alternatives
 
 ### Leaflet ([link](https://github.com/javalent/obsidian-leaflet))

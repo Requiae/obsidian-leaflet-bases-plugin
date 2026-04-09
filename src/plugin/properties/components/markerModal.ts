@@ -2,8 +2,10 @@ import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject } from "@plugin/types";
-import { Validator } from "../validators";
+import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { Validator } from "@plugin/validation/validators";
 import { IconSuggest } from "./iconSuggest";
+import { MarkerModalErrorComponent } from "./markerModalErrorComponent";
 
 function buildColourOptionsObject(): Record<string, string> {
 	return Object.fromEntries(
@@ -15,7 +17,7 @@ function buildColourOptionsObject(): Record<string, string> {
 }
 
 export class MarkerModal extends Modal {
-	private value: MarkerObject;
+	private value: Partial<MarkerObject>;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
 
 	constructor(
@@ -27,7 +29,7 @@ export class MarkerModal extends Modal {
 		super(app);
 		this.setTitle(t(`modal.title.${mode}`));
 
-		this.value = initialValue ?? { coordinates: "-1, -1" };
+		this.value = initialValue ?? {};
 		const coordinatesValidator = Validator.coordinates;
 
 		new Setting(this.contentEl)
@@ -39,26 +41,31 @@ export class MarkerModal extends Modal {
 					.onChange((value) => (this.value.mapName = value !== "" ? value : undefined));
 			});
 
-		// TODO: Add validation visibility, warning disappears on blur now
+		let coordinatesError: MarkerModalErrorComponent;
 		new Setting(this.contentEl)
 			.setName(t("modal.coordinates.title"))
 			.setDesc(t("modal.coordinates.description"))
+			.setClass("bases-leaflet-view-setting-vertical")
 			.addText((textField) => {
-				textField.setValue(this.value.coordinates).onChange((value) => {
+				textField.setValue(this.value.coordinates ?? "").onChange((value) => {
 					if (value === "") {
-						textField.inputEl.setCustomValidity(t("modal.coordinates.error.required"));
+						coordinatesError.setMessage(t("modal.coordinates.error.required"));
 						this.submitEnabledCallback(false);
 					} else if (!coordinatesValidator(value)) {
-						textField.inputEl.setCustomValidity(t("modal.coordinates.error.invalid"));
+						coordinatesError.setMessage(t("modal.coordinates.error.invalid"));
 						this.submitEnabledCallback(false);
 					} else {
-						textField.inputEl.setCustomValidity("");
+						coordinatesError.setMessage("");
 						this.submitEnabledCallback(true);
 						this.value.coordinates = value;
 					}
 
 					textField.inputEl.reportValidity();
 				});
+			})
+			.addComponent((errorEl) => {
+				coordinatesError = new MarkerModalErrorComponent(errorEl).setMessage("");
+				return coordinatesError;
 			});
 
 		new Setting(this.contentEl)
@@ -114,8 +121,10 @@ export class MarkerModal extends Modal {
 				.setButtonText(t(`modal.submit.${mode}`))
 				.setCta()
 				.onClick(() => {
-					this.close();
-					onSubmit(this.value);
+					if (SchemaValidator.marker(this.value)) {
+						this.close();
+						onSubmit(this.value);
+					}
 				});
 			this.setSubmitEnabledCallback((isEnabled) => {
 				button.setDisabled(!isEnabled);

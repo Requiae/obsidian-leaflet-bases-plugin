@@ -1,5 +1,5 @@
-import { Validator } from "@plugin/properties/validators";
-import { test, expect, describe } from "vitest";
+import { describe, expect, test } from "vitest";
+import { Validator } from "@plugin/validation/validators";
 
 describe("String validator", () => {
 	const validator = Validator.string;

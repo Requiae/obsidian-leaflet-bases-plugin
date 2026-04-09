@@ -1,10 +1,10 @@
-import { BaseLeafletViewPlugin } from "@plugin/plugin";
+import { Manager } from "@plugin/types";
 import { LeafletMapViewRegistrationBuilder } from "./leaflet-map/view";
 
-export class ViewManager {
-	constructor(public plugin: BaseLeafletViewPlugin) {
-		this.plugin.registerBasesView(...LeafletMapViewRegistrationBuilder());
+export class ViewManager extends Manager {
+	async load(): Promise<void> {
+		this.plugin.registerBasesView(...LeafletMapViewRegistrationBuilder(this.plugin));
 	}
 
-	unload() {}
+	unload(): void {}
 }
