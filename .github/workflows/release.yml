@@ -9,9 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write
       contents: read
+      id-token: write
       attestations: write
     steps:
       - uses: actions/checkout@v3
