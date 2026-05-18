@@ -4,16 +4,15 @@
 
 This plugin for [Obsidian](https://obsidian.md) adds a new bases view: 'Leaflet Map' and a new type of property: 'marker'
 
-> Leaflet Bases is still in the testing phase. While you can be confident that no current features will be dramatically changed, you should expect the occasional bug.
 > Please report any issues you encounter [here](https://github.com/Requiae/obsidian-leaflet-bases-plugin/issues).
 
 Leaflet bases was developed for three reasons:
 
 - To leverage the versatility of [Obsidian bases](https://help.obsidian.md/bases)
 - Marker data is part of the note it belongs to, not of the map it is shown on
-- To have your maps be available in your online garden using [Quartz](https://quartz.jzhao.xyz/), the is a [separate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin) for that.
+- To have your maps be available in your online garden using [Quartz](https://quartz.jzhao.xyz/), there is a [separate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin) for that.
 
-> For use with Quartz you'll need the [appropiate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin). Quartz does not support bases yet, but the developers are working hard and a beta is expected sometime in the coming months.
+> For use with Quartz you'll need the [appropiate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin). Quartz v5 supports bases but is still in open beta, there is also a Quartz plugin version that supports Quartz v4.
 
 ## Installation
 
@@ -29,7 +28,7 @@ This plugin currently requires Obsidian v1.11.4 or later to work.
 
 ### Install via Community Plugins
 
-Leaflet Bases is not yet available under Community Plugins. It is currently still in the testing phase.
+You can find the plugin [here](https://community.obsidian.md/plugins/leaflet-bases).
 
 ## Usage
 
