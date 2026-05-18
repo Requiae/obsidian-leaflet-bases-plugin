@@ -28,7 +28,12 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest@v4
         with:
-          subject-path: "."
+          subject-path: "./main.js"
+
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: "./styles.css"
 
       - name: Create release
         env:
