@@ -28,7 +28,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest@v4
         with:
-          subject-path: main.js manifest.json styles.css
+          subject-path: "."
 
       - name: Create release
         env:
