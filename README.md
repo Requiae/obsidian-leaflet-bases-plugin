@@ -14,22 +14,6 @@ Leaflet bases was developed for three reasons:
 
 > For use with Quartz you'll need the [appropiate Quartz plugin](https://github.com/Requiae/quartz-leaflet-map-plugin). Quartz v5 supports bases but is still in open beta, there is also a Quartz plugin version that supports Quartz v4.
 
-## Installation
-
-This plugin currently requires Obsidian v1.11.4 or later to work.
-
-### Install via BRAT
-
-1. Install the [BRAT plugin](https://obsidian.md/plugins?search=BRAT) under Community Plugins.
-2. Open BRAT settings and click "Add beta plugin".
-3. Enter the URL of this repository: `https://github.com/Requiae/obsidian-leaflet-bases-plugin`.
-4. Under "Select a version", choose the Latest version.
-5. Click "Add plugin".
-
-### Install via Community Plugins
-
-You can find the plugin [here](https://community.obsidian.md/plugins/leaflet-bases).
-
 ## Usage
 
 > You can find an example vault [here](https://github.com/Requiae/obsidian-leaflet-bases-plugin-example).
@@ -145,6 +129,22 @@ marker:
    ![download iconset file](docs/add-icon-download.png)
 5. Open Obsidian. The open your vault settings. Under community plugins, go to `Leaflet bases`
 6. Under `Additional icon sets`, find the option to add iconsets and click the button. It will open a prompt where you can select the file you just downloaded. Press `open` and the iconset has been added!
+
+## Installation
+
+This plugin currently requires Obsidian v1.11.4 or later to work.
+
+### Install via Community Plugins
+
+You can find the plugin [here](https://community.obsidian.md/plugins/leaflet-bases).
+
+### Install via BRAT
+
+1. Install the [BRAT plugin](https://obsidian.md/plugins?search=BRAT) under Community Plugins.
+2. Open BRAT settings and click "Add beta plugin".
+3. Enter the URL of this repository: `https://github.com/Requiae/obsidian-leaflet-bases-plugin`.
+4. Under "Select a version", choose the Latest version.
+5. Click "Add plugin".
 
 ## Alternatives
 
