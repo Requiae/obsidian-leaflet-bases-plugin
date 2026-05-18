@@ -4,7 +4,7 @@ import { Manager } from "@plugin/types";
 import { markerWidget } from "./components/markerPropertyWidget";
 
 export class PropertyManager extends Manager {
-	private metadataTypeManager: MetadataTypeManager | null;
+	private metadataTypeManager: MetadataTypeManager | null = null;
 
 	async load(): Promise<void> {
 		this.metadataTypeManager = this.plugin.app.metadataTypeManager;

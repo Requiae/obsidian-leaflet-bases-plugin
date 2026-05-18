@@ -44,7 +44,7 @@ class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	) {
 		this.containerEl = this.element.createDiv();
 
-		this.listComponent = document.createElement("ul");
+		this.listComponent = activeDocument.createElement("ul");
 		this.listComponent.addClass("leaflet-map-property-tag-list");
 		this.containerEl.appendChild(this.listComponent);
 

@@ -19,7 +19,7 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 	) {
 		super();
 
-		this.tagEl = document.createElement("li");
+		this.tagEl = activeDocument.createElement("li");
 		this.tagEl.addClass("leaflet-map-property-tag-item");
 
 		this.tagEl.setCssStyles({ background: value.colour ?? C.marker.defaultColour });
@@ -101,11 +101,11 @@ export class MarkerValueComponent extends ValueComponent<MarkerObject> {
 			},
 		});
 
-		const line1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		const line1 = activeDocument.createElementNS("http://www.w3.org/2000/svg", "path");
 		line1.setAttribute("d", "M3 11 11 3");
 		cross.appendChild(line1);
 
-		const line2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		const line2 = activeDocument.createElementNS("http://www.w3.org/2000/svg", "path");
 		line2.setAttribute("d", "M3 3 11 11");
 		cross.appendChild(line2);
 	}

@@ -2,20 +2,20 @@ import { FileManager, MetadataCache, UserEvent, Vault, Workspace } from "obsidia
 
 export class App {
 	/** @public */
-	workspace: Workspace;
+	workspace!: Workspace;
 
 	/** @public */
-	vault: Vault;
+	vault!: Vault;
 
 	/** @public */
-	metadataCache: MetadataCache;
+	metadataCache!: MetadataCache;
 
 	/** @public */
-	fileManager: FileManager;
+	fileManager!: FileManager;
 
 	/**
 	 * The last known user interaction event, to help commands find out what modifier keys are pressed.
 	 * @public
 	 */
-	lastEvent: UserEvent | null;
+	lastEvent!: UserEvent | null;
 }

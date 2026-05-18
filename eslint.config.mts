@@ -1,10 +1,10 @@
 import obsidianmd from "eslint-plugin-obsidianmd";
-import { globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
-import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
 	{
+		files: ["**/*.ts"],
 		languageOptions: {
 			globals: {
 				...globals.browser,
@@ -22,6 +22,11 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		rules: {
+			"obsidianmd/no-plugin-as-component": "off",
+		},
+	},
 	globalIgnores([
 		"node_modules",
 		"dist",

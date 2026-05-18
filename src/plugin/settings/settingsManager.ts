@@ -3,7 +3,8 @@ import { BasesLeafletViewSettings, Manager } from "@plugin/types";
 import { BasesLeafletViewSettingsTab } from "./basesLeafletViewSettingsTab";
 
 export class SettingsManager extends Manager {
-	private _settings: BasesLeafletViewSettings;
+	private defaultData: BasesLeafletViewSettings = { ...C.settings.default, iconData: [] };
+	private _settings: BasesLeafletViewSettings = { ...this.defaultData };
 	get settings(): BasesLeafletViewSettings {
 		return this._settings;
 	}
@@ -17,9 +18,8 @@ export class SettingsManager extends Manager {
 	unload(): void {}
 
 	async loadSettings(): Promise<void> {
-		const defaultData: BasesLeafletViewSettings = { ...C.settings.default, iconData: [] };
 		const loadedData = (await this.plugin.loadData()) as BasesLeafletViewSettings;
-		this._settings = Object.assign({}, defaultData, loadedData);
+		this._settings = Object.assign({}, this.defaultData, loadedData);
 	}
 
 	async updateSettings(settings: Partial<BasesLeafletViewSettings>): Promise<void> {
