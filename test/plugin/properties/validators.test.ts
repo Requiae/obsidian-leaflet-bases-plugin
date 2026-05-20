@@ -300,6 +300,7 @@ describe("Icon validator", () => {
 		expect(validator("test")).toEqual(true);
 		expect(validator("test-icon")).toEqual(true);
 		expect(validator("also-a-test-icon")).toEqual(true);
+		expect(validator("collision-2")).toEqual(true);
 	});
 
 	describe("returns false on", () => {
@@ -312,6 +313,7 @@ describe("Icon validator", () => {
 			expect(validator("asd test-icon")).toEqual(false);
 			expect(validator(" 12 also-a-test-icon")).toEqual(false);
 			expect(validator("test    ")).toEqual(false);
+			expect(validator("yeah-2-no")).toEqual(false);
 		});
 
 		test("undefined value", () => {
