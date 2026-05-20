@@ -105,6 +105,7 @@ export class MarkerManager {
 				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
+				markerItem.on("mouseover", this.getMarkerOnHover(markerItem, markerEntry.link));
 
 				this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom);
 				this.map.on("zoomend", () =>
@@ -139,6 +140,18 @@ export class MarkerManager {
 	private getMarkerOnClick(url: string): LeafletMouseEventHandlerFn {
 		return (_event: LeafletMouseEvent) => {
 			void this.app.workspace.openLinkText("", url);
+		};
+	}
+
+	private getMarkerOnHover(markerItem: Marker, url: string): LeafletMouseEventHandlerFn {
+		return (event: LeafletMouseEvent) => {
+			this.app.workspace.trigger("hover-link", {
+				event: event.originalEvent,
+				source: "bases",
+				hoverParent: this.app.renderContext,
+				targetEl: markerItem.getElement(),
+				linktext: url,
+			});
 		};
 	}
 }
