@@ -1,7 +1,6 @@
 import {
 	DivIcon,
 	divIcon,
-	DomEvent,
 	LayerGroup,
 	LeafletMouseEvent,
 	LeafletMouseEventHandlerFn,
@@ -106,6 +105,8 @@ export class MarkerManager {
 				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
+				// TODO: Add middle mouse click detection
+				// Leaflet does not detect middle mouse click, and the mouseup event does not lead to a smooth experience
 
 				markerItem.on("mouseover", this.getMarkerOnHover(markerItem, markerEntry.link));
 
