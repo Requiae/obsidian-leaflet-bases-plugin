@@ -2,7 +2,7 @@
 	"id": "leaflet-bases",
 	"name": "Leaflet bases",
 	"description": "Interactive map view inside your bases.",
-	"version": "1.1.9",
+	"version": "1.1.10",
 	"minAppVersion": "1.11.4",
 	"author": "Sara Lilith Slootmaker",
 	"authorUrl": "https://github.com/Requiae",
