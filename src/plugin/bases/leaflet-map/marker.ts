@@ -81,9 +81,9 @@ export class MarkerManager {
 		this.markerLayer.clearLayers();
 	}
 
-	private addMarkerWhenZoom(markerItem: Marker, markerZoom: number) {
+	private addMarkerWhenZoom(markerItem: Marker, markerEntry: MarkerEntry) {
 		const tolerance = 0.00001; // We have to deal with floating point errors
-		if (this.map.getZoom() >= markerZoom - tolerance) {
+		if (this.map.getZoom() >= (markerEntry.minZoom ?? this.mapMinZoom) - tolerance) {
 			markerItem.addTo(this.markerLayer);
 		} else {
 			markerItem.remove();
@@ -105,11 +105,13 @@ export class MarkerManager {
 				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
 					.on("click", this.getMarkerOnClick(markerEntry.link));
+				// TODO: Add middle mouse click detection
+				// Leaflet does not detect middle mouse click, and the mouseup event does not lead to a smooth experience
 
-				this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom);
-				this.map.on("zoomend", () =>
-					this.addMarkerWhenZoom(markerItem, markerEntry.minZoom ?? this.mapMinZoom),
-				);
+				markerItem.on("mouseover", this.getMarkerOnHover(markerItem, markerEntry.link));
+
+				this.addMarkerWhenZoom(markerItem, markerEntry);
+				this.map.on("zoomend", () => this.addMarkerWhenZoom(markerItem, markerEntry));
 			});
 	}
 
@@ -137,8 +139,20 @@ export class MarkerManager {
 	}
 
 	private getMarkerOnClick(url: string): LeafletMouseEventHandlerFn {
-		return (_event: LeafletMouseEvent) => {
-			void this.app.workspace.openLinkText("", url);
+		return (event: LeafletMouseEvent) => {
+			return void this.app.workspace.openLinkText("", url, event.originalEvent.ctrlKey);
+		};
+	}
+
+	private getMarkerOnHover(markerItem: Marker, url: string): LeafletMouseEventHandlerFn {
+		return (event: LeafletMouseEvent) => {
+			this.app.workspace.trigger("hover-link", {
+				event: event.originalEvent,
+				source: "bases",
+				hoverParent: this.app.renderContext,
+				targetEl: markerItem.getElement(),
+				linktext: url,
+			});
 		};
 	}
 }
