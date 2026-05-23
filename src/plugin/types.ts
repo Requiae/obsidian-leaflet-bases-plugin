@@ -21,6 +21,11 @@ export type MarkerObject = {
 	minZoom?: number;
 };
 
+export interface MarkerEntry extends MarkerObject {
+	name: string;
+	link: string;
+}
+
 export type MapObject = {
 	name?: string;
 	image: string | Wiki;

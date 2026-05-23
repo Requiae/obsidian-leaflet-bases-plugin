@@ -1,23 +1,10 @@
-import {
-	DivIcon,
-	divIcon,
-	LayerGroup,
-	LeafletMouseEvent,
-	LeafletMouseEventHandlerFn,
-	Map,
-	Marker,
-	marker,
-} from "leaflet";
-import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
+import { LayerGroup, Map } from "leaflet";
+import { App, BasesEntry, TFile, Value } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { MarkerObject } from "@plugin/types";
-import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
+import { MarkerEntry } from "@plugin/types";
+import { isNonEmptyObject, isNotNull } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
-
-interface MarkerEntry extends MarkerObject {
-	name: string;
-	link: string;
-}
+import { marker, Marker } from "./marker";
 
 function isProperEntry(entry: unknown): entry is { [key: string]: string } {
 	if (!isNonEmptyObject(entry)) return false;
@@ -64,8 +51,6 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 }
 
 export class MarkerManager {
-	private xmlSerializer: XMLSerializer;
-
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
 
@@ -73,9 +58,7 @@ export class MarkerManager {
 		private app: App,
 		private map: Map,
 		private markerLayer: LayerGroup,
-	) {
-		this.xmlSerializer = new XMLSerializer();
-	}
+	) {}
 
 	unload(): void {
 		this.markerLayer.clearLayers();
@@ -100,15 +83,7 @@ export class MarkerManager {
 				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
 			)
 			.forEach((markerEntry) => {
-				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
-				// LatLng is y, x so we reverse the coordinates
-				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
-					.bindTooltip(markerEntry.name)
-					.on("click", this.getMarkerOnClick(markerEntry.link));
-				// TODO: Add middle mouse click detection
-				// Leaflet does not detect middle mouse click, and the mouseup event does not lead to a smooth experience
-
-				markerItem.on("mouseover", this.getMarkerOnHover(markerItem, markerEntry.link));
+				const markerItem = marker(this.app, markerEntry);
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
 				this.map.on("zoomend", () => this.addMarkerWhenZoom(markerItem, markerEntry));
@@ -118,41 +93,5 @@ export class MarkerManager {
 	updateSettings(mapName: string | undefined, mapMinZoom: number) {
 		this.mapName = mapName;
 		this.mapMinZoom = mapMinZoom;
-	}
-
-	private buildMarkerIcon(iconId: IconName | undefined, colour: string | undefined): DivIcon {
-		const innerIcon = getIconWithDefault(iconId);
-		innerIcon.addClass("leaflet-marker-inner-icon");
-
-		return divIcon({
-			className: "leaflet-marker-icon",
-			html: `
-				<svg class="leaflet-marker-pin" style="fill:${colour ?? C.marker.defaultColour}" viewBox="0 0 32 48">
-					<path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
-				</svg>
-				${this.xmlSerializer.serializeToString(innerIcon)}
-			`,
-			iconSize: [32, 48],
-			iconAnchor: [16, 48],
-			tooltipAnchor: [17, -30],
-		});
-	}
-
-	private getMarkerOnClick(url: string): LeafletMouseEventHandlerFn {
-		return (event: LeafletMouseEvent) => {
-			return void this.app.workspace.openLinkText("", url, event.originalEvent.ctrlKey);
-		};
-	}
-
-	private getMarkerOnHover(markerItem: Marker, url: string): LeafletMouseEventHandlerFn {
-		return (event: LeafletMouseEvent) => {
-			this.app.workspace.trigger("hover-link", {
-				event: event.originalEvent,
-				source: "bases",
-				hoverParent: this.app.renderContext,
-				targetEl: markerItem.getElement(),
-				linktext: url,
-			});
-		};
 	}
 }

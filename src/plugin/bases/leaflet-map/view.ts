@@ -6,7 +6,7 @@ import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
 import { clamp } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MapManager } from "./map";
-import { MarkerManager } from "./marker";
+import { MarkerManager } from "./marker/markerManager";
 
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = (
 	plugin: BasesLeafletViewPlugin,
