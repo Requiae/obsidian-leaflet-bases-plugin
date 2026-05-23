@@ -92,7 +92,7 @@ export class MapManager {
 		this._leafletMap.setMinZoom(settings.minZoom);
 		this._leafletMap.setMaxZoom(settings.maxZoom);
 
-		this._leafletMap.setZoom(settings.defaultZoom);
+		this._leafletMap.setZoom(settings.defaultZoom, { animate: false });
 
 		// No clue why there are no setting functions for this but mehh, this works
 		this._leafletMap.options = {
