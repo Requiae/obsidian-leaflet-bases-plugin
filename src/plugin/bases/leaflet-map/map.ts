@@ -55,6 +55,7 @@ export class MapManager {
 
 	unload(): void {
 		this.controls?.onRemove(this._leafletMap);
+		this.contextMenu.removeHooks();
 		this._leafletMap.clearAllEventListeners();
 		this._leafletMap.remove();
 	}

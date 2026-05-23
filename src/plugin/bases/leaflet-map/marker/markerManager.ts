@@ -83,7 +83,7 @@ export class MarkerManager {
 				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
 			)
 			.forEach((markerEntry) => {
-				const markerItem = marker(this.app, markerEntry);
+				const markerItem = marker(this.app, this.map, markerEntry);
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
 				this.map.on("zoomend", () => this.addMarkerWhenZoom(markerItem, markerEntry));

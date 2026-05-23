@@ -3,6 +3,7 @@ import {
 	divIcon,
 	Marker as LeafletMarker,
 	LeafletMouseEvent,
+	Map,
 	MarkerOptions,
 } from "leaflet";
 import { App, IconName } from "obsidian";
@@ -22,14 +23,14 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
                 <path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
             </svg>
             ${xmlSerializer.serializeToString(innerIcon)}`,
-		iconSize: [32, 48],
-		iconAnchor: [16, 48],
+		iconSize: [32, 48], // TODO: Markersize is hardcoded
+		iconAnchor: [16, 48], // TODO: Anchor is hardcoded
 		tooltipAnchor: [17, -30],
 	});
 }
 
-export function marker(app: App, entry: MarkerEntry): Marker {
-	return new Marker(app, entry, {
+export function marker(app: App, map: Map, entry: MarkerEntry): Marker {
+	return new Marker(app, map, entry, {
 		icon: buildMarkerIcon(entry.icon, entry.colour),
 	});
 }
@@ -37,6 +38,7 @@ export function marker(app: App, entry: MarkerEntry): Marker {
 export class Marker extends LeafletMarker {
 	constructor(
 		private app: App,
+		private map: Map,
 		private entry: MarkerEntry,
 		options?: MarkerOptions,
 	) {
@@ -46,6 +48,7 @@ export class Marker extends LeafletMarker {
 
 		this.on("click", (event) => this.onClick(event));
 		this.on("mouseover", (event) => this.onHover(event));
+		this.on("contextmenu", (event) => this.onContextMenu(event));
 	}
 
 	private onClick(event: LeafletMouseEvent): void {
@@ -62,5 +65,10 @@ export class Marker extends LeafletMarker {
 			targetEl: this.getElement(),
 			linktext: this.entry.link,
 		});
+	}
+
+	private onContextMenu(event: LeafletMouseEvent): void {
+		event.originalEvent.preventDefault();
+		this.map.fire("markermenu", { ...event, entry: this.entry });
 	}
 }
