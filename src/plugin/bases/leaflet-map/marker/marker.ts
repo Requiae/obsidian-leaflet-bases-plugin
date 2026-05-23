@@ -18,24 +18,23 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
 	return divIcon({
 		className: "leaflet-marker-icon",
 		html: `
-				<svg class="leaflet-marker-pin" style="fill:${colour ?? C.marker.defaultColour}" viewBox="0 0 32 48">
-					<path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
-				</svg>
-				${xmlSerializer.serializeToString(innerIcon)}
-			`,
+            <svg class="leaflet-marker-pin" style="fill:${colour ?? C.marker.defaultColour}" viewBox="0 0 32 48">
+                <path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
+            </svg>
+            ${xmlSerializer.serializeToString(innerIcon)}`,
 		iconSize: [32, 48],
 		iconAnchor: [16, 48],
 		tooltipAnchor: [17, -30],
 	});
 }
 
-export function marker<P = unknown>(app: App, entry: MarkerEntry): Marker<P> {
+export function marker(app: App, entry: MarkerEntry): Marker {
 	return new Marker(app, entry, {
 		icon: buildMarkerIcon(entry.icon, entry.colour),
 	});
 }
 
-export class Marker<P = unknown> extends LeafletMarker<P> {
+export class Marker extends LeafletMarker {
 	constructor(
 		private app: App,
 		private entry: MarkerEntry,
