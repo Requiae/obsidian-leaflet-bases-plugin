@@ -2,6 +2,7 @@ import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } fro
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject, Wiki } from "@plugin/types";
+import { ContextMenu } from "./contextMenu";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
 
@@ -17,6 +18,7 @@ export class MapManager {
 	// Managers
 	private imageLoader: ImageLoader;
 	private controls: ControlContainer | undefined;
+	private contextMenu: ContextMenu;
 
 	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement) {
 		this.mapEl = containerEl.createDiv("bases-leaflet-map");
@@ -28,6 +30,7 @@ export class MapManager {
 			crs: CRS.Simple,
 			zoomSnap: C.map.default.zoomSnap,
 			layers: [this._markerLayer],
+			closePopupOnClick: true,
 		});
 
 		if (
@@ -35,8 +38,11 @@ export class MapManager {
 			plugin.settingsManager.settings.enableCopyTool
 		) {
 			this.controls = new ControlContainer(plugin.settingsManager.settings);
-			this.controls.addTo(this._leafletMap);
+			this.controls.addTo(this.leafletMap);
 		}
+
+		this.contextMenu = new ContextMenu(this.leafletMap);
+		this.contextMenu.addHooks();
 	}
 
 	get leafletMap(): Map {

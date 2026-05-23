@@ -39,6 +39,15 @@ div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	line-height: var(--line-height-tight);
 }
 
+.bases-leaflet-view-context-menu {
+	display: none;
+	width: 100px;
+	height: 100px;
+	background: #3388ff;
+	position: absolute;
+	z-index: 1000;
+}
+
 .setting-item-description {
 	color: var(--text-muted);
 	font-size: var(--font-ui-smaller);

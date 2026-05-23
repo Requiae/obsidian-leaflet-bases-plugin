@@ -1,3 +1,4 @@
+import { LatLng } from "leaflet";
 import { BasesViewRegistration, IconName } from "obsidian";
 import { IconifyInfo, IconifyJSONIconsData } from "@iconify/types";
 import { BasesLeafletViewPlugin } from "./plugin";
@@ -53,6 +54,8 @@ export abstract class Manager {
 	abstract load(): Promise<void>;
 	abstract unload(): void;
 }
+
+export type LeafletContextMenuCallback = (latLng: LatLng) => void;
 
 export interface BasesLeafletViewSettings {
 	enableMeasureTool: boolean;
