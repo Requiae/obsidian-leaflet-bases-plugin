@@ -23,8 +23,8 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
                 <path d="m32,19c0,12 -12,24 -16,29c-4,-5 -16,-16 -16,-29a16,19 0 0 1 32,0"/>
             </svg>
             ${xmlSerializer.serializeToString(innerIcon)}`,
-		iconSize: [32, 48], // TODO: Markersize is hardcoded
-		iconAnchor: [16, 48], // TODO: Anchor is hardcoded
+		iconSize: [32, 48],
+		iconAnchor: [16, 48],
 		tooltipAnchor: [17, -30],
 	});
 }

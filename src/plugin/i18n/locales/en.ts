@@ -119,6 +119,22 @@ export default {
 				},
 			},
 		},
+		contextMenu: {
+			marker: {
+				addToNew: "Add marker to new note",
+				addToExisting: "Add marker to existing note",
+				edit: "Edit marker",
+				move: "Pickup marker to move",
+				duplicate: "Duplicate marker",
+				setMinimalZoom: "Set marker minimal zoom (<INSERT ZOOM>)",
+				delete: "Delete",
+			},
+			map: {
+				copyCoordinates: "Copy coordinates",
+				setDefaultZoom: "Set default zoom",
+				setDefaultCenterPOint: "Set default center point",
+			},
+		},
 	},
 	marker: {
 		name: "Marker",

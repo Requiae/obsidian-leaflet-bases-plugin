@@ -1,114 +1,165 @@
-import { DomEvent, DomUtil, Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
-import { clamp } from "@plugin/util";
+import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
+import { Menu } from "obsidian";
+import { t } from "@plugin/i18n/locale";
+import { MarkerEntry } from "@plugin/types";
 
-interface EventPos {
-	left: number;
-	right: number;
-	top: number;
-	bottom: number;
+interface LeafletMarkerEvent extends LeafletMouseEvent {
+	entry: MarkerEntry;
+}
+
+function isLeafletMarkerEvent(event: LeafletMouseEvent): event is LeafletMarkerEvent {
+	return event.type === "markermenu";
 }
 
 export class ContextMenu extends Handler {
-	private menuEl: HTMLElement;
 	private map: Map;
 
-	private positionLatLng = new LatLng(0, 0);
-	private visible = false;
+	private position = new LatLng(0, 0);
 
 	constructor(map: Map) {
 		super(map);
-
 		this.map = map;
-		this.menuEl = DomUtil.create("div", "bases-leaflet-view-context-menu", map.getContainer());
-
-		DomEvent.on(this.menuEl, "click", DomEvent.stop)
-			.on(this.menuEl, "mousedown", DomEvent.stop)
-			.on(this.menuEl, "dblclick", DomEvent.stop)
-			.on(this.menuEl, "contextmenu", DomEvent.stop);
 	}
 
 	override addHooks(): void {
 		this.map
 			.on("contextmenu", (event: LeafletMouseEvent) => this.show(event), this)
-			.on("markermenu", (event: LeafletMouseEvent) => this.show(event), this)
-			.on("mousedown", () => this.hide(), this)
-			.on("mouseout", () => this.hide(), this)
-			.on("movestart", () => this.hide(), this)
-			.on("zoomstart", () => this.hide(), this);
+			.on("markermenu", (event: LeafletMouseEvent) => this.show(event), this);
 	}
 
 	override removeHooks(): void {
 		this.map.off();
-		DomEvent.off(this.menuEl);
 	}
 
 	private show(event: LeafletMouseEvent): void {
-		this.updateContent(event);
-		this.updatePosition(event);
+		this.position = event.latlng;
 
-		if (!this.visible) {
-			this.visible = true;
-			this.menuEl.setCssProps({ display: "block" });
-		}
+		const menu = Menu.forEvent(event.originalEvent);
+		this.setMenuContent(menu, event);
 	}
 
-	private hide(): void {
-		if (this.visible) {
-			this.visible = false;
-			this.menuEl.setCssProps({ display: "none" });
-		}
-	}
-
-	private updateContent(event: LeafletMouseEvent): void {
-		// Update content according to whether or not it was on a marker
-	}
-
-	private updatePosition(event: LeafletMouseEvent): void {
-		this.positionLatLng = event.latlng;
-
-		const eventPos = this.getEventPos(event);
-
-		const mapSize = this.map.getContainer().getBoundingClientRect();
-		const menuSize = { x: 100, y: 100 }; // TODO: Menu size is not calculated yet
-
-		if (eventPos.right + menuSize.x > mapSize.width) {
-			this.menuEl.setCssProps({
-				left: "auto",
-				right: `${clamp(mapSize.width - eventPos.left, 0, mapSize.width - menuSize.x - 1)}px`,
-			});
-		} else {
-			this.menuEl.setCssProps({
-				left: `${Math.max(eventPos.right, 1)}px`,
-				right: "auto",
-			});
-		}
-
-		if (eventPos.top + menuSize.y > mapSize.height) {
-			this.menuEl.setCssProps({
-				top: "auto",
-				bottom: `${clamp(mapSize.height - eventPos.bottom, 0, mapSize.height - menuSize.y - 1)}px`,
-			});
-		} else {
-			this.menuEl.setCssProps({
-				top: `${Math.max(eventPos.top, 1)}px`,
-				bottom: "auto",
-			});
-		}
-	}
-
-	private getEventPos(event: LeafletMouseEvent): EventPos {
-		const containerPoint = this.map.latLngToContainerPoint(event.latlng);
-
+	private setMenuContent(menu: Menu, event: LeafletMouseEvent): void {
 		if (!["contextmenu", "markermenu"].contains(event.type)) {
 			throw new Error(`Unknown event type: ${event.type}`);
 		}
 
-		return {
-			// TODO: Markersize and anchor are hardcoded
-			left: containerPoint.x - (event.type === "markermenu" ? 16 : 0),
-			right: containerPoint.x + (event.type === "markermenu" ? 16 : 0),
-			top: containerPoint.y - (event.type === "markermenu" ? 48 : 0),
-			bottom: containerPoint.y,
-		};
+		// Update content according to whether or not it was on a marker
+
+		// Marker section
+		if (isLeafletMarkerEvent(event)) {
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.move"))
+					.setSection("marker")
+					.setIcon("hand")
+					.onClick(() => {
+						// TODO: Implement move/drag marker method
+					}),
+			);
+
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.duplicate"))
+					.setSection("marker")
+					.setIcon("map-pin-plus")
+					.onClick(() => {
+						// TODO: Implement duplicate then move/drag marker method
+						// skip if unreasonable
+					}),
+			);
+
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.setMinimalZoom"))
+					.setSection("marker")
+					.setIcon("search")
+					.onClick(() => {
+						// TODO: Implement set marker minimal zoom method
+					}),
+			);
+		}
+
+		if (event.type === "contextmenu") {
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.addToNew"))
+					.setSection("marker")
+					.setIcon("square-pen")
+					.onClick(() => {
+						// TODO: Implement add marker to new note method
+						// use marker modal
+					}),
+			);
+
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.addToExisting"))
+					.setSection("marker")
+					.setIcon("map-pin-plus")
+					.onClick(() => {
+						// TODO: Implement add marker to existing note method
+						// use marker modal altered to select existing note
+						// maybe combine with new note>
+					}),
+			);
+		}
+
+		// Map section
+		menu.addItem((item) =>
+			item
+				.setTitle(t("map.contextMenu.map.copyCoordinates"))
+				.setSection("map")
+				.setIcon("copy")
+				.onClick(() => {
+					// TODO: Implement copy coordinates method
+					// remove copy sub control
+				}),
+		);
+
+		menu.addItem((item) =>
+			item
+				.setTitle(t("map.contextMenu.map.setDefaultZoom"))
+				.setSection("map")
+				.setIcon("search")
+				.onClick(() => {
+					// TODO: Implement set map default zoom method
+				}),
+		);
+
+		menu.addItem((item) =>
+			item
+				.setTitle(t("map.contextMenu.map.setDefaultCenterPOint"))
+				.setSection("map")
+				.setIcon("map-pin")
+				.onClick(() => {
+					// TODO: Implement set map default center point method
+				}),
+		);
+
+		// Danger section
+		if (isLeafletMarkerEvent(event)) {
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.edit"))
+					.setSection("danger")
+					.setIcon("pencil-line")
+					.onClick(() => {
+						// TODO: Implement edit marker method
+						// use marker modal
+					}),
+			);
+
+			menu.addItem((item) =>
+				item
+					.setTitle(t("map.contextMenu.marker.delete"))
+					.setSection("danger")
+					.setIcon("trash-2")
+					.setWarning(true)
+					.onClick(() => {
+						// TODO: Implement delete marker method
+						// ask for confirmation? maybe not, unsure as of yet, maybe setting
+					}),
+			);
+		}
 	}
 }
