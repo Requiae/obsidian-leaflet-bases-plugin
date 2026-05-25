@@ -1,5 +1,6 @@
 import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
-import { Menu } from "obsidian";
+import { BasesViewConfig, Menu, Notice } from "obsidian";
+import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerEntry } from "@plugin/types";
 
@@ -12,13 +13,15 @@ function isLeafletMarkerEvent(event: LeafletMouseEvent): event is LeafletMarkerE
 }
 
 export class ContextMenu extends Handler {
-	private map: Map;
-
 	private position = new LatLng(0, 0);
+	private viewConfig: BasesViewConfig | undefined;
 
-	constructor(map: Map) {
+	constructor(private map: Map) {
 		super(map);
-		this.map = map;
+	}
+
+	setViewConfig(viewConfig: BasesViewConfig): void {
+		this.viewConfig = viewConfig;
 	}
 
 	override addHooks(): void {
@@ -70,11 +73,12 @@ export class ContextMenu extends Handler {
 
 			menu.addItem((item) =>
 				item
-					.setTitle(t("map.contextMenu.marker.setMinimalZoom"))
+					.setTitle(`${t("map.contextMenu.marker.setMinimalZoom")} (${this.map.getZoom()})`)
 					.setSection("marker")
 					.setIcon("search")
 					.onClick(() => {
 						// TODO: Implement set marker minimal zoom method
+						// if marker has minimal zoom, remove instead, update title to represent that
 					}),
 			);
 		}
@@ -111,8 +115,10 @@ export class ContextMenu extends Handler {
 				.setSection("map")
 				.setIcon("copy")
 				.onClick(() => {
-					// TODO: Implement copy coordinates method
-					// remove copy sub control
+					navigator.clipboard
+						.writeText(`${Math.round(this.position.lat)}, ${Math.round(this.position.lng)}`)
+						.then(() => new Notice(t("map.controls.copy.notice.success")))
+						.catch(() => new Notice(t("map.controls.copy.notice.failure")));
 				}),
 		);
 
@@ -122,7 +128,7 @@ export class ContextMenu extends Handler {
 				.setSection("map")
 				.setIcon("search")
 				.onClick(() => {
-					// TODO: Implement set map default zoom method
+					this.viewConfig?.set(C.view.obsidianIdentifiers.defaultZoom, this.map.getZoom());
 				}),
 		);
 

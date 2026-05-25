@@ -58,6 +58,8 @@ class LeafletMapView extends BasesView {
 	private async updateMapSettings(): Promise<void> {
 		if (this.mapSettings) return;
 
+		this.mapManager.setViewConfig(this.config);
+
 		const settings = {
 			name: this.config.get(C.view.obsidianIdentifiers.mapName),
 			image: this.config.get(C.view.obsidianIdentifiers.image),

@@ -8,10 +8,6 @@ export default {
 				title: "Enable measure tool",
 				description: "Enable tool that allows you to measure distances",
 			},
-			copy: {
-				title: "Enable copy tool",
-				description: "Enable tool that allows you to copy coordinated to your clipboard",
-			},
 		},
 		icons: {
 			title: "Additional icon sets",
@@ -126,7 +122,7 @@ export default {
 				edit: "Edit marker",
 				move: "Pickup marker to move",
 				duplicate: "Duplicate marker",
-				setMinimalZoom: "Set marker minimal zoom (<INSERT ZOOM>)",
+				setMinimalZoom: "Set marker minimal zoom",
 				delete: "Delete",
 			},
 			map: {

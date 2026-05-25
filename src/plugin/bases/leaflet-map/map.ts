@@ -1,4 +1,5 @@
 import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
+import { BasesViewConfig } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject, Wiki } from "@plugin/types";
@@ -33,10 +34,7 @@ export class MapManager {
 			closePopupOnClick: true,
 		});
 
-		if (
-			plugin.settingsManager.settings.enableMeasureTool ||
-			plugin.settingsManager.settings.enableCopyTool
-		) {
+		if (plugin.settingsManager.settings.enableMeasureTool) {
 			this.controls = new ControlContainer(plugin.settingsManager.settings);
 			this.controls.addTo(this.leafletMap);
 		}
@@ -51,6 +49,10 @@ export class MapManager {
 
 	get markerLayer(): LayerGroup {
 		return this._markerLayer;
+	}
+
+	setViewConfig(viewConfig: BasesViewConfig): void {
+		this.contextMenu.setViewConfig(viewConfig);
 	}
 
 	unload(): void {

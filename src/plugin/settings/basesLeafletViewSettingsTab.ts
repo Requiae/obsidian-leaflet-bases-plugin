@@ -33,16 +33,6 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 							await this.manager.updateSettings({ enableMeasureTool: value });
 						}),
 					);
-			})
-			.addSetting((setting) => {
-				setting
-					.setName(t("settings.tools.copy.title"))
-					.setDesc(t("settings.tools.copy.description"))
-					.addToggle((toggle) =>
-						toggle.setValue(this.manager.settings.enableCopyTool).onChange(async (value) => {
-							await this.manager.updateSettings({ enableCopyTool: value });
-						}),
-					);
 			});
 	}
 
