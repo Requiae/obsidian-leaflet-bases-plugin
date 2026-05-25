@@ -69,6 +69,7 @@ export const Constants = {
 			zoomDelta: "zoomDelta",
 			scale: "scale",
 			unit: "unit",
+			center: "center",
 		},
 		config: {
 			height: {

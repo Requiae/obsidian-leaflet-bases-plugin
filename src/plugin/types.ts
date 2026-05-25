@@ -36,6 +36,7 @@ export type MapObject = {
 	zoomDelta?: number;
 	scale?: number;
 	unit?: string;
+	center?: Coordinates;
 };
 
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
@@ -45,7 +46,10 @@ export type IconifyJSONIconsObject = {
 } & { info?: ReducedIconifyInfo };
 
 // Set all properties of MapObject to required except name
-export type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
+export type RequiredMapObject = Omit<Required<MapObject>, "name" | "center"> & {
+	name?: string;
+	center?: Coordinates;
+};
 
 export type ValidatorFunction<T> = (value: unknown) => value is T;
 

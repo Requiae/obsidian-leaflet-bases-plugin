@@ -3,6 +3,7 @@ import { BasesViewConfig, Menu, Notice } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerEntry } from "@plugin/types";
+import { writeCoordinates } from "@plugin/util";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
 	entry: MarkerEntry;
@@ -114,12 +115,7 @@ export class ContextMenu extends Handler {
 				.setTitle(t("map.contextMenu.map.copyCoordinates"))
 				.setSection("map")
 				.setIcon("copy")
-				.onClick(() => {
-					navigator.clipboard
-						.writeText(`${Math.round(this.position.lat)}, ${Math.round(this.position.lng)}`)
-						.then(() => new Notice(t("map.controls.copy.notice.success")))
-						.catch(() => new Notice(t("map.controls.copy.notice.failure")));
-				}),
+				.onClick(() => this.copyCoordinatesCallback()),
 		);
 
 		menu.addItem((item) =>
@@ -127,19 +123,15 @@ export class ContextMenu extends Handler {
 				.setTitle(t("map.contextMenu.map.setDefaultZoom"))
 				.setSection("map")
 				.setIcon("search")
-				.onClick(() => {
-					this.viewConfig?.set(C.view.obsidianIdentifiers.defaultZoom, this.map.getZoom());
-				}),
+				.onClick(() => this.setDefaultZoomCallback()),
 		);
 
 		menu.addItem((item) =>
 			item
-				.setTitle(t("map.contextMenu.map.setDefaultCenterPOint"))
+				.setTitle(t("map.contextMenu.map.setDefaultCenterPoint"))
 				.setSection("map")
 				.setIcon("map-pin")
-				.onClick(() => {
-					// TODO: Implement set map default center point method
-				}),
+				.onClick(() => this.setDefaultCenterPointCallback()),
 		);
 
 		// Danger section
@@ -167,5 +159,20 @@ export class ContextMenu extends Handler {
 					}),
 			);
 		}
+	}
+
+	private copyCoordinatesCallback(): void {
+		navigator.clipboard
+			.writeText(writeCoordinates(this.position))
+			.then(() => new Notice(t("map.controls.copy.notice.success")))
+			.catch(() => new Notice(t("map.controls.copy.notice.failure")));
+	}
+
+	private setDefaultZoomCallback(): void {
+		this.viewConfig?.set(C.view.obsidianIdentifiers.defaultZoom, this.map.getZoom());
+	}
+
+	private setDefaultCenterPointCallback(): void {
+		this.viewConfig?.set(C.view.obsidianIdentifiers.center, writeCoordinates(this.position));
 	}
 }

@@ -31,10 +31,8 @@ export default {
 		options: {
 			image: "Image",
 			height: "Embedded height",
-			mapname: {
-				title: "Map name",
-				placeholder: "Optional",
-			},
+			mapname: "Map name",
+			center: "Default center point",
 			zoom: {
 				header: "Zoom",
 				default: "Default zoom",
@@ -50,6 +48,7 @@ export default {
 					placeholder: "Unit of measurement",
 				},
 			},
+			placeholder: "Optional",
 		},
 	},
 	modal: {
@@ -128,7 +127,7 @@ export default {
 			map: {
 				copyCoordinates: "Copy coordinates",
 				setDefaultZoom: "Set default zoom",
-				setDefaultCenterPOint: "Set default center point",
+				setDefaultCenterPoint: "Set default center point",
 			},
 		},
 	},

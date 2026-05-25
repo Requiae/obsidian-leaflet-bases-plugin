@@ -2,7 +2,8 @@ import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } fro
 import { BasesViewConfig } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
-import type { RequiredMapObject, Wiki } from "@plugin/types";
+import type { RequiredMapObject } from "@plugin/types";
+import { parseCoordinates } from "@plugin/util";
 import { ContextMenu } from "./contextMenu";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
@@ -56,14 +57,14 @@ export class MapManager {
 	}
 
 	unload(): void {
-		this.controls?.onRemove(this._leafletMap);
+		this.controls?.onRemove(this.leafletMap);
 		this.contextMenu.removeHooks();
-		this._leafletMap.clearAllEventListeners();
-		this._leafletMap.remove();
+		this.leafletMap.clearAllEventListeners();
+		this.leafletMap.remove();
 	}
 
 	async updateSettings(settings: RequiredMapObject): Promise<void> {
-		await this.updateImageOverlay(settings.image);
+		await this.updateImageOverlay(settings);
 		this.updateZoom(settings);
 		this.updateCss(settings);
 
@@ -71,35 +72,39 @@ export class MapManager {
 
 		// This cleans up all sorts of remaining data from the leaflet map and fixes issues
 		// caused by making changes to the image overlay and container size
-		this._leafletMap.invalidateSize();
+		this.leafletMap.invalidateSize();
 
 		this.settings = settings;
 	}
 
-	private async updateImageOverlay(image: string | Wiki): Promise<void> {
-		if (this.settings?.image === image) return;
+	private async updateImageOverlay(settings: RequiredMapObject): Promise<void> {
+		if (this.settings?.image === settings.image) return;
 
-		const imageData = await this.imageLoader.getImageData(image);
+		const imageData = await this.imageLoader.getImageData(settings.image);
 		if (!imageData) return;
 
-		if (this.imageOverlay) this._leafletMap.removeLayer(this.imageOverlay);
+		if (this.imageOverlay) this.leafletMap.removeLayer(this.imageOverlay);
 		this.imageOverlay = imageOverlay(imageData.url, imageData.bounds);
 
-		this._leafletMap
+		this.leafletMap
 			.addLayer(this.imageOverlay)
 			.setMaxBounds(imageData.bounds)
 			.fitBounds(imageData.bounds);
+
+		if (settings.center) {
+			this.leafletMap.panTo(parseCoordinates(settings.center), { animate: false });
+		}
 	}
 
 	private updateZoom(settings: RequiredMapObject): void {
-		this._leafletMap.setMinZoom(settings.minZoom);
-		this._leafletMap.setMaxZoom(settings.maxZoom);
+		this.leafletMap.setMinZoom(settings.minZoom);
+		this.leafletMap.setMaxZoom(settings.maxZoom);
 
-		this._leafletMap.setZoom(settings.defaultZoom, { animate: false });
+		this.leafletMap.setZoom(settings.defaultZoom, { animate: false });
 
 		// No clue why there are no setting functions for this but mehh, this works
-		this._leafletMap.options = {
-			...this._leafletMap.options,
+		this.leafletMap.options = {
+			...this.leafletMap.options,
 			zoomDelta: settings.zoomDelta,
 			// wheelPxPerZoomLevel defaults to 60, but the actual amount is dependent on the user's scroll device
 			// This is therefore just an approximation based on the default value

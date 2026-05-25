@@ -70,6 +70,7 @@ class LeafletMapView extends BasesView {
 			zoomDelta: this.config.get(C.view.obsidianIdentifiers.zoomDelta),
 			scale: this.config.get(C.view.obsidianIdentifiers.scale),
 			unit: this.config.get(C.view.obsidianIdentifiers.unit),
+			center: this.config.get(C.view.obsidianIdentifiers.center),
 		};
 
 		// Obsidian view options doesn't have a text based number input and type slider is impractical
@@ -110,10 +111,16 @@ class LeafletMapView extends BasesView {
 				...C.view.config.height,
 			},
 			{
-				displayName: t("view.options.mapname.title"),
+				displayName: t("view.options.mapname"),
 				type: "text",
 				key: C.view.obsidianIdentifiers.mapName,
-				placeholder: t("view.options.mapname.placeholder"),
+				placeholder: t("view.options.placeholder"),
+			},
+			{
+				displayName: t("view.options.center"),
+				type: "text",
+				key: C.view.obsidianIdentifiers.center,
+				placeholder: t("view.options.placeholder"),
 			},
 			{
 				displayName: t("view.options.zoom.header"),

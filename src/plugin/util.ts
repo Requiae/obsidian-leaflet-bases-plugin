@@ -1,4 +1,4 @@
-import { LatLngLiteral, LatLngTuple } from "leaflet";
+import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
 import { Coordinates, StringMap } from "@plugin/types";
 
@@ -34,6 +34,10 @@ export function parseCoordinates(coordinates: Coordinates): LatLngTuple {
 	}
 
 	return parsedCoordinates;
+}
+
+export function writeCoordinates(coordinates: LatLng): Coordinates {
+	return `${Math.round(coordinates.lat)}, ${Math.round(coordinates.lng)}`;
 }
 
 export function isLatLngTuple(value: unknown): value is LatLngTuple {

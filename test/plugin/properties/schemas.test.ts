@@ -49,6 +49,7 @@ describe("Map schema validator", () => {
 				zoomDelta: 1,
 				scale: 1,
 				unit: "kilomiles",
+				center: "1, 1",
 			}),
 		).toEqual(true);
 	});
@@ -69,6 +70,7 @@ describe("Map schema validator", () => {
 		expect(validator({ image: "link", zoomDelta: -1 })).toEqual(false);
 		expect(validator({ image: "link", scale: -1 })).toEqual(false);
 		expect(validator({ image: "link", unit: 1 })).toEqual(false);
+		expect(validator({ image: "link", center: "1" })).toEqual(false);
 	});
 });
 
