@@ -1,9 +1,10 @@
 import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
-import { BasesViewConfig, Menu, Notice } from "obsidian";
-import { Constants as C } from "@plugin/constants";
+import { Menu, Notice } from "obsidian";
 import { t } from "@plugin/i18n/locale";
 import { MarkerEntry } from "@plugin/types";
 import { writeCoordinates } from "@plugin/util";
+import BasesLeafletViewPlugin from "../../../main";
+import { ViewConfig } from "./viewConfig";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
 	entry: MarkerEntry;
@@ -15,14 +16,13 @@ function isLeafletMarkerEvent(event: LeafletMouseEvent): event is LeafletMarkerE
 
 export class ContextMenu extends Handler {
 	private position = new LatLng(0, 0);
-	private viewConfig: BasesViewConfig | undefined;
 
-	constructor(private map: Map) {
+	constructor(
+		private plugin: BasesLeafletViewPlugin,
+		private viewConfig: ViewConfig,
+		private map: Map,
+	) {
 		super(map);
-	}
-
-	setViewConfig(viewConfig: BasesViewConfig): void {
-		this.viewConfig = viewConfig;
 	}
 
 	override addHooks(): void {
@@ -46,8 +46,6 @@ export class ContextMenu extends Handler {
 		if (!["contextmenu", "markermenu"].contains(event.type)) {
 			throw new Error(`Unknown event type: ${event.type}`);
 		}
-
-		// Update content according to whether or not it was on a marker
 
 		// Marker section
 		if (isLeafletMarkerEvent(event)) {
@@ -169,10 +167,10 @@ export class ContextMenu extends Handler {
 	}
 
 	private setDefaultZoomCallback(): void {
-		this.viewConfig?.set(C.view.obsidianIdentifiers.defaultZoom, this.map.getZoom());
+		this.viewConfig.updateSetting("defaultZoom", this.map.getZoom());
 	}
 
 	private setDefaultCenterPointCallback(): void {
-		this.viewConfig?.set(C.view.obsidianIdentifiers.center, writeCoordinates(this.position));
+		this.viewConfig.updateSetting("center", writeCoordinates(this.position));
 	}
 }

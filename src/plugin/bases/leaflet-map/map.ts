@@ -1,5 +1,4 @@
 import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
-import { BasesViewConfig } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject } from "@plugin/types";
@@ -7,6 +6,7 @@ import { parseCoordinates } from "@plugin/util";
 import { ContextMenu } from "./contextMenu";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
+import { ViewConfig } from "./viewConfig";
 
 export class MapManager {
 	private mapEl: HTMLElement;
@@ -22,7 +22,7 @@ export class MapManager {
 	private controls: ControlContainer | undefined;
 	private contextMenu: ContextMenu;
 
-	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement) {
+	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement, viewConfig: ViewConfig) {
 		this.mapEl = containerEl.createDiv("bases-leaflet-map");
 		this.imageLoader = new ImageLoader(plugin.app);
 
@@ -40,7 +40,7 @@ export class MapManager {
 			this.controls.addTo(this.leafletMap);
 		}
 
-		this.contextMenu = new ContextMenu(this.leafletMap);
+		this.contextMenu = new ContextMenu(plugin, viewConfig, this.leafletMap);
 		this.contextMenu.addHooks();
 	}
 
@@ -50,10 +50,6 @@ export class MapManager {
 
 	get markerLayer(): LayerGroup {
 		return this._markerLayer;
-	}
-
-	setViewConfig(viewConfig: BasesViewConfig): void {
-		this.contextMenu.setViewConfig(viewConfig);
 	}
 
 	unload(): void {
