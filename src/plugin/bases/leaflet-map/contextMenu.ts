@@ -1,9 +1,9 @@
 import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
-import { Menu, Notice } from "obsidian";
+import { App, Menu, Notice } from "obsidian";
 import { t } from "@plugin/i18n/locale";
+import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry } from "@plugin/types";
-import { writeCoordinates } from "@plugin/util";
-import BasesLeafletViewPlugin from "../../../main";
+import { toOptionalFixed, writeCoordinates } from "@plugin/util";
 import { ViewConfig } from "./viewConfig";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
@@ -16,13 +16,15 @@ function isLeafletMarkerEvent(event: LeafletMouseEvent): event is LeafletMarkerE
 
 export class ContextMenu extends Handler {
 	private position = new LatLng(0, 0);
+	private frontmatter: Frontmatter;
 
 	constructor(
-		private plugin: BasesLeafletViewPlugin,
+		app: App,
 		private viewConfig: ViewConfig,
 		private map: Map,
 	) {
 		super(map);
+		this.frontmatter = new Frontmatter(app);
 	}
 
 	override addHooks(): void {
@@ -55,6 +57,7 @@ export class ContextMenu extends Handler {
 					.setSection("marker")
 					.setIcon("hand")
 					.onClick(() => {
+						this.frontmatter.addMarker(event.entry);
 						// TODO: Implement move/drag marker method
 					}),
 			);
@@ -72,7 +75,9 @@ export class ContextMenu extends Handler {
 
 			menu.addItem((item) =>
 				item
-					.setTitle(`${t("map.contextMenu.marker.setMinimalZoom")} (${this.map.getZoom()})`)
+					.setTitle(
+						`${t("map.contextMenu.marker.setMinimalZoom")} (${toOptionalFixed(this.map.getZoom(), 2)})`,
+					)
 					.setSection("marker")
 					.setIcon("search")
 					.onClick(() => {

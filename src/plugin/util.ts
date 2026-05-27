@@ -10,6 +10,10 @@ export function distance(a: LatLngLiteral, b: LatLngLiteral): number {
 	return Math.sqrt(Math.pow(a.lat - b.lat, 2) + Math.pow(a.lng - b.lng, 2));
 }
 
+export function toOptionalFixed(value: number, digits: number): `${number}` {
+	return `${parseFloat(value.toFixed(digits))}`;
+}
+
 export function getIconWithDefault(iconId: string | undefined): SVGSVGElement {
 	if (iconId) {
 		const icon = getIcon(iconId);
@@ -56,4 +60,12 @@ export function isNonEmptyObject(value: unknown): value is StringMap {
 
 export function isNotNull<T>(value: T | null): value is T {
 	return value !== null;
+}
+
+export function isArray<T>(
+	array: unknown,
+	validator: (element: unknown) => element is T,
+): array is T[] {
+	if (!Array.isArray(array)) return false;
+	return array.every((element) => validator(element));
 }

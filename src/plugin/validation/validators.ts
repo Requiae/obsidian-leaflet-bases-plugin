@@ -42,6 +42,7 @@ function colourValidator(value: unknown): value is Hex {
 function booleanValidator(value: unknown): value is boolean {
 	return typeof value === "boolean";
 }
+
 function ignoreValidator(_value: unknown): _value is undefined {
 	return true;
 }

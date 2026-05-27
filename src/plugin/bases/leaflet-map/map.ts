@@ -40,7 +40,7 @@ export class MapManager {
 			this.controls.addTo(this.leafletMap);
 		}
 
-		this.contextMenu = new ContextMenu(plugin, viewConfig, this.leafletMap);
+		this.contextMenu = new ContextMenu(plugin.app, viewConfig, this.leafletMap);
 		this.contextMenu.addHooks();
 	}
 
