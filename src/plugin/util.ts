@@ -1,6 +1,7 @@
 import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates, StringMap } from "@plugin/types";
+import { Coordinates } from "@plugin/types";
+import { Validator } from "./validation/validators";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
@@ -33,7 +34,7 @@ export function parseCoordinates(coordinates: Coordinates): LatLngTuple {
 		.split(",")
 		.map((coordinate) => parseInt(coordinate));
 
-	if (!isLatLngTuple(parsedCoordinates)) {
+	if (!Validator.latLngTuple(parsedCoordinates)) {
 		throw new Error("Coordinates not properly validated");
 	}
 
@@ -42,20 +43,6 @@ export function parseCoordinates(coordinates: Coordinates): LatLngTuple {
 
 export function writeCoordinates(coordinates: LatLng): Coordinates {
 	return `${Math.round(coordinates.lat)}, ${Math.round(coordinates.lng)}`;
-}
-
-export function isLatLngTuple(value: unknown): value is LatLngTuple {
-	return (
-		!!value &&
-		Array.isArray(value) &&
-		value.length === 2 &&
-		value.every((value) => typeof value === "number" && !isNaN(value))
-	);
-}
-
-export function isNonEmptyObject(value: unknown): value is StringMap {
-	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-	return Object.keys(value).length > 0;
 }
 
 export function isNotNull<T>(value: T | null): value is T {

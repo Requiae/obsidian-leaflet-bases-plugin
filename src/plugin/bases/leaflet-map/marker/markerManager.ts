@@ -2,12 +2,13 @@ import { LayerGroup, Map } from "leaflet";
 import { App, BasesEntry, TFile, Value } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { MarkerEntry } from "@plugin/types";
-import { isNonEmptyObject, isNotNull } from "@plugin/util";
+import { isNotNull } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { Validator } from "@plugin/validation/validators";
 import { marker, Marker } from "./marker";
 
 function isProperEntry(entry: unknown): entry is { [key: string]: string } {
-	if (!isNonEmptyObject(entry)) return false;
+	if (!Validator.stringMap(entry)) return false;
 	return Object.values(entry).every((property) => typeof property === "string");
 }
 

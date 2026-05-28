@@ -1,5 +1,5 @@
 import { getLanguage } from "obsidian";
-import { isNonEmptyObject } from "@plugin/util";
+import { Validator } from "@plugin/validation/validators";
 import en from "./locales/en";
 
 const localeMap: { [k: string]: Partial<typeof en> } = {
@@ -32,7 +32,7 @@ export function t(path: KeyPaths<typeof en>): string {
 	for (const key of keys) {
 		const value = isKeyOf(currentObj, key) ? currentObj[key] : undefined;
 
-		if (isNonEmptyObject(value)) {
+		if (Validator.stringMap(value)) {
 			currentObj = value;
 		} else if (typeof value === "string") {
 			return value;

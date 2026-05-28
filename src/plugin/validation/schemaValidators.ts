@@ -8,13 +8,13 @@ import {
 	StringMap,
 	ValidatorFunction,
 } from "@plugin/types";
-import { isNonEmptyObject } from "@plugin/util";
+import { Validator } from "./validators";
 
 export function schemaValidatorFactory<T extends StringMap>(
 	schema: Schema<string>,
 ): ValidatorFunction<T> {
 	function schemaValidator(value: unknown): value is T {
-		if (!isNonEmptyObject(value)) return false;
+		if (!Validator.stringMap(value)) return false;
 
 		return Object.entries(schema)
 			.map(([key, validate]) => {

@@ -1,8 +1,9 @@
+import { LatLngTuple } from "leaflet";
 import { IconName } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { Coordinates, Hex, Url, ValidatorFunction, Wiki } from "@plugin/types";
+import { Coordinates, Hex, StringMap, Url, ValidatorFunction, Wiki } from "@plugin/types";
 
-type ValidatedProperties = string | Wiki | number | boolean | undefined;
+type ValidatedProperties = string | Wiki | number | boolean | undefined | LatLngTuple | StringMap;
 
 function stringValidator(value: unknown): value is string {
 	return typeof value === "string";
@@ -47,6 +48,15 @@ function ignoreValidator(_value: unknown): _value is undefined {
 	return true;
 }
 
+function latLngTupleValidator(value: unknown): value is LatLngTuple {
+	return !!value && Array.isArray(value) && value.length === 2 && value.every(Validator.number);
+}
+
+function stringMapValidator(value: unknown): value is StringMap {
+	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+	return Object.keys(value).length > 0;
+}
+
 export const Validator = {
 	string: stringValidator,
 	source: sourcevalidator,
@@ -58,4 +68,6 @@ export const Validator = {
 	boolean: booleanValidator,
 	url: urlValidator,
 	ignore: ignoreValidator,
+	latLngTuple: latLngTupleValidator,
+	stringMap: stringMapValidator,
 } as const satisfies Record<string, ValidatorFunction<ValidatedProperties>>;

@@ -1,10 +1,11 @@
 import { App } from "obsidian";
 import { MarkerEntry, MarkerObject } from "@plugin/types";
-import { isArray, isNonEmptyObject } from "@plugin/util";
+import { isArray } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { Validator } from "@plugin/validation/validators";
 
 function hasMarkers(value: unknown): value is { marker: MarkerObject[] } {
-	if (!isNonEmptyObject(value)) return false;
+	if (!Validator.stringMap(value)) return false;
 	if (!("marker" in value)) return false;
 	return isArray(value.marker, SchemaValidator.marker);
 }
@@ -30,7 +31,7 @@ export class Frontmatter {
 
 	addMarker(marker: MarkerEntry) {
 		this.processFrontMatter(marker, (frontmatter) => {
-			if (!isNonEmptyObject(frontmatter)) return;
+			if (!Validator.stringMap(frontmatter)) return;
 
 			if (hasMarkers(frontmatter)) {
 				frontmatter.marker.push(entryToObject(marker));
@@ -47,7 +48,6 @@ export class Frontmatter {
 			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, markerOld));
 			if (markerIndex < 0) return;
 
-			// TODO: Test
 			frontmatter.marker.splice(markerIndex, 1, entryToObject(markerNew));
 		});
 	}

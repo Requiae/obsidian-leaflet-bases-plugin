@@ -1,14 +1,7 @@
 import { LatLngLiteral } from "leaflet";
 import { describe, expect, test } from "vitest";
 import { Coordinates } from "@plugin/types";
-import {
-	clamp,
-	distance,
-	isLatLngTuple,
-	isNonEmptyObject,
-	isNotNull,
-	parseCoordinates,
-} from "@plugin/util";
+import { clamp, distance, isNotNull, parseCoordinates } from "@plugin/util";
 
 describe("Clamp function", () => {
 	const minimum = 2;
@@ -90,81 +83,6 @@ describe("Parse coordinates function", () => {
 		expect(() => parseCoordinates(",1" as Coordinates)).toThrow();
 		expect(() => parseCoordinates("1, 1, 1" as Coordinates)).toThrow();
 		expect(() => parseCoordinates("asdfe" as Coordinates)).toThrow();
-	});
-});
-
-describe("Is latitude longitude tuple type guard", () => {
-	test("returns true on LatLngTuple values", () => {
-		expect(isLatLngTuple([0, 0])).toEqual(true);
-		expect(isLatLngTuple([1, 0])).toEqual(true);
-		expect(isLatLngTuple([0, 4])).toEqual(true);
-		expect(isLatLngTuple([-1, -5])).toEqual(true);
-	});
-
-	test("returns false on non-LatLngTuple value", () => {
-		expect(isLatLngTuple("")).toEqual(false);
-		expect(isLatLngTuple(true)).toEqual(false);
-		expect(isLatLngTuple(false)).toEqual(false);
-		expect(isLatLngTuple({})).toEqual(false);
-		expect(isLatLngTuple({ kaas: 1 })).toEqual(false);
-		expect(isLatLngTuple(() => {})).toEqual(false);
-		expect(isLatLngTuple(null)).toEqual(false);
-		expect(isLatLngTuple(undefined)).toEqual(false);
-		expect(isLatLngTuple([])).toEqual(false);
-		expect(isLatLngTuple([1])).toEqual(false);
-		expect(isLatLngTuple([NaN, 1])).toEqual(false);
-		expect(isLatLngTuple([1, 1, 1])).toEqual(false);
-		expect(isLatLngTuple(["", ""])).toEqual(false);
-	});
-});
-
-describe("Is not empty object type guard", () => {
-	test("is true on non empty objects", () => {
-		expect(isNonEmptyObject({ 1: 1 })).toEqual(true);
-		expect(isNonEmptyObject({ a: 1 })).toEqual(true);
-		expect(isNonEmptyObject({ 1: "aaa" })).toEqual(true);
-		expect(isNonEmptyObject({ a: "aaa" })).toEqual(true);
-		expect(isNonEmptyObject({ 1: {} })).toEqual(true);
-		expect(isNonEmptyObject({ a: {} })).toEqual(true);
-	});
-
-	describe("is false on", () => {
-		test("empty objects", () => {
-			expect(isNonEmptyObject({})).toEqual(false);
-		});
-
-		test("null values", () => {
-			expect(isNonEmptyObject(null)).toEqual(false);
-		});
-
-		test("undefined values", () => {
-			expect(isNonEmptyObject(undefined)).toEqual(false);
-		});
-
-		test("number values", () => {
-			expect(isNonEmptyObject(0)).toEqual(false);
-			expect(isNonEmptyObject(1)).toEqual(false);
-		});
-
-		test("boolean values", () => {
-			expect(isNonEmptyObject(true)).toEqual(false);
-			expect(isNonEmptyObject(false)).toEqual(false);
-		});
-
-		test("string values", () => {
-			expect(isNonEmptyObject("a")).toEqual(false);
-		});
-
-		test("array values", () => {
-			expect(isNonEmptyObject([])).toEqual(false);
-			expect(isNonEmptyObject([1, 2])).toEqual(false);
-			expect(isNonEmptyObject(["a", "b"])).toEqual(false);
-		});
-
-		test("function values", () => {
-			expect(isNonEmptyObject(() => {})).toEqual(false);
-			expect(isNonEmptyObject((a: number) => a + 1)).toEqual(false);
-		});
 	});
 });
 

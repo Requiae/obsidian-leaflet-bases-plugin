@@ -5,12 +5,11 @@ import {
 	IconifyTransformations,
 } from "@iconify/types";
 import { IconifyJSONIconsObject, ReducedIconifyInfo, Schema } from "@plugin/types";
-import { isNonEmptyObject } from "@plugin/util";
 import { schemaValidatorFactory } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 
 function iconifyIconsValidator(value: unknown): value is IconifyIcons {
-	if (!isNonEmptyObject(value)) return false;
+	if (!Validator.stringMap(value)) return false;
 
 	return Object.values(value)
 		.map((value) => schemaValidatorFactory(iconifyIconSchema)(value))
