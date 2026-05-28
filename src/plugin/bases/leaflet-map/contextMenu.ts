@@ -157,8 +157,8 @@ export class ContextMenu extends Handler {
 					.setIcon("trash-2")
 					.setWarning(true)
 					.onClick(() => {
-						// TODO: Implement delete marker method
-						// ask for confirmation? maybe not, unsure as of yet, maybe setting
+						this.frontmatter.removeMarker(event.entry);
+						// TODO: Ask for confirmation? Maybe not, unsure as of yet, maybe setting
 					}),
 			);
 		}

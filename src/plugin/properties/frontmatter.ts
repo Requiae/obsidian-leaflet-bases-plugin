@@ -15,6 +15,16 @@ function entryToObject(entry: MarkerEntry): MarkerObject {
 	return markerObject;
 }
 
+function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
+	return (
+		marker1.colour === marker2.colour &&
+		marker1.coordinates === marker2.coordinates &&
+		marker1.icon === marker2.icon &&
+		marker1.mapName === marker2.mapName &&
+		marker1.minZoom === marker2.minZoom
+	);
+}
+
 export class Frontmatter {
 	constructor(private app: App) {}
 
@@ -33,12 +43,23 @@ export class Frontmatter {
 	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry) {
 		this.processFrontMatter(markerOld, (frontmatter) => {
 			if (!hasMarkers(frontmatter)) return;
+
+			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, markerOld));
+			if (markerIndex < 0) return;
+
+			// TODO: Test
+			frontmatter.marker.splice(markerIndex, 1, entryToObject(markerNew));
 		});
 	}
 
 	removeMarker(marker: MarkerEntry) {
 		this.processFrontMatter(marker, (frontmatter) => {
 			if (!hasMarkers(frontmatter)) return;
+
+			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, marker));
+			if (markerIndex < 0) return;
+
+			frontmatter.marker.splice(markerIndex, 1);
 		});
 	}
 
