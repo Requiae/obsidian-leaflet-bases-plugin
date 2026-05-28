@@ -4,6 +4,7 @@ import { t } from "@plugin/i18n/locale";
 import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry } from "@plugin/types";
 import { toOptionalFixed, writeCoordinates } from "@plugin/util";
+import { Validator } from "@plugin/validation/validators";
 import { ViewConfig } from "./viewConfig";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
@@ -49,8 +50,9 @@ export class ContextMenu extends Handler {
 			throw new Error(`Unknown event type: ${event.type}`);
 		}
 
-		// Marker section
+		/* -------- Marker section -------- */
 		if (isLeafletMarkerEvent(event)) {
+			// Move marker
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.move"))
@@ -62,6 +64,7 @@ export class ContextMenu extends Handler {
 					}),
 			);
 
+			// Duplicate and drag marker
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.duplicate"))
@@ -73,21 +76,38 @@ export class ContextMenu extends Handler {
 					}),
 			);
 
-			menu.addItem((item) =>
-				item
-					.setTitle(
-						`${t("map.contextMenu.marker.setMinimalZoom")} (${toOptionalFixed(this.map.getZoom(), 2)})`,
-					)
-					.setSection("marker")
-					.setIcon("search")
-					.onClick(() => {
-						// TODO: Implement set marker minimal zoom method
-						// if marker has minimal zoom, remove instead, update title to represent that
-					}),
-			);
+			// Set marker minimal zoom
+			if (Validator.number(event.entry.minZoom)) {
+				menu.addItem((item) =>
+					item
+						.setTitle(`${t("map.contextMenu.marker.resetMinimalZoom")}`)
+						.setSection("marker")
+						.setIcon("search")
+						.onClick(() =>
+							this.frontmatter.updateMarker(event.entry, { ...event.entry, minZoom: undefined }),
+						),
+				);
+			} else {
+				// Remove floating point rounding error, 5 significant digits should cover every reasonable usecase
+				// If it doesn't, look up the definition of reasonable
+				const currentZoom = toOptionalFixed(this.map.getZoom(), 5);
+				menu.addItem((item) =>
+					item
+						.setTitle(`${t("map.contextMenu.marker.setMinimalZoom")} (${currentZoom})`)
+						.setSection("marker")
+						.setIcon("search")
+						.onClick(() =>
+							this.frontmatter.updateMarker(event.entry, {
+								...event.entry,
+								minZoom: parseFloat(currentZoom),
+							}),
+						),
+				);
+			}
 		}
 
 		if (event.type === "contextmenu") {
+			// Add marker to new note
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.addToNew"))
@@ -99,6 +119,7 @@ export class ContextMenu extends Handler {
 					}),
 			);
 
+			// Add marker to existing note
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.addToExisting"))
@@ -112,33 +133,42 @@ export class ContextMenu extends Handler {
 			);
 		}
 
-		// Map section
+		/* -------- Map section -------- */
+		// Copy click coordinates
 		menu.addItem((item) =>
 			item
 				.setTitle(t("map.contextMenu.map.copyCoordinates"))
 				.setSection("map")
 				.setIcon("copy")
-				.onClick(() => this.copyCoordinatesCallback()),
+				.onClick(() =>
+					navigator.clipboard
+						.writeText(writeCoordinates(this.position))
+						.then(() => new Notice(t("map.controls.copy.notice.success")))
+						.catch(() => new Notice(t("map.controls.copy.notice.failure"))),
+				),
 		);
 
+		// Set map default zoom
 		menu.addItem((item) =>
 			item
 				.setTitle(t("map.contextMenu.map.setDefaultZoom"))
 				.setSection("map")
 				.setIcon("search")
-				.onClick(() => this.setDefaultZoomCallback()),
+				.onClick(() => this.viewConfig.updateSetting("defaultZoom", this.map.getZoom())),
 		);
 
+		// Set map default center point
 		menu.addItem((item) =>
 			item
 				.setTitle(t("map.contextMenu.map.setDefaultCenterPoint"))
 				.setSection("map")
 				.setIcon("map-pin")
-				.onClick(() => this.setDefaultCenterPointCallback()),
+				.onClick(() => this.viewConfig.updateSetting("center", writeCoordinates(this.position))),
 		);
 
-		// Danger section
+		/* -------- Danger section -------- */
 		if (isLeafletMarkerEvent(event)) {
+			// Edit marker
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.edit"))
@@ -150,6 +180,7 @@ export class ContextMenu extends Handler {
 					}),
 			);
 
+			// Delete marker
 			menu.addItem((item) =>
 				item
 					.setTitle(t("map.contextMenu.marker.delete"))
@@ -162,20 +193,5 @@ export class ContextMenu extends Handler {
 					}),
 			);
 		}
-	}
-
-	private copyCoordinatesCallback(): void {
-		navigator.clipboard
-			.writeText(writeCoordinates(this.position))
-			.then(() => new Notice(t("map.controls.copy.notice.success")))
-			.catch(() => new Notice(t("map.controls.copy.notice.failure")));
-	}
-
-	private setDefaultZoomCallback(): void {
-		this.viewConfig.updateSetting("defaultZoom", this.map.getZoom());
-	}
-
-	private setDefaultCenterPointCallback(): void {
-		this.viewConfig.updateSetting("center", writeCoordinates(this.position));
 	}
 }

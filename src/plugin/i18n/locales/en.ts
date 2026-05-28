@@ -122,6 +122,7 @@ export default {
 				move: "Pickup marker to move",
 				duplicate: "Duplicate marker",
 				setMinimalZoom: "Set marker minimal zoom",
+				resetMinimalZoom: "Reset marker minimal zoom",
 				delete: "Delete",
 			},
 			map: {
