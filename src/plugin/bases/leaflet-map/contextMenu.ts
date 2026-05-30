@@ -1,8 +1,9 @@
 import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
 import { App, Menu, Notice } from "obsidian";
 import { t } from "@plugin/i18n/locale";
+import { MarkerModal } from "@plugin/properties/components/markerModal";
 import { Frontmatter } from "@plugin/properties/frontmatter";
-import { MarkerEntry } from "@plugin/types";
+import { MarkerEntry, MarkerModalMode } from "@plugin/types";
 import { toOptionalFixed, writeCoordinates } from "@plugin/util";
 import { Validator } from "@plugin/validation/validators";
 import { ViewConfig } from "./viewConfig";
@@ -20,7 +21,7 @@ export class ContextMenu extends Handler {
 	private frontmatter: Frontmatter;
 
 	constructor(
-		app: App,
+		private app: App,
 		private viewConfig: ViewConfig,
 		private map: Map,
 	) {
@@ -51,6 +52,7 @@ export class ContextMenu extends Handler {
 		}
 
 		/* -------- Marker section -------- */
+
 		if (isLeafletMarkerEvent(event)) {
 			// Move marker
 			menu.addItem((item) =>
@@ -61,18 +63,6 @@ export class ContextMenu extends Handler {
 					.onClick(() => {
 						this.frontmatter.addMarker(event.entry);
 						// TODO: Implement move/drag marker method
-					}),
-			);
-
-			// Duplicate and drag marker
-			menu.addItem((item) =>
-				item
-					.setTitle(t("map.contextMenu.marker.duplicate"))
-					.setSection("marker")
-					.setIcon("map-pin-plus")
-					.onClick(() => {
-						// TODO: Implement duplicate then move/drag marker method
-						// skip if unreasonable
 					}),
 			);
 
@@ -134,6 +124,7 @@ export class ContextMenu extends Handler {
 		}
 
 		/* -------- Map section -------- */
+
 		// Copy click coordinates
 		menu.addItem((item) =>
 			item
@@ -167,6 +158,7 @@ export class ContextMenu extends Handler {
 		);
 
 		/* -------- Danger section -------- */
+
 		if (isLeafletMarkerEvent(event)) {
 			// Edit marker
 			menu.addItem((item) =>
@@ -174,10 +166,14 @@ export class ContextMenu extends Handler {
 					.setTitle(t("map.contextMenu.marker.edit"))
 					.setSection("danger")
 					.setIcon("pencil-line")
-					.onClick(() => {
-						// TODO: Implement edit marker method
-						// use marker modal
-					}),
+					.onClick(() =>
+						new MarkerModal(
+							this.app,
+							(result) => this.frontmatter.updateMarker(event.entry, result),
+							{ ...event.entry },
+							MarkerModalMode.Edit,
+						).open(),
+					),
 			);
 
 			// Delete marker
@@ -187,10 +183,10 @@ export class ContextMenu extends Handler {
 					.setSection("danger")
 					.setIcon("trash-2")
 					.setWarning(true)
-					.onClick(() => {
-						this.frontmatter.removeMarker(event.entry);
+					.onClick(() =>
 						// TODO: Ask for confirmation? Maybe not, unsure as of yet, maybe setting
-					}),
+						this.frontmatter.removeMarker(event.entry),
+					),
 			);
 		}
 	}

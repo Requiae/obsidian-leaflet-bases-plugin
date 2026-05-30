@@ -10,10 +10,14 @@ function hasMarkers(value: unknown): value is { marker: MarkerObject[] } {
 	return isArray(value.marker, SchemaValidator.marker);
 }
 
-function entryToObject(entry: MarkerEntry): MarkerObject {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { name, link, ...markerObject } = entry;
-	return markerObject;
+function entryToObject(entry: MarkerEntry | MarkerObject): MarkerObject {
+	return {
+		colour: entry.colour,
+		coordinates: entry.coordinates,
+		icon: entry.icon,
+		mapName: entry.mapName,
+		minZoom: entry.minZoom,
+	};
 }
 
 function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
@@ -41,7 +45,7 @@ export class Frontmatter {
 		});
 	}
 
-	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry) {
+	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry | MarkerObject) {
 		this.processFrontMatter(markerOld, (frontmatter) => {
 			if (!hasMarkers(frontmatter)) return;
 
