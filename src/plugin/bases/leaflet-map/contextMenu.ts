@@ -1,6 +1,7 @@
 import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
 import { App, Menu, Notice } from "obsidian";
 import { t } from "@plugin/i18n/locale";
+import { MarkerFileModal } from "@plugin/properties/components/markerFileModal";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
 import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry, MarkerModalMode } from "@plugin/types";
@@ -103,10 +104,16 @@ export class ContextMenu extends Handler {
 					.setTitle(t("map.contextMenu.marker.addToNew"))
 					.setSection("marker")
 					.setIcon("square-pen")
-					.onClick(() => {
+					.onClick(
+						() =>
+							new MarkerFileModal(
+								this.app,
+								(result) => this.frontmatter.addMarker(result),
+								MarkerModalMode.Add,
+							).open(),
 						// TODO: Implement add marker to new note method
 						// use marker modal
-					}),
+					),
 			);
 
 			// Add marker to existing note

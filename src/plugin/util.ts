@@ -1,6 +1,6 @@
 import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates } from "@plugin/types";
+import { Coordinates, MarkerEntry, MarkerObject } from "@plugin/types";
 import { Validator } from "./validation/validators";
 
 export function clamp(value: number, min: number, max: number): number {
@@ -55,4 +55,14 @@ export function isArray<T>(
 ): array is T[] {
 	if (!Array.isArray(array)) return false;
 	return array.every((element) => validator(element));
+}
+
+export function markerEntryToObject(entry: MarkerEntry | MarkerObject): MarkerObject {
+	return {
+		colour: entry.colour,
+		coordinates: entry.coordinates,
+		icon: entry.icon,
+		mapName: entry.mapName,
+		minZoom: entry.minZoom,
+	};
 }

@@ -1,6 +1,6 @@
 import { App } from "obsidian";
 import { MarkerEntry, MarkerObject } from "@plugin/types";
-import { isArray } from "@plugin/util";
+import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 
@@ -8,16 +8,6 @@ function hasMarkers(value: unknown): value is { marker: MarkerObject[] } {
 	if (!Validator.stringMap(value)) return false;
 	if (!("marker" in value)) return false;
 	return isArray(value.marker, SchemaValidator.marker);
-}
-
-function entryToObject(entry: MarkerEntry | MarkerObject): MarkerObject {
-	return {
-		colour: entry.colour,
-		coordinates: entry.coordinates,
-		icon: entry.icon,
-		mapName: entry.mapName,
-		minZoom: entry.minZoom,
-	};
 }
 
 function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
@@ -38,9 +28,9 @@ export class Frontmatter {
 			if (!Validator.stringMap(frontmatter)) return;
 
 			if (hasMarkers(frontmatter)) {
-				frontmatter.marker.push(entryToObject(marker));
+				frontmatter.marker.push(markerEntryToObject(marker));
 			} else {
-				frontmatter.marker = [entryToObject(marker)];
+				frontmatter.marker = [markerEntryToObject(marker)];
 			}
 		});
 	}
@@ -52,7 +42,7 @@ export class Frontmatter {
 			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, markerOld));
 			if (markerIndex < 0) return;
 
-			frontmatter.marker.splice(markerIndex, 1, entryToObject(markerNew));
+			frontmatter.marker.splice(markerIndex, 1, markerEntryToObject(markerNew));
 		});
 	}
 

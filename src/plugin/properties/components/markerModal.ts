@@ -1,4 +1,4 @@
-import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
+import { App, ButtonComponent, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject } from "@plugin/types";
@@ -17,20 +17,26 @@ function buildColourOptionsObject(): Record<string, string> {
 }
 
 export class MarkerModal extends Modal {
-	private value: Partial<MarkerObject>;
+	protected value: Partial<MarkerObject>;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
+
+	protected confirmButton: ButtonComponent | undefined;
 
 	constructor(
 		app: App,
-		private onSubmit: (result: MarkerObject) => void,
+		protected onSubmit: (result: MarkerObject) => void,
 		initialValue: MarkerObject | undefined,
-		private mode: MarkerModalMode,
+		protected mode: MarkerModalMode,
 	) {
 		super(app);
 		this.setTitle(t(`modal.title.${this.mode}`));
 
-		this.value = initialValue ?? {};
+		this.value = { ...initialValue };
 
+		this.addSettings();
+	}
+
+	protected addSettings() {
 		this.addMapNameSetting();
 		this.addCoordinatesSetting();
 		this.addIconSetting();
@@ -152,6 +158,7 @@ export class MarkerModal extends Modal {
 			this.setSubmitEnabledCallback((isEnabled) => {
 				button.setDisabled(!isEnabled);
 			});
+			this.confirmButton = button;
 		});
 	}
 }
