@@ -39,6 +39,11 @@ export type MapObject = {
 	center?: Coordinates;
 };
 
+export interface SimpleTFile {
+	basename: string;
+	path: string;
+}
+
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
 // Reconstruct interface as type to avoid "Index signature is missing" error
 export type IconifyJSONIconsObject = {

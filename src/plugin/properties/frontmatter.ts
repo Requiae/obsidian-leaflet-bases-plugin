@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { MarkerEntry, MarkerObject } from "@plugin/types";
+import { MarkerEntry, MarkerObject, StringMap } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
@@ -23,10 +23,8 @@ function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean 
 export class Frontmatter {
 	constructor(private app: App) {}
 
-	addMarker(marker: MarkerEntry) {
-		this.processFrontMatter(marker, (frontmatter) => {
-			if (!Validator.stringMap(frontmatter)) return;
-
+	addMarker(marker: MarkerEntry): void {
+		void this.processFrontMatter(marker, (frontmatter: StringMap) => {
 			if (hasMarkers(frontmatter)) {
 				frontmatter.marker.push(markerEntryToObject(marker));
 			} else {
@@ -35,32 +33,40 @@ export class Frontmatter {
 		});
 	}
 
-	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry | MarkerObject) {
-		this.processFrontMatter(markerOld, (frontmatter) => {
-			if (!hasMarkers(frontmatter)) return;
+	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry | MarkerObject): void {
+		void this.processFrontMatter(markerOld, (frontmatter) => {
+			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${markerOld.link}`);
 
 			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, markerOld));
-			if (markerIndex < 0) return;
+			if (markerIndex < 0) throw new Error(`Selected marker not found in ${markerOld.link}`);
 
 			frontmatter.marker.splice(markerIndex, 1, markerEntryToObject(markerNew));
 		});
 	}
 
-	removeMarker(marker: MarkerEntry) {
-		this.processFrontMatter(marker, (frontmatter) => {
-			if (!hasMarkers(frontmatter)) return;
+	removeMarker(marker: MarkerEntry): void {
+		void this.processFrontMatter(marker, (frontmatter) => {
+			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${marker.link}`);
 
 			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, marker));
-			if (markerIndex < 0) return;
+			if (markerIndex < 0) throw new Error(`Selected marker not found in ${marker.link}`);
 
 			frontmatter.marker.splice(markerIndex, 1);
 		});
 	}
 
-	private processFrontMatter(marker: MarkerEntry, operation: (frontmatter: unknown) => void): void {
-		const file = this.app.vault.getFileByPath(marker.link);
-		if (!file) throw new Error("File not found");
+	private async processFrontMatter(
+		marker: MarkerEntry,
+		operation: (frontmatter: unknown) => void,
+	): Promise<void> {
+		if (marker.name.length === 0) throw new Error("No file to add marker to");
 
-		void this.app.fileManager.processFrontMatter(file, (frontmatter) => operation(frontmatter));
+		let file = marker.link.length > 0 ? this.app.vault.getFileByPath(marker.link) : null;
+		if (!file) {
+			// TODO: Handle file already exists... Maybe rethink this entire thing
+			file = await this.app.vault.create(`${marker.name}.md`, "");
+		}
+
+		await this.app.fileManager.processFrontMatter(file, (frontmatter) => operation(frontmatter));
 	}
 }

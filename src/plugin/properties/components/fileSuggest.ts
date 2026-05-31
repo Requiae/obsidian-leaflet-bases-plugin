@@ -1,9 +1,5 @@
 import { AbstractInputSuggest, App, SearchComponent } from "obsidian";
-
-interface SimpleTFile {
-	basename: string;
-	path: string;
-}
+import { SimpleTFile } from "@plugin/types";
 
 export class FileSuggest extends AbstractInputSuggest<SimpleTFile> {
 	private content: SimpleTFile[] = [];
@@ -11,21 +7,23 @@ export class FileSuggest extends AbstractInputSuggest<SimpleTFile> {
 	constructor(
 		app: App,
 		private searchComponent: SearchComponent,
+		private setSelection: (file: SimpleTFile) => void,
 	) {
 		super(app, searchComponent.inputEl);
-		this.content = app.vault.getFiles().reduce<SimpleTFile[]>((filtered, file) => {
-			if (file.extension === "md") {
-				filtered.push({ basename: file.basename, path: file.path });
-			}
-			return filtered;
-		}, []);
+		this.content = app.vault
+			.getMarkdownFiles()
+			.map((file) => ({ basename: file.basename, path: file.path }));
 	}
 
 	protected override getSuggestions(input: string): SimpleTFile[] | Promise<SimpleTFile[]> {
 		const lowerCaseInput = input.toLocaleLowerCase();
-		return this.content.filter((content) =>
-			content.basename.toLocaleLowerCase().contains(lowerCaseInput),
+		const suggestions = this.content.filter(
+			(content) =>
+				content.basename.toLocaleLowerCase().contains(lowerCaseInput) ||
+				content.path.toLocaleLowerCase().contains(lowerCaseInput),
 		);
+
+		return suggestions;
 	}
 
 	override renderSuggestion(value: SimpleTFile, el: HTMLElement): void {
@@ -34,7 +32,8 @@ export class FileSuggest extends AbstractInputSuggest<SimpleTFile> {
 	}
 
 	override selectSuggestion(value: SimpleTFile, _evt: MouseEvent | KeyboardEvent): void {
-		this.searchComponent.setValue(value.basename).onChanged();
+		this.searchComponent.setValue(value.basename);
+		this.setSelection(value);
 		this.close();
 	}
 }

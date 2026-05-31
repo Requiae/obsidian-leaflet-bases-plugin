@@ -1,20 +1,21 @@
-import { App, Setting, TFile } from "obsidian";
+import { App, Setting } from "obsidian";
 import { t } from "@plugin/i18n/locale";
-import { MarkerEntry, MarkerModalMode } from "@plugin/types";
+import { MarkerEntry, MarkerModalMode, MarkerObject, SimpleTFile } from "@plugin/types";
 import { isNotNull } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { FileSuggest } from "./fileSuggest";
 import { MarkerModal } from "./markerModal";
 
 export class MarkerFileModal extends MarkerModal {
-	private selectedFile: TFile | null;
+	private selectedFile: SimpleTFile | null;
 
 	constructor(
 		app: App,
 		protected override onSubmit: (result: MarkerEntry) => void,
+		initialValue: MarkerObject | undefined,
 		mode: MarkerModalMode,
 	) {
-		super(app, onSubmit, undefined, mode);
+		super(app, onSubmit, initialValue, mode);
 	}
 
 	override addSettings() {
@@ -39,10 +40,11 @@ export class MarkerFileModal extends MarkerModal {
 			.setDesc(t("modal.icon.description")) // TODO
 			.addSearch((searchField) => {
 				searchField
-					.setValue(this.value.icon ?? "")
 					.setPlaceholder(t("modal.icon.placeholder")) // TODO
-					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
-				new FileSuggest(this.app, searchField);
+					.onChange(
+						(value) => (this.selectedFile = value !== "" ? { basename: value, path: "" } : null),
+					);
+				new FileSuggest(this.app, searchField, (file) => (this.selectedFile = file));
 			});
 	}
 }

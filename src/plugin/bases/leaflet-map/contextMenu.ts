@@ -61,10 +61,10 @@ export class ContextMenu extends Handler {
 					.setTitle(t("map.contextMenu.marker.move"))
 					.setSection("marker")
 					.setIcon("hand")
-					.onClick(() => {
-						this.frontmatter.addMarker(event.entry);
+					.onClick(
+						() => this.frontmatter.addMarker(event.entry),
 						// TODO: Implement move/drag marker method
-					}),
+					),
 			);
 
 			// Set marker minimal zoom
@@ -104,15 +104,16 @@ export class ContextMenu extends Handler {
 					.setTitle(t("map.contextMenu.marker.addToNew"))
 					.setSection("marker")
 					.setIcon("square-pen")
-					.onClick(
-						() =>
-							new MarkerFileModal(
-								this.app,
-								(result) => this.frontmatter.addMarker(result),
-								MarkerModalMode.Add,
-							).open(),
-						// TODO: Implement add marker to new note method
-						// use marker modal
+					.onClick(() =>
+						new MarkerFileModal(
+							this.app,
+							(result) => this.frontmatter.addMarker(result),
+							{
+								coordinates: writeCoordinates(this.position),
+								mapName: (this.viewConfig.getSettings() ?? undefined)?.name,
+							},
+							MarkerModalMode.Add,
+						).open(),
 					),
 			);
 
