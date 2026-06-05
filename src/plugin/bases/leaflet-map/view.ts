@@ -5,7 +5,7 @@ import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { ViewRegistrationBuilder } from "@plugin/types";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker/markerManager";
-import { ViewConfig } from "./viewConfig";
+import { ViewUtil } from "./viewUtil";
 
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = (
 	plugin: BasesLeafletViewPlugin,
@@ -15,13 +15,13 @@ export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = (
 		name: t("view.name"),
 		icon: C.view.icon,
 		factory: (controller, parentEl) => new LeafletMapView(controller, parentEl, plugin),
-		options: () => ViewConfig.getViewOptions(),
+		options: () => ViewUtil.getViewOptions(),
 	},
 ];
 
 class LeafletMapView extends BasesView {
 	type = C.view.type;
-	private viewConfig: ViewConfig;
+	private viewUtil: ViewUtil;
 
 	// Managers
 	private mapManager: MapManager;
@@ -32,9 +32,9 @@ class LeafletMapView extends BasesView {
 
 		const containerEl = parentEl.createDiv("bases-leaflet-map-container");
 
-		this.viewConfig = new ViewConfig(this);
+		this.viewUtil = new ViewUtil(this);
 
-		this.mapManager = new MapManager(plugin, containerEl, this.viewConfig);
+		this.mapManager = new MapManager(plugin, containerEl, this.viewUtil);
 		this.markerManager = new MarkerManager(
 			this.app,
 			this.mapManager.leafletMap,
@@ -57,7 +57,7 @@ class LeafletMapView extends BasesView {
 	}
 
 	private async updateMapSettings(): Promise<void> {
-		const settings = this.viewConfig.getSettings();
+		const settings = this.viewUtil.getSettings();
 
 		if (!settings) return;
 

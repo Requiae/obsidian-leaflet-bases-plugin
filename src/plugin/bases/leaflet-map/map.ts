@@ -6,7 +6,7 @@ import { parseCoordinates } from "@plugin/util";
 import { ContextMenu } from "./contextMenu";
 import { ControlContainer } from "./control/container";
 import { ImageLoader } from "./imageLoader";
-import { ViewConfig } from "./viewConfig";
+import { ViewUtil } from "./viewUtil";
 
 export class MapManager {
 	private mapEl: HTMLElement;
@@ -22,7 +22,7 @@ export class MapManager {
 	private controls: ControlContainer | undefined;
 	private contextMenu: ContextMenu;
 
-	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement, viewConfig: ViewConfig) {
+	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement, viewUtil: ViewUtil) {
 		this.mapEl = containerEl.createDiv("bases-leaflet-map");
 		this.imageLoader = new ImageLoader(plugin.app);
 
@@ -40,7 +40,7 @@ export class MapManager {
 			this.controls.addTo(this.leafletMap);
 		}
 
-		this.contextMenu = new ContextMenu(plugin.app, viewConfig, this.leafletMap);
+		this.contextMenu = new ContextMenu(plugin.app, viewUtil, this.leafletMap);
 		this.contextMenu.addHooks();
 	}
 

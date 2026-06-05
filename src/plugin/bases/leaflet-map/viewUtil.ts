@@ -1,7 +1,7 @@
 import { BasesAllOptions, BasesView } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { MapObject, RequiredMapObject } from "@plugin/types";
+import { MapObject, RequiredMapObject, StringMap } from "@plugin/types";
 import { clamp } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 
@@ -18,7 +18,7 @@ const KeyIdentifierMap: Record<keyof MapObject, string> = {
 	center: C.view.obsidianIdentifiers.center,
 } as const;
 
-export class ViewConfig {
+export class ViewUtil {
 	constructor(private view: BasesView) {}
 
 	getSettings(): RequiredMapObject | void {
@@ -49,6 +49,12 @@ export class ViewConfig {
 
 	updateSetting<K extends keyof MapObject>(key: K, value: NonNullable<MapObject[K]>): void {
 		this.view.config.set(KeyIdentifierMap[key], value);
+	}
+
+	createFileForView(frontmatterData: StringMap) {
+		void this.view.createFileForView(undefined, (frontmatter: StringMap) => {
+			Object.entries(frontmatterData).forEach(([key, value]) => (frontmatter[key] = value));
+		});
 	}
 
 	static getViewOptions(): BasesAllOptions[] {

@@ -7,7 +7,7 @@ import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry, MarkerModalMode } from "@plugin/types";
 import { toOptionalFixed, writeCoordinates } from "@plugin/util";
 import { Validator } from "@plugin/validation/validators";
-import { ViewConfig } from "./viewConfig";
+import { ViewUtil } from "./viewUtil";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
 	entry: MarkerEntry;
@@ -23,7 +23,7 @@ export class ContextMenu extends Handler {
 
 	constructor(
 		private app: App,
-		private viewConfig: ViewConfig,
+		private viewUtil: ViewUtil,
 		private map: Map,
 	) {
 		super(map);
@@ -110,7 +110,7 @@ export class ContextMenu extends Handler {
 							(result) => this.frontmatter.addMarker(result),
 							{
 								coordinates: writeCoordinates(this.position),
-								mapName: (this.viewConfig.getSettings() ?? undefined)?.name,
+								mapName: (this.viewUtil.getSettings() ?? undefined)?.name,
 							},
 							MarkerModalMode.Add,
 						).open(),
@@ -153,7 +153,7 @@ export class ContextMenu extends Handler {
 				.setTitle(t("map.contextMenu.map.setDefaultZoom"))
 				.setSection("map")
 				.setIcon("search")
-				.onClick(() => this.viewConfig.updateSetting("defaultZoom", this.map.getZoom())),
+				.onClick(() => this.viewUtil.updateSetting("defaultZoom", this.map.getZoom())),
 		);
 
 		// Set map default center point
@@ -162,7 +162,7 @@ export class ContextMenu extends Handler {
 				.setTitle(t("map.contextMenu.map.setDefaultCenterPoint"))
 				.setSection("map")
 				.setIcon("map-pin")
-				.onClick(() => this.viewConfig.updateSetting("center", writeCoordinates(this.position))),
+				.onClick(() => this.viewUtil.updateSetting("center", writeCoordinates(this.position))),
 		);
 
 		/* -------- Danger section -------- */
