@@ -1,23 +1,27 @@
-import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
+import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup } from "leaflet";
+import { BasesEntry } from "obsidian";
+import { ContextMenu } from "@plugin/bases/leaflet-map/contextMenu";
+import { ControlContainer } from "@plugin/bases/leaflet-map/control/container";
+import { ImageLoader } from "@plugin/bases/leaflet-map/imageLoader";
+import { map, Map } from "@plugin/bases/leaflet-map/map/map";
+import { MarkerManager } from "@plugin/bases/leaflet-map/marker/markerManager";
+import { ViewUtil } from "@plugin/bases/leaflet-map/viewUtil";
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject } from "@plugin/types";
 import { parseCoordinates } from "@plugin/util";
-import { ContextMenu } from "./contextMenu";
-import { ControlContainer } from "./control/container";
-import { ImageLoader } from "./imageLoader";
-import { ViewUtil } from "./viewUtil";
 
 export class MapManager {
 	private mapEl: HTMLElement;
-	private _leafletMap: Map;
+	private leafletMap: Map;
 	private settings: RequiredMapObject | undefined = undefined;
 
 	// Layers
-	private _markerLayer: LayerGroup;
+	private markerLayer: LayerGroup;
 	private imageOverlay: ImageOverlay | undefined;
 
 	// Managers
+	private markerManager: MarkerManager;
 	private imageLoader: ImageLoader;
 	private controls: ControlContainer | undefined;
 	private contextMenu: ContextMenu;
@@ -27,39 +31,43 @@ export class MapManager {
 		this.imageLoader = new ImageLoader(plugin.app);
 
 		// Map initialisation
-		this._markerLayer = layerGroup();
-		this._leafletMap = map(this.mapEl, {
+		this.markerLayer = layerGroup();
+		this.leafletMap = map(this.mapEl, {
 			crs: CRS.Simple,
 			zoomSnap: C.map.default.zoomSnap,
-			layers: [this._markerLayer],
+			layers: [this.markerLayer],
 			closePopupOnClick: true,
 		});
 
-		if (plugin.settingsManager.settings.enableMeasureTool) {
+		if (
+			plugin.settingsManager.settings.enableMeasureTool ||
+			plugin.settingsManager.settings.enableDragTool
+		) {
 			this.controls = new ControlContainer(plugin.settingsManager.settings);
 			this.controls.addTo(this.leafletMap);
 		}
 
 		this.contextMenu = new ContextMenu(plugin.app, viewUtil, this.leafletMap);
 		this.contextMenu.addHooks();
-	}
 
-	get leafletMap(): Map {
-		return this._leafletMap;
-	}
-
-	get markerLayer(): LayerGroup {
-		return this._markerLayer;
+		this.markerManager = new MarkerManager(plugin.app, this.leafletMap, this.markerLayer);
 	}
 
 	unload(): void {
+		this.markerManager.unload();
 		this.controls?.onRemove(this.leafletMap);
 		this.contextMenu.removeHooks();
 		this.leafletMap.clearAllEventListeners();
 		this.leafletMap.remove();
 	}
 
+	updateData(data: { data: BasesEntry[] }): void {
+		this.markerManager.updateMarkers(data);
+	}
+
 	async updateSettings(settings: RequiredMapObject): Promise<void> {
+		this.markerManager.updateSettings(settings.name, settings.minZoom);
+
 		await this.updateImageOverlay(settings);
 		this.updateZoom(settings);
 		this.updateCss(settings);

@@ -8,6 +8,10 @@ export default {
 				title: "Enable measure tool",
 				description: "Enable tool that allows you to measure distances",
 			},
+			drag: {
+				title: "Enable drag tool",
+				description: "Enable tool that allows you to drag markers",
+			},
 		},
 		icons: {
 			title: "Additional icon sets",
@@ -103,9 +107,8 @@ export default {
 	map: {
 		controls: {
 			measure: "Measure",
-			pan: {
-				label: "Pan",
-			},
+			pan: "Pan",
+			drag: "Drag",
 			copy: {
 				label: "Copy coordinates",
 				notice: {
@@ -119,7 +122,6 @@ export default {
 				addToNew: "Add marker to new note",
 				addToExisting: "Add marker to existing note",
 				edit: "Edit marker",
-				move: "Pickup marker to move",
 				setMinimalZoom: "Set marker minimal zoom",
 				resetMinimalZoom: "Reset marker minimal zoom",
 				delete: "Delete",

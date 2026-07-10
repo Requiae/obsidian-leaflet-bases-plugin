@@ -1,15 +1,18 @@
 import {
 	DivIcon,
 	divIcon,
+	DragEndEvent,
+	LayerGroup,
 	Marker as LeafletMarker,
 	LeafletMouseEvent,
-	Map,
 	MarkerOptions,
 } from "leaflet";
 import { App, IconName } from "obsidian";
+import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
+import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry } from "@plugin/types";
-import { getIconWithDefault, parseCoordinates } from "@plugin/util";
+import { getIconWithDefault, parseCoordinates, writeCoordinates } from "@plugin/util";
 
 function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefined): DivIcon {
 	const xmlSerializer = new XMLSerializer();
@@ -29,13 +32,16 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
 	});
 }
 
-export function marker(app: App, map: Map, entry: MarkerEntry): Marker {
+export function marker(app: App, map: Map, entry: MarkerEntry, options?: MarkerOptions): Marker {
 	return new Marker(app, map, entry, {
 		icon: buildMarkerIcon(entry.icon, entry.colour),
+		...options,
 	});
 }
 
 export class Marker extends LeafletMarker {
+	private frontmatter: Frontmatter;
+
 	constructor(
 		private app: App,
 		private map: Map,
@@ -43,12 +49,21 @@ export class Marker extends LeafletMarker {
 		options?: MarkerOptions,
 	) {
 		super(parseCoordinates(entry.coordinates), options);
+		this.frontmatter = new Frontmatter(app);
 
 		this.bindTooltip(entry.name);
 
-		this.on("click", (event) => this.onClick(event));
-		this.on("mouseover", (event) => this.onHover(event));
-		this.on("contextmenu", (event) => this.onContextMenu(event));
+		this.on({
+			click: (event) => this.onClick(event),
+			mouseover: (event) => this.onHover(event),
+			contextmenu: (event) => this.onContextMenu(event),
+			dragend: (event) => this.updateMarkerEntry(event),
+		});
+	}
+
+	override addTo(map: Map | LayerGroup<unknown>): this {
+		this.options.draggable = this.map.markerDragEnabled;
+		return super.addTo(map);
 	}
 
 	private onClick(event: LeafletMouseEvent): void {
@@ -70,5 +85,14 @@ export class Marker extends LeafletMarker {
 	private onContextMenu(event: LeafletMouseEvent): void {
 		event.originalEvent.preventDefault();
 		this.map.fire("markermenu", { ...event, entry: this.entry });
+	}
+
+	private updateMarkerEntry(event: DragEndEvent): void {
+		const marker = event.target as Marker;
+		const coordinates = writeCoordinates(marker.getLatLng());
+
+		const newEntry = { ...this.entry, coordinates: coordinates };
+		this.frontmatter.updateMarker(this.entry, newEntry);
+		this.entry = newEntry;
 	}
 }

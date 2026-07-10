@@ -12,11 +12,14 @@ export const Constants = {
 			unit: "",
 		},
 		controlIcons: {
-			copy: "pin",
+			drag: "hand",
 			measure: "ruler",
 			pan: "mouse-pointer-2",
 		},
 		imageTypes: ["avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", "webp"],
+		events: {
+			markerRefresh: "zoomend",
+		},
 	},
 	marker: {
 		defaultColour: "#21409a",
@@ -49,7 +52,7 @@ export const Constants = {
 	settings: {
 		default: {
 			enableMeasureTool: true,
-			enableCopyTool: true,
+			enableDragTool: true,
 		},
 		links: {
 			preview: "https://icon-sets.iconify.design/",

@@ -33,6 +33,16 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 							await this.manager.updateSettings({ enableMeasureTool: value });
 						}),
 					);
+			})
+			.addSetting((setting) => {
+				setting
+					.setName(t("settings.tools.drag.title"))
+					.setDesc(t("settings.tools.drag.description"))
+					.addToggle((toggle) =>
+						toggle.setValue(this.manager.settings.enableMeasureTool).onChange(async (value) => {
+							await this.manager.updateSettings({ enableMeasureTool: value });
+						}),
+					);
 			});
 	}
 

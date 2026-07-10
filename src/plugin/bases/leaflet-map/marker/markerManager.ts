@@ -1,5 +1,6 @@
-import { LayerGroup, Map } from "leaflet";
+import { LayerGroup } from "leaflet";
 import { App, BasesEntry, TFile, Value } from "obsidian";
+import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
 import { MarkerEntry } from "@plugin/types";
 import { isNotNull } from "@plugin/util";
@@ -55,6 +56,8 @@ export class MarkerManager {
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
 
+	private data: { data: BasesEntry[] } | undefined;
+
 	constructor(
 		private app: App,
 		private map: Map,
@@ -63,18 +66,13 @@ export class MarkerManager {
 
 	unload(): void {
 		this.markerLayer.clearLayers();
-	}
-
-	private addMarkerWhenZoom(markerItem: Marker, markerEntry: MarkerEntry) {
-		const tolerance = 0.00001; // We have to deal with floating point errors
-		if (this.map.getZoom() >= (markerEntry.minZoom ?? this.mapMinZoom) - tolerance) {
-			markerItem.addTo(this.markerLayer);
-		} else {
-			markerItem.remove();
-		}
+		this.data = undefined;
 	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
+		this.data = data;
+
+		this.map.removeEventListener(C.map.events.markerRefresh);
 		this.markerLayer.clearLayers();
 
 		data.data
@@ -87,12 +85,31 @@ export class MarkerManager {
 				const markerItem = marker(this.app, this.map, markerEntry);
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
-				this.map.on("zoomend", () => this.addMarkerWhenZoom(markerItem, markerEntry));
+				this.map.on(C.map.events.markerRefresh, () =>
+					this.addMarkerWhenZoom(markerItem, markerEntry),
+				);
 			});
 	}
 
 	updateSettings(mapName: string | undefined, mapMinZoom: number) {
 		this.mapName = mapName;
 		this.mapMinZoom = mapMinZoom;
+	}
+
+	private addMarkerWhenZoom(markerItem: Marker, markerEntry: MarkerEntry): void {
+		const tolerance = 0.00001; // We have to deal with floating point errors
+
+		if (this.map.getZoom() < (markerEntry.minZoom ?? this.mapMinZoom) - tolerance) {
+			markerItem.remove();
+			return;
+		}
+
+		markerItem.addTo(this.markerLayer);
+
+		if (this.map.markerDragEnabled) {
+			markerItem.dragging?.enable();
+		} else {
+			markerItem.dragging?.disable();
+		}
 	}
 }

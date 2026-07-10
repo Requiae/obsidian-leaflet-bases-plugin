@@ -1,10 +1,9 @@
 import { BasesView, QueryController } from "obsidian";
+import { MapManager } from "@plugin/bases/leaflet-map/map/mapManager";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { ViewRegistrationBuilder } from "@plugin/types";
-import { MapManager } from "./map";
-import { MarkerManager } from "./marker/markerManager";
 import { ViewUtil } from "./viewUtil";
 
 export const LeafletMapViewRegistrationBuilder: ViewRegistrationBuilder = (
@@ -25,7 +24,6 @@ class LeafletMapView extends BasesView {
 
 	// Managers
 	private mapManager: MapManager;
-	private markerManager: MarkerManager;
 
 	constructor(controller: QueryController, parentEl: HTMLElement, plugin: BasesLeafletViewPlugin) {
 		super(controller);
@@ -35,11 +33,6 @@ class LeafletMapView extends BasesView {
 		this.viewUtil = new ViewUtil(this);
 
 		this.mapManager = new MapManager(plugin, containerEl, this.viewUtil);
-		this.markerManager = new MarkerManager(
-			this.app,
-			this.mapManager.leafletMap,
-			this.mapManager.markerLayer,
-		);
 	}
 
 	onDataUpdated(): void {
@@ -47,13 +40,12 @@ class LeafletMapView extends BasesView {
 	}
 
 	override unload(): void {
-		this.markerManager.unload();
 		this.mapManager.unload();
 	}
 
 	private async updateData(): Promise<void> {
 		void this.updateMapSettings();
-		this.markerManager.updateMarkers(this.data);
+		this.mapManager.updateData(this.data);
 	}
 
 	private async updateMapSettings(): Promise<void> {
@@ -61,7 +53,6 @@ class LeafletMapView extends BasesView {
 
 		if (!settings) return;
 
-		this.markerManager.updateSettings(settings.name, settings.minZoom);
 		await this.mapManager.updateSettings(settings);
 	}
 }

@@ -73,6 +73,7 @@ export type LeafletContextMenuCallback = (latLng: LatLng) => void;
 
 export interface BasesLeafletViewSettings {
 	enableMeasureTool: boolean;
+	enableDragTool: boolean;
 	iconData: IconifyJSONIconsObject[];
 }
 

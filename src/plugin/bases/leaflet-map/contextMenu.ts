@@ -1,5 +1,6 @@
-import { Handler, LatLng, LeafletMouseEvent, Map } from "leaflet";
+import { Handler, LatLng, LeafletMouseEvent } from "leaflet";
 import { App, Menu, Notice } from "obsidian";
+import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { t } from "@plugin/i18n/locale";
 import { MarkerFileModal } from "@plugin/properties/components/markerFileModal";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
@@ -55,18 +56,6 @@ export class ContextMenu extends Handler {
 		/* -------- Marker section -------- */
 
 		if (isLeafletMarkerEvent(event)) {
-			// Move marker
-			menu.addItem((item) =>
-				item
-					.setTitle(t("map.contextMenu.marker.move"))
-					.setSection("marker")
-					.setIcon("hand")
-					.onClick(
-						() => this.frontmatter.addMarker(event.entry),
-						// TODO: Implement move/drag marker method
-					),
-			);
-
 			// Set marker minimal zoom
 			if (Validator.number(event.entry.minZoom)) {
 				menu.addItem((item) =>
