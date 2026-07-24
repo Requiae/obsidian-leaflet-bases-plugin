@@ -43,6 +43,16 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 							await this.manager.updateSettings({ enableCopyTool: value });
 						}),
 					);
+			})
+			.addSetting((setting) => {
+				setting
+					.setName(t("settings.tools.createNote.title"))
+					.setDesc(t("settings.tools.createNote.description"))
+					.addToggle((toggle) =>
+						toggle.setValue(this.manager.settings.enableCreateNoteTool).onChange(async (value) => {
+							await this.manager.updateSettings({ enableCreateNoteTool: value });
+						}),
+					);
 			});
 	}
 

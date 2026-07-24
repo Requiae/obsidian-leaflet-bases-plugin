@@ -15,6 +15,7 @@ export const Constants = {
 			copy: "pin",
 			measure: "ruler",
 			pan: "mouse-pointer-2",
+			createNote: "file-plus",
 		},
 		imageTypes: ["avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", "webp"],
 	},
@@ -50,6 +51,7 @@ export const Constants = {
 		default: {
 			enableMeasureTool: true,
 			enableCopyTool: true,
+			enableCreateNoteTool: true,
 		},
 		links: {
 			preview: "https://icon-sets.iconify.design/",

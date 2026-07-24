@@ -1,4 +1,4 @@
-import { LatLngLiteral, LatLngTuple } from "leaflet";
+import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
 import { Coordinates, StringMap } from "@plugin/types";
 
@@ -21,6 +21,10 @@ export function getIconWithDefault(iconId: string | undefined): SVGSVGElement {
 
 	defaultIcon.setAttribute("fill", "currentColor");
 	return defaultIcon;
+}
+
+export function formatCoordinates(coordinate: LatLng): Coordinates {
+	return `${Math.round(coordinate.lat)}, ${Math.round(coordinate.lng)}`;
 }
 
 export function parseCoordinates(coordinates: Coordinates): LatLngTuple {

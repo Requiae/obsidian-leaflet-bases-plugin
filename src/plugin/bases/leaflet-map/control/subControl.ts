@@ -1,16 +1,19 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
+import { App } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { RequiredMapObject } from "@plugin/types";
 
 interface SubControlOptions {
 	index: number;
 	map: Map;
+	app: App;
 	onSelectCallback: (index: number) => void;
 }
 
 export class SubControl {
 	readonly index: number;
 	readonly map: Map;
+	readonly app: App;
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
@@ -28,6 +31,7 @@ export class SubControl {
 	constructor(options: SubControlOptions) {
 		this.index = options.index;
 		this.map = options.map;
+		this.app = options.app;
 		this.onSelectCallback = options.onSelectCallback;
 	}
 

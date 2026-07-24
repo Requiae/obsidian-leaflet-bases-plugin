@@ -12,6 +12,10 @@ export default {
 				title: "Enable copy tool",
 				description: "Enable tool that allows you to copy coordinated to your clipboard",
 			},
+			createNote: {
+				title: "Enable create note tool",
+				description: "Enable tool that creates a new note with a marker at the clicked location",
+			},
 		},
 		icons: {
 			title: "Additional icon sets",
@@ -116,6 +120,13 @@ export default {
 				notice: {
 					success: "Coordinates copied to clipboard",
 					failure: "Failed copying coordinates to clipboard",
+				},
+			},
+			createNote: {
+				label: "Create note here",
+				defaultName: "Untitled",
+				notice: {
+					failure: "Failed creating note",
 				},
 			},
 		},

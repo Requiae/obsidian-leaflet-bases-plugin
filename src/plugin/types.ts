@@ -57,6 +57,7 @@ export abstract class Manager {
 export interface BasesLeafletViewSettings {
 	enableMeasureTool: boolean;
 	enableCopyTool: boolean;
+	enableCreateNoteTool: boolean;
 	iconData: IconifyJSONIconsObject[];
 }
 

@@ -32,9 +32,10 @@ export class MapManager {
 
 		if (
 			plugin.settingsManager.settings.enableMeasureTool ||
-			plugin.settingsManager.settings.enableCopyTool
+			plugin.settingsManager.settings.enableCopyTool ||
+			plugin.settingsManager.settings.enableCreateNoteTool
 		) {
-			this.controls = new ControlContainer(plugin.settingsManager.settings);
+			this.controls = new ControlContainer(plugin.app, plugin.settingsManager.settings);
 			this.controls.addTo(this._leafletMap);
 		}
 	}

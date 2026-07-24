@@ -2,7 +2,7 @@ import { LatLng, LeafletMouseEvent, Tooltip, tooltip } from "leaflet";
 import { Notice } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { getIconWithDefault } from "@plugin/util";
+import { formatCoordinates, getIconWithDefault } from "@plugin/util";
 import { SubControl } from "../subControl";
 
 export class CopyControl extends SubControl {
@@ -41,6 +41,6 @@ export class CopyControl extends SubControl {
 	}
 
 	private getContent(coordinate: LatLng): string {
-		return `${Math.round(coordinate.lat)}, ${Math.round(coordinate.lng)}`;
+		return formatCoordinates(coordinate);
 	}
 }
