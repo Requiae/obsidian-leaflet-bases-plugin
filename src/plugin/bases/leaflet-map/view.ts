@@ -33,7 +33,7 @@ class LeafletMapView extends BasesView {
 
 		const containerEl = parentEl.createDiv("bases-leaflet-map-container");
 
-		this.mapManager = new MapManager(plugin, containerEl);
+		this.mapManager = new MapManager(plugin, containerEl, this);
 		this.markerManager = new MarkerManager(
 			this.app,
 			this.mapManager.leafletMap,

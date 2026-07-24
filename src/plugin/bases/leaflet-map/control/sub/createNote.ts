@@ -1,5 +1,5 @@
 import { LeafletMouseEvent } from "leaflet";
-import { Notice, TFolder } from "obsidian";
+import { Notice } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
@@ -28,41 +28,35 @@ export class CreateNoteControl extends SubControl {
 	}
 
 	private async createNoteAt(event: LeafletMouseEvent): Promise<void> {
-		try {
-			const folder = this.app.fileManager.getNewFileParent("");
-			const file = await this.app.vault.create(this.getUniquePath(folder), "");
-			await this.app.workspace.getLeaf("tab").openFile(file);
+		const coordinates = formatCoordinates(event.latlng);
+		const mapName = this.options.name;
 
-			new MarkerModal(
-				this.app,
-				(result) => {
-					void this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-						frontmatter[C.property.marker.identifier] = [result];
-					});
+		try {
+			// Delegates location/naming to Bases' own new-note handling, so it respects
+			// the vault's "Default location for new notes" setting like any other note.
+			await this.view.createFileForView(
+				t("map.controls.createNote.defaultName"),
+				(frontmatter: StringMap) => {
+					frontmatter[C.property.marker.identifier] = [{ coordinates, mapName }];
 				},
-				{ coordinates: formatCoordinates(event.latlng), mapName: this.options.name },
-				MarkerModalMode.Add,
-			).open();
+			);
 		} catch {
 			new Notice(t("map.controls.createNote.notice.failure"));
-		}
-	}
-
-	private getUniquePath(folder: TFolder): string {
-		const baseName = t("map.controls.createNote.defaultName");
-
-		let suffix = 0;
-		let path = this.buildPath(folder, baseName, suffix);
-		while (this.app.vault.getAbstractFileByPath(path)) {
-			suffix += 1;
-			path = this.buildPath(folder, baseName, suffix);
+			return;
 		}
 
-		return path;
-	}
+		const file = this.view.app.workspace.getActiveFile();
+		if (!file) return;
 
-	private buildPath(folder: TFolder, baseName: string, suffix: number): string {
-		const name = suffix === 0 ? baseName : `${baseName} ${suffix}`;
-		return folder.isRoot() ? `${name}.md` : `${folder.path}/${name}.md`;
+		new MarkerModal(
+			this.view.app,
+			(result) => {
+				void this.view.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
+					frontmatter[C.property.marker.identifier] = [result];
+				});
+			},
+			{ coordinates, mapName },
+			MarkerModalMode.Add,
+		).open();
 	}
 }

@@ -1,4 +1,5 @@
 import { CRS, ImageOverlay, imageOverlay, LayerGroup, layerGroup, Map, map } from "leaflet";
+import { BasesView } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import type { RequiredMapObject, Wiki } from "@plugin/types";
@@ -18,7 +19,7 @@ export class MapManager {
 	private imageLoader: ImageLoader;
 	private controls: ControlContainer | undefined;
 
-	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement) {
+	constructor(plugin: BasesLeafletViewPlugin, containerEl: HTMLElement, view: BasesView) {
 		this.mapEl = containerEl.createDiv("bases-leaflet-map");
 		this.imageLoader = new ImageLoader(plugin.app);
 
@@ -35,7 +36,7 @@ export class MapManager {
 			plugin.settingsManager.settings.enableCopyTool ||
 			plugin.settingsManager.settings.enableCreateNoteTool
 		) {
-			this.controls = new ControlContainer(plugin.app, plugin.settingsManager.settings);
+			this.controls = new ControlContainer(view, plugin.settingsManager.settings);
 			this.controls.addTo(this._leafletMap);
 		}
 	}

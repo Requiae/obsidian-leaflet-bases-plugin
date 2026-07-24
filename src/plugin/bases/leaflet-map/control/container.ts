@@ -1,5 +1,5 @@
 import { Control, DomUtil, Map } from "leaflet";
-import { App } from "obsidian";
+import { BasesView } from "obsidian";
 import { BasesLeafletViewSettings, RequiredMapObject } from "@plugin/types";
 import { CopyControl, CreateNoteControl, MeasureControl, PanControl } from "./sub";
 import { SubControl } from "./subControl";
@@ -10,7 +10,7 @@ export class ControlContainer extends Control {
 	private activeIndex: number = 0;
 
 	constructor(
-		private app: App,
+		private view: BasesView,
 		private pluginSettings: BasesLeafletViewSettings,
 	) {
 		super({ position: "topleft" });
@@ -53,7 +53,7 @@ export class ControlContainer extends Control {
 			this.controls.at(controlIndex)?.setSelected(true);
 			this.activeIndex = controlIndex;
 		};
-		const options = { index: this.controls.length, map, app: this.app, onSelectCallback };
+		const options = { index: this.controls.length, map, view: this.view, onSelectCallback };
 		this.controls.push(new control(options));
 	}
 }
