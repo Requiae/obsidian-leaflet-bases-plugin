@@ -7,6 +7,7 @@ import { Validator } from "@plugin/validation/validators";
 import { IconSuggest } from "./iconSuggest";
 import { MarkerModalErrorComponent } from "./markerModalErrorComponent";
 import { NoteSuggest } from "./noteSuggest";
+import { openMatchingMap } from "./openMatchingMap";
 
 function buildColourOptionsObject(): Record<string, string> {
 	return Object.fromEntries(
@@ -83,6 +84,15 @@ export class MarkerModal extends Modal {
 			.addComponent((errorEl) => {
 				coordinatesError = new MarkerModalErrorComponent(errorEl).setMessage("");
 				return coordinatesError;
+			});
+
+		new Setting(this.contentEl)
+			.setName(t("modal.openMap.title"))
+			.setDesc(t("modal.openMap.description"))
+			.addButton((button) => {
+				button
+					.setButtonText(t("modal.openMap.button"))
+					.onClick(() => void openMatchingMap(app, this.value.mapName));
 			});
 
 		new Setting(this.contentEl)

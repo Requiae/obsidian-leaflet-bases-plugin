@@ -86,6 +86,11 @@ export default {
 				invalid: "Value not a valid coordinate",
 			},
 		},
+		openMap: {
+			title: "Show on map",
+			description: "Open the base and Leaflet map view this marker belongs to.",
+			button: "Open map",
+		},
 		icon: {
 			title: "Icon",
 			description: "Optional. The marker icon, defaults to a dot if left empty.",
@@ -152,6 +157,7 @@ export default {
 			},
 			notice: {
 				noMaps: "No Leaflet map views found in this vault",
+				noMatchingMap: "No Leaflet map view found for this marker's map name",
 				imageLoadFailed: "Failed to load the map image",
 			},
 		},

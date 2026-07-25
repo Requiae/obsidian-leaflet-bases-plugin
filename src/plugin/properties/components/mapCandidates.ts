@@ -18,6 +18,10 @@ export async function findLeafletMapCandidates(app: App): Promise<MapCandidate[]
 	return candidateLists.flat();
 }
 
+export async function openMapCandidate(app: App, candidate: MapCandidate): Promise<void> {
+	await app.workspace.openLinkText(`${candidate.file.path}#${candidate.viewName}`, "", true);
+}
+
 async function findInFile(app: App, file: TFile): Promise<MapCandidate[]> {
 	const config = await readBaseConfig(app, file);
 	const views = config?.views;
