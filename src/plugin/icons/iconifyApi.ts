@@ -18,7 +18,7 @@ export function getIconifyCollections(): Promise<IconifyCollections | null> {
 }
 
 export async function getIconifyIconSet(prefix: string): Promise<unknown> {
-	const url = `${C.settings.iconify.apiBaseUrl}/${prefix}.json`;
+	const url = `${C.settings.iconify.rawJsonBaseUrl}/${prefix}.json`;
 	try {
 		const response = await requestUrl({ url, throw: false });
 		if (response.status !== 200) {
