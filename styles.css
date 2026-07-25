@@ -25,6 +25,15 @@ div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	margin-inline-start: 0.5rem;
 }
 
+.bases-leaflet-view-icon-preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--input-height);
+	height: var(--input-height);
+	color: var(--text-muted);
+}
+
 .bases-leaflet-view-setting-empty {
 	display: block;
 }

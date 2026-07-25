@@ -4,6 +4,7 @@ import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject, NoteNameFieldOptions, NoteSelection } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
+import { IconPreviewComponent } from "./iconPreviewComponent";
 import { IconSuggest } from "./iconSuggest";
 import { MarkerModalErrorComponent } from "./markerModalErrorComponent";
 import { NoteSuggest } from "./noteSuggest";
@@ -95,14 +96,22 @@ export class MarkerModal extends Modal {
 					.onClick(() => void openMatchingMap(app, this.value.mapName));
 			});
 
+		let iconPreview: IconPreviewComponent;
 		new Setting(this.contentEl)
 			.setName(t("modal.icon.title"))
 			.setDesc(t("modal.icon.description"))
+			.addComponent((containerEl) => {
+				iconPreview = new IconPreviewComponent(containerEl).setIcon(this.value.icon);
+				return iconPreview;
+			})
 			.addSearch((searchField) => {
 				searchField
 					.setValue(this.value.icon ?? "")
 					.setPlaceholder(t("modal.icon.placeholder"))
-					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
+					.onChange((value) => {
+						this.value.icon = value !== "" ? value : undefined;
+						iconPreview.setIcon(this.value.icon);
+					});
 				new IconSuggest(app, searchField);
 			});
 
