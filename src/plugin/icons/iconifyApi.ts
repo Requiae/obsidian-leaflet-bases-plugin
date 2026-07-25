@@ -18,17 +18,23 @@ export function getIconifyCollections(): Promise<IconifyCollections | null> {
 }
 
 export async function getIconifyIconSet(prefix: string): Promise<unknown> {
+	const url = `${C.settings.iconify.apiBaseUrl}/${prefix}.json`;
 	try {
-		const response = await requestUrl({
-			url: `${C.settings.iconify.apiBaseUrl}/${prefix}.json`,
-			throw: false,
-		});
-		if (response.status !== 200) return null;
+		const response = await requestUrl({ url, throw: false });
+		if (response.status !== 200) {
+			console.error(`Iconify request to ${url} failed with status ${response.status}`, response.text);
+			return null;
+		}
 
 		const json: unknown = response.json;
-		return isNonEmptyObject(json) ? json : null;
+		if (!isNonEmptyObject(json)) {
+			console.error(`Iconify request to ${url} did not return a valid icon set`, json);
+			return null;
+		}
+
+		return json;
 	} catch (error) {
-		console.error(error);
+		console.error(`Iconify request to ${url} threw`, error);
 		return null;
 	}
 }
@@ -49,17 +55,23 @@ export function filterCollectionEntries(entries: CollectionEntry[], query: strin
 }
 
 async function fetchIconifyCollections(): Promise<IconifyCollections | null> {
+	const url = `${C.settings.iconify.apiBaseUrl}/collections`;
 	try {
-		const response = await requestUrl({
-			url: `${C.settings.iconify.apiBaseUrl}/collections`,
-			throw: false,
-		});
-		if (response.status !== 200) return null;
+		const response = await requestUrl({ url, throw: false });
+		if (response.status !== 200) {
+			console.error(`Iconify request to ${url} failed with status ${response.status}`, response.text);
+			return null;
+		}
 
 		const json: unknown = response.json;
-		return isNonEmptyObject(json) ? (json as IconifyCollections) : null;
+		if (!isNonEmptyObject(json)) {
+			console.error(`Iconify request to ${url} did not return a valid collection list`, json);
+			return null;
+		}
+
+		return json as IconifyCollections;
 	} catch (error) {
-		console.error(error);
+		console.error(`Iconify request to ${url} threw`, error);
 		return null;
 	}
 }

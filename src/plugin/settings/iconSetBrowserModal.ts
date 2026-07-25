@@ -146,6 +146,7 @@ export class IconSetBrowserModal extends Modal {
 				await this.settingsManager.updateSettings({ iconData: data });
 				added = true;
 			} else {
+				console.error(`Icon set "${entry.prefix}" failed validation`, json);
 				new Notice(t("settings.icons.browse.addError"));
 			}
 		});
