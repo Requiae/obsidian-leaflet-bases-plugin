@@ -1,4 +1,5 @@
 import { App, ButtonComponent, Modal, Notice, Setting } from "obsidian";
+import { Constants as C } from "@plugin/constants";
 import {
 	CollectionEntry,
 	filterCollectionEntries,
@@ -10,6 +11,8 @@ import { IconManager } from "@plugin/icons/iconManager";
 import { t } from "@plugin/i18n/locale";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { SettingsManager } from "./settingsManager";
+
+const MAX_PREVIEW_ICONS = 6;
 
 export class IconSetBrowserModal extends Modal {
 	private listEl: HTMLElement | undefined;
@@ -86,7 +89,12 @@ export class IconSetBrowserModal extends Modal {
 
 		const row = this.listEl.createDiv({ cls: "setting-item" });
 		row.createDiv({ cls: "setting-item-info" }, (info) => {
-			info.createDiv({ text: entry.info.name, cls: "setting-item-name" });
+			info.createDiv({ cls: "setting-item-name" }, (name) => {
+				name.createEl("a", {
+					text: entry.info.name,
+					href: `${C.settings.links.preview}${entry.prefix}/`,
+				});
+			});
 			info.createDiv({
 				text: [
 					entry.prefix,
@@ -98,6 +106,7 @@ export class IconSetBrowserModal extends Modal {
 					.join(" • "),
 				cls: "setting-item-description",
 			});
+			this.buildPreview(info, entry);
 		});
 		row.createDiv({ cls: "setting-item-control" }, (control) => {
 			const button = new ButtonComponent(control)
@@ -106,6 +115,22 @@ export class IconSetBrowserModal extends Modal {
 				)
 				.setDisabled(isAdded);
 			button.onClick(() => void this.addIconSet(entry, button));
+		});
+	}
+
+	private buildPreview(container: HTMLElement, entry: CollectionEntry): void {
+		const samples = entry.info.samples?.slice(0, MAX_PREVIEW_ICONS);
+		if (!samples || samples.length === 0) return;
+
+		container.createDiv({ cls: "bases-leaflet-view-icon-browser-preview" }, (preview) => {
+			for (const sample of samples) {
+				preview.createEl("img", {
+					attr: {
+						src: `${C.settings.iconify.apiBaseUrl}/${entry.prefix}/${sample}.svg`,
+						alt: sample,
+					},
+				});
+			}
 		});
 	}
 

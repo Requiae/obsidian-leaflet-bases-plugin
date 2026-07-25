@@ -46,6 +46,18 @@ div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	text-align: center;
 	padding: var(--size-4-4) 0;
 }
+.bases-leaflet-view-icon-browser-preview {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-top: 0.3rem;
+	max-width: 84px;
+}
+.bases-leaflet-view-icon-browser-preview img {
+	width: 20px;
+	height: 20px;
+	opacity: 0.85;
+}
 
 .bases-leaflet-view-setting-empty {
 	display: block;
