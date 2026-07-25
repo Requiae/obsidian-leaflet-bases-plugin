@@ -60,6 +60,9 @@ export const Constants = {
 			preview: "https://icon-sets.iconify.design/",
 			github: "https://github.com/iconify/icon-sets/tree/master/json",
 		},
+		iconify: {
+			apiBaseUrl: "https://api.iconify.design",
+		},
 	},
 	view: {
 		type: "leaflet-map",
