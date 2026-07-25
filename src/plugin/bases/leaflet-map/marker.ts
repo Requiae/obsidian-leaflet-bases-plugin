@@ -20,7 +20,7 @@ import {
 	isNotNull,
 	parseCoordinates,
 } from "@plugin/util";
-import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { SchemaValidator, toMarkerArray } from "@plugin/validation/schemaValidators";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
@@ -90,7 +90,10 @@ export class MarkerManager {
 
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
-	private dragEnabled: boolean = true;
+	// Only enabled by an explicit dragModeChanged event (fired when the pan tool is selected),
+	// so dragging stays off if no control container exists to police it (e.g. all optional map
+	// tools disabled in settings).
+	private dragEnabled: boolean = false;
 	private markerItems: Marker[] = [];
 
 	constructor(
@@ -172,12 +175,7 @@ export class MarkerManager {
 
 		try {
 			await this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-				const existing: unknown = frontmatter[C.property.marker.identifier];
-				const markers: MarkerObject[] = Array.isArray(existing)
-					? (existing as MarkerObject[])
-					: existing
-						? [existing as MarkerObject]
-						: [];
+				const markers = toMarkerArray(frontmatter[C.property.marker.identifier]);
 
 				if (markers[index]) markers[index] = { ...markers[index], coordinates };
 				frontmatter[C.property.marker.identifier] = markers;

@@ -66,7 +66,8 @@ export enum MarkerModalMode {
 	Edit = "edit",
 }
 
+export type NoteSelection = string | TFile | undefined;
+
 export type NoteNameFieldOptions = {
 	existingFiles: TFile[];
-	onChange: (value: string | TFile | undefined) => void;
 };

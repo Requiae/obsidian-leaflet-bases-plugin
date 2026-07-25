@@ -85,6 +85,13 @@ views:
 3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
    ![edit marker modal](docs/add-marker-edit.png)
 
+#### Using the map
+
+1. Enable the "create note" tool in the plugin settings (`Settings` → `Leaflet bases` → `Enable create note tool`).
+2. Select the "Create note here" tool (📄) in the map's toolbar and click a spot on the map.
+3. Fill in the form. In the note name field, either type a name to create a new note there, or pick an existing note shown in the base to add the marker to that note instead.
+4. New notes are created at your vault's default location for new notes.
+
 #### Using source code frontmatter
 
 Ensure that the frontmatter block is the first thing in your note.
@@ -115,6 +122,17 @@ marker:
 > Technically only 'coordinates' is required for the marker to be valid. However you'll likely end up using most of the other settings.
 
 > Coordinates can easily be obtained using the 'copy' (📌) tool in the map. Clicking a spot on the map automatically copies the coordinates to your clipboard.
+
+### Map tools
+
+The map has a toolbar in the top-left corner. The optional tools can each be turned on or off in the plugin settings; the pan tool shows whenever at least one optional tool is enabled.
+
+| Tool              | Icon | What it does                                                                                                             |
+| ----------------- | ---- | ------------------------------------------------------------------------------------------------------------------------- |
+| Pan               | 🖱️   | Pans the map. Also lets you drag an existing marker to a new spot; its coordinates in the note's frontmatter are updated automatically on drop. |
+| Measure           | 📏   | Click two points to measure the distance between them, using the map's `scale` and `unit` settings.                     |
+| Copy coordinates  | 📌   | Click a spot to copy its coordinates to your clipboard.                                                                  |
+| Create note here  | 📄   | Click a spot to open the marker form and create a note for it, or add the marker to an existing note. See [Adding a marker](#adding-a-marker). |
 
 ### Adding icons to Obsidian
 

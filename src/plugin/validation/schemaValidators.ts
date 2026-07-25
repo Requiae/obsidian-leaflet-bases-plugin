@@ -30,3 +30,9 @@ export const SchemaValidator = {
 	marker: schemaValidatorFactory<MarkerObject>(markerSchema),
 	map: schemaValidatorFactory<MapObject>(mapSchema),
 } as const satisfies Record<string, ValidatorFunction<StringMap>>;
+
+// Frontmatter stores a single marker as an object, several as an array, and none as undefined
+export function toMarkerArray(value: unknown): MarkerObject[] {
+	const candidates = Array.isArray(value) ? value : value ? [value] : [];
+	return candidates.filter(SchemaValidator.marker);
+}

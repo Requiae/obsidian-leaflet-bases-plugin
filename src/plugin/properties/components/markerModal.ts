@@ -1,7 +1,7 @@
 import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { MarkerModalMode, MarkerObject, NoteNameFieldOptions } from "@plugin/types";
+import { MarkerModalMode, MarkerObject, NoteNameFieldOptions, NoteSelection } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 import { IconSuggest } from "./iconSuggest";
@@ -19,11 +19,12 @@ function buildColourOptionsObject(): Record<string, string> {
 
 export class MarkerModal extends Modal {
 	private value: Partial<MarkerObject>;
+	private noteSelection: NoteSelection;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
 
 	constructor(
 		app: App,
-		onSubmit: (result: MarkerObject) => void,
+		onSubmit: (result: MarkerObject, noteSelection: NoteSelection) => void,
 		initialValue: MarkerObject | undefined,
 		mode: MarkerModalMode,
 		noteNameField?: NoteNameFieldOptions,
@@ -40,10 +41,10 @@ export class MarkerModal extends Modal {
 				.setDesc(t("modal.noteName.description"))
 				.addSearch((searchField) => {
 					searchField.onChange((value) => {
-						noteNameField.onChange(value !== "" ? value : undefined);
+						this.noteSelection = value !== "" ? value : undefined;
 					});
 					new NoteSuggest(app, searchField, noteNameField.existingFiles, (file) => {
-						noteNameField.onChange(file);
+						this.noteSelection = file;
 					});
 				});
 		}
@@ -139,7 +140,7 @@ export class MarkerModal extends Modal {
 				.onClick(() => {
 					if (SchemaValidator.marker(this.value)) {
 						this.close();
-						onSubmit(this.value);
+						onSubmit(this.value, this.noteSelection);
 					}
 				});
 			this.setSubmitEnabledCallback((isEnabled) => {

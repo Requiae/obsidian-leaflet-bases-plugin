@@ -3,8 +3,9 @@ import { Notice, TFile } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
-import { MarkerModalMode, MarkerObject, StringMap } from "@plugin/types";
+import { MarkerModalMode, MarkerObject, NoteSelection, StringMap } from "@plugin/types";
 import { formatCoordinates, getIconWithDefault } from "@plugin/util";
+import { toMarkerArray } from "@plugin/validation/schemaValidators";
 import { SubControl } from "../subControl";
 
 export class CreateNoteControl extends SubControl {
@@ -31,26 +32,16 @@ export class CreateNoteControl extends SubControl {
 		const coordinates = formatCoordinates(event.latlng);
 		const mapName = this.options.name;
 
-		let noteSelection: string | TFile | undefined;
-
 		new MarkerModal(
-			this.view.app,
-			(result) => {
-				void this.createOrUpdateFile(result, noteSelection);
-			},
+			this.app,
+			(result, noteSelection) => void this.createOrUpdateFile(result, noteSelection),
 			{ coordinates, mapName },
 			MarkerModalMode.Add,
-			{
-				existingFiles: this.view.data.data.map((entry) => entry.file),
-				onChange: (value) => (noteSelection = value),
-			},
+			{ existingFiles: this.entries.map((entry) => entry.file) },
 		).open();
 	}
 
-	private async createOrUpdateFile(
-		marker: MarkerObject,
-		noteSelection: string | TFile | undefined,
-	): Promise<void> {
+	private async createOrUpdateFile(marker: MarkerObject, noteSelection: NoteSelection): Promise<void> {
 		if (noteSelection instanceof TFile) {
 			await this.addMarkerToExistingFile(noteSelection, marker);
 			return;
@@ -71,14 +62,13 @@ export class CreateNoteControl extends SubControl {
 	}
 
 	private async addMarkerToExistingFile(file: TFile, marker: MarkerObject): Promise<void> {
-		await this.view.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-			const existing: unknown = frontmatter[C.property.marker.identifier];
-			const existingMarkers: MarkerObject[] = Array.isArray(existing)
-				? (existing as MarkerObject[])
-				: existing
-					? [existing as MarkerObject]
-					: [];
-			frontmatter[C.property.marker.identifier] = [...existingMarkers, marker];
-		});
+		try {
+			await this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
+				const existingMarkers = toMarkerArray(frontmatter[C.property.marker.identifier]);
+				frontmatter[C.property.marker.identifier] = [...existingMarkers, marker];
+			});
+		} catch {
+			new Notice(t("map.controls.createNote.notice.failure"));
+		}
 	}
 }
