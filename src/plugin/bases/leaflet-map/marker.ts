@@ -20,7 +20,7 @@ import {
 	isNotNull,
 	parseCoordinates,
 } from "@plugin/util";
-import { SchemaValidator, toMarkerArray } from "@plugin/validation/schemaValidators";
+import { SchemaValidator, toRawMarkerArray } from "@plugin/validation/schemaValidators";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
@@ -175,9 +175,10 @@ export class MarkerManager {
 
 		try {
 			await this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-				const markers = toMarkerArray(frontmatter[C.property.marker.identifier]);
+				const markers = toRawMarkerArray(frontmatter[C.property.marker.identifier]);
 
-				if (markers[index]) markers[index] = { ...markers[index], coordinates };
+				const target = markers[index];
+				if (SchemaValidator.marker(target)) markers[index] = { ...target, coordinates };
 				frontmatter[C.property.marker.identifier] = markers;
 			});
 		} catch {

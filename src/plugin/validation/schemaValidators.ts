@@ -31,8 +31,10 @@ export const SchemaValidator = {
 	map: schemaValidatorFactory<MapObject>(mapSchema),
 } as const satisfies Record<string, ValidatorFunction<StringMap>>;
 
-// Frontmatter stores a single marker as an object, several as an array, and none as undefined
-export function toMarkerArray(value: unknown): MarkerObject[] {
-	const candidates = Array.isArray(value) ? value : value ? [value] : [];
-	return candidates.filter(SchemaValidator.marker);
+// Frontmatter stores a single marker as an object, several as an array, and none as undefined.
+// Deliberately not filtered/validated: callers rewrite this array back into frontmatter, and
+// entries are addressed by their original index (e.g. when a drag updates one marker), so
+// dropping invalid entries would shift every later index and silently delete unrelated markers.
+export function toRawMarkerArray(value: unknown): unknown[] {
+	return Array.isArray(value) ? value : value ? [value] : [];
 }

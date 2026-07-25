@@ -30,7 +30,7 @@ export class IconSetBrowserModal extends Modal {
 		this.modalEl.addClass("bases-leaflet-view-icon-browser-modal");
 	}
 
-	override async onOpen(): Promise<void> {
+	override onOpen(): void {
 		new Setting(this.contentEl).addSearch((searchField) => {
 			searchField.setPlaceholder(t("settings.icons.browse.searchPlaceholder")).onChange((value) => {
 				this.query = value;
@@ -39,6 +39,14 @@ export class IconSetBrowserModal extends Modal {
 		});
 
 		this.listEl = this.contentEl.createDiv({ cls: "setting-items bases-leaflet-view-icon-browser-list" });
+		void this.loadCollections();
+	}
+
+	override onClose(): void {
+		this.contentEl.empty();
+	}
+
+	private async loadCollections(): Promise<void> {
 		this.setStatus(t("settings.icons.browse.loading"));
 
 		const collections = await getIconifyCollections();
@@ -51,10 +59,6 @@ export class IconSetBrowserModal extends Modal {
 		this.renderList();
 	}
 
-	override onClose(): void {
-		this.contentEl.empty();
-	}
-
 	private setStatus(message: string, withRetry: boolean = false): void {
 		if (!this.listEl) return;
 
@@ -62,7 +66,7 @@ export class IconSetBrowserModal extends Modal {
 		this.listEl.createDiv({ cls: "bases-leaflet-view-icon-browser-status", text: message });
 		if (withRetry) {
 			new Setting(this.listEl).addButton((button) =>
-				button.setButtonText(t("settings.icons.browse.retry")).onClick(() => void this.onOpen()),
+				button.setButtonText(t("settings.icons.browse.retry")).onClick(() => void this.loadCollections()),
 			);
 		}
 	}

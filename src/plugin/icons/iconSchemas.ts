@@ -54,6 +54,8 @@ const iconifyInfoSchema: Schema<keyof ReducedIconifyInfo> = {
 	license: { validator: schemaValidatorFactory(iconifyLicenseSchema), required: true },
 };
 
+export const isIconifyInfo = schemaValidatorFactory<ReducedIconifyInfo>(iconifyInfoSchema);
+
 export const iconifyJsonSchema: Schema<keyof IconifyJSONIconsObject> = {
 	prefix: { validator: Validator.string, required: true },
 	provider: { validator: Validator.string },

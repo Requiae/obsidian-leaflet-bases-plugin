@@ -5,7 +5,7 @@ import { t } from "@plugin/i18n/locale";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
 import { MarkerModalMode, MarkerObject, NoteSelection, StringMap } from "@plugin/types";
 import { formatCoordinates, getIconWithDefault } from "@plugin/util";
-import { toMarkerArray } from "@plugin/validation/schemaValidators";
+import { toRawMarkerArray } from "@plugin/validation/schemaValidators";
 import { SubControl } from "../subControl";
 
 export class CreateNoteControl extends SubControl {
@@ -64,7 +64,7 @@ export class CreateNoteControl extends SubControl {
 	private async addMarkerToExistingFile(file: TFile, marker: MarkerObject): Promise<void> {
 		try {
 			await this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-				const existingMarkers = toMarkerArray(frontmatter[C.property.marker.identifier]);
+				const existingMarkers = toRawMarkerArray(frontmatter[C.property.marker.identifier]);
 				frontmatter[C.property.marker.identifier] = [...existingMarkers, marker];
 			});
 		} catch {

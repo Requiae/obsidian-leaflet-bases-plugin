@@ -1,7 +1,7 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
 import { App, BasesEntry, BasesView } from "obsidian";
-import { Constants as C } from "@plugin/constants";
 import { RequiredMapObject } from "@plugin/types";
+import { fillMapDefaults } from "@plugin/util";
 
 interface SubControlOptions {
 	index: number;
@@ -17,11 +17,7 @@ export class SubControl {
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected button: HTMLButtonElement | undefined;
-	protected options: RequiredMapObject = {
-		...C.map.default,
-		defaultZoom: C.map.default.minZoom,
-		image: "",
-	};
+	protected options: RequiredMapObject = fillMapDefaults({ image: "" });
 
 	private _isSelected: boolean = false;
 	get isSelected(): boolean {

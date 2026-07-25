@@ -1,6 +1,7 @@
 import { requestUrl } from "obsidian";
 import { IconifyInfo } from "@iconify/types";
 import { Constants as C } from "@plugin/constants";
+import { isIconifyInfo } from "@plugin/icons/iconSchemas";
 import { isNonEmptyObject } from "@plugin/util";
 
 export type IconifyCollections = Record<string, IconifyInfo>;
@@ -10,10 +11,18 @@ export interface CollectionEntry {
 	info: IconifyInfo;
 }
 
+function isIconifyCollections(value: unknown): value is IconifyCollections {
+	return isNonEmptyObject(value) && Object.values(value).every(isIconifyInfo);
+}
+
 let collectionsCache: Promise<IconifyCollections | null> | null = null;
 
 export function getIconifyCollections(): Promise<IconifyCollections | null> {
-	collectionsCache ??= fetchIconifyCollections();
+	collectionsCache ??= fetchIconifyCollections().then((result) => {
+		// Don't cache a failure — let the next call retry instead of being stuck forever
+		if (result === null) collectionsCache = null;
+		return result;
+	});
 	return collectionsCache;
 }
 
@@ -64,12 +73,12 @@ async function fetchIconifyCollections(): Promise<IconifyCollections | null> {
 		}
 
 		const json: unknown = response.json;
-		if (!isNonEmptyObject(json)) {
+		if (!isIconifyCollections(json)) {
 			console.error(`Iconify request to ${url} did not return a valid collection list`, json);
 			return null;
 		}
 
-		return json as IconifyCollections;
+		return json;
 	} catch (error) {
 		console.error(`Iconify request to ${url} threw`, error);
 		return null;

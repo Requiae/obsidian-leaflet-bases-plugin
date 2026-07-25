@@ -80,7 +80,7 @@ views:
 
 1. Add a new marker property to the note you want to have a marker.
    ![add marker property](docs/add-marker-property.png)
-2. Add a marker using the '+' button that appeared. Fill in the form in the modal and click 'Create marker'.
+2. Add a marker using the '+' button that appeared. If the vault has more than one Leaflet map view, pick which one the marker belongs to, then click on that map to set the marker's coordinates. Fill in the form in the modal and click 'Create marker'.
    ![add marker modal](docs/add-marker-modal.png)
 3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
    ![edit marker modal](docs/add-marker-edit.png)
@@ -137,6 +137,16 @@ The map has a toolbar in the top-left corner. The optional tools can each be tur
 ### Adding icons to Obsidian
 
 > Any icons added to Obsidian using another plugin should work just fine as long as their icons stick to Obsidian's design limitations. However, these icons likely won't work with Quartz.
+
+#### Browsing Iconify icon sets
+
+1. Open your vault settings. Under community plugins, go to `Leaflet bases`.
+2. Under `Additional icon sets`, click `Browse icon sets`.
+3. Search for the icon set you want, and click `Add`.
+
+#### Adding a set manually
+
+Use this if you already have an icon set `.json` file, or need a custom set not on Iconify's registry.
 
 1. Go to the [Iconify website](https://icon-sets.iconify.design/) and find the iconset you want.
 2. Select any icon and find the set prefix. In the image this is `game-icons`
