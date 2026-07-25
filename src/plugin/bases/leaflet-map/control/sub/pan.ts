@@ -15,4 +15,12 @@ export class PanControl extends SubControl {
 	override mapClicked(_event: LeafletMouseEvent): void {
 		// Just pass, map panning is default leaflet behaviour
 	}
+
+	override onSelected(): void {
+		this.map.fire(C.map.events.dragModeChanged, { enabled: true });
+	}
+
+	override onDeselected(): void {
+		this.map.fire(C.map.events.dragModeChanged, { enabled: false });
+	}
 }

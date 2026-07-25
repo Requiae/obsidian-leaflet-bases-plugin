@@ -2,21 +2,33 @@ import {
 	DivIcon,
 	divIcon,
 	LayerGroup,
+	LeafletEvent,
 	LeafletMouseEvent,
 	LeafletMouseEventHandlerFn,
 	Map,
 	Marker,
 	marker,
 } from "leaflet";
-import { App, BasesEntry, IconName, TFile, Value } from "obsidian";
+import { App, BasesEntry, IconName, Notice, TFile, Value } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { MarkerObject } from "@plugin/types";
-import { getIconWithDefault, isNonEmptyObject, isNotNull, parseCoordinates } from "@plugin/util";
+import { t } from "@plugin/i18n/locale";
+import { MarkerObject, StringMap } from "@plugin/types";
+import {
+	formatCoordinates,
+	getIconWithDefault,
+	isNonEmptyObject,
+	isNotNull,
+	parseCoordinates,
+} from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 
 interface MarkerEntry extends MarkerObject {
 	name: string;
 	link: string;
+}
+
+interface DragModeChangedEvent extends LeafletEvent {
+	enabled: boolean;
 }
 
 function isProperEntry(entry: unknown): entry is { [key: string]: string } {
@@ -41,7 +53,12 @@ function parseMarkerFromEntry(entry: unknown, name: string, link: string): Marke
 	};
 }
 
-function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | null {
+interface IndexedMarkerEntry {
+	markerEntry: MarkerEntry;
+	index: number;
+}
+
+function markersFromEntry(entry: Value | null, file: TFile): IndexedMarkerEntry[] | null {
 	if (entry === null) return null;
 
 	// ListValue is not iterable and ObjectValue is burdensome
@@ -58,8 +75,13 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 	}
 
 	if (!Array.isArray(markerEntries)) return null;
+	// Index reflects the position in the raw frontmatter array, needed to update the
+	// correct entry when a marker is dragged, so it must be captured before any filtering.
 	return markerEntries
-		.map((markerEntry) => parseMarkerFromEntry(markerEntry, file.basename, file.path))
+		.map((rawEntry, index) => {
+			const markerEntry = parseMarkerFromEntry(rawEntry, file.basename, file.path);
+			return markerEntry ? { markerEntry, index } : null;
+		})
 		.filter(isNotNull);
 }
 
@@ -68,6 +90,8 @@ export class MarkerManager {
 
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
+	private dragEnabled: boolean = true;
+	private markerItems: Marker[] = [];
 
 	constructor(
 		private app: App,
@@ -75,6 +99,9 @@ export class MarkerManager {
 		private markerLayer: LayerGroup,
 	) {
 		this.xmlSerializer = new XMLSerializer();
+		this.map.on(C.map.events.dragModeChanged, (event) => {
+			this.setDraggable((event as DragModeChangedEvent).enabled);
+		});
 	}
 
 	unload(): void {
@@ -92,23 +119,35 @@ export class MarkerManager {
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
 		this.markerLayer.clearLayers();
+		this.markerItems = [];
 
 		data.data
-			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker"), entry.file))
-			.filter(isNotNull)
-			.filter(
-				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
+			.flatMap((entry) =>
+				(markersFromEntry(entry.getValue("note.marker"), entry.file) ?? []).map(
+					({ markerEntry, index }) => ({ markerEntry, index, file: entry.file }),
+				),
 			)
-			.forEach((markerEntry) => {
-				const options = { icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour) };
+			.filter(
+				({ markerEntry }) =>
+					markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
+			)
+			.forEach(({ markerEntry, index, file }) => {
+				const options = {
+					icon: this.buildMarkerIcon(markerEntry.icon, markerEntry.colour),
+					draggable: true,
+				};
 				// LatLng is y, x so we reverse the coordinates
 				const markerItem = marker(parseCoordinates(markerEntry.coordinates), options)
 					.bindTooltip(markerEntry.name)
-					.on("click", this.getMarkerOnClick(markerEntry.link));
+					.on("click", this.getMarkerOnClick(markerEntry.link))
+					.on("dragend", () => void this.onMarkerDragEnd(markerItem, file, index));
 				// TODO: Add middle mouse click detection
 				// Leaflet does not detect middle mouse click, and the mouseup event does not lead to a smooth experience
 
 				markerItem.on("mouseover", this.getMarkerOnHover(markerItem, markerEntry.link));
+
+				this.markerItems.push(markerItem);
+				if (!this.dragEnabled) markerItem.dragging?.disable();
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
 				this.map.on("zoomend", () => this.addMarkerWhenZoom(markerItem, markerEntry));
@@ -118,6 +157,34 @@ export class MarkerManager {
 	updateSettings(mapName: string | undefined, mapMinZoom: number) {
 		this.mapName = mapName;
 		this.mapMinZoom = mapMinZoom;
+	}
+
+	private setDraggable(enabled: boolean): void {
+		this.dragEnabled = enabled;
+		this.markerItems.forEach((markerItem) => {
+			if (enabled) markerItem.dragging?.enable();
+			else markerItem.dragging?.disable();
+		});
+	}
+
+	private async onMarkerDragEnd(markerItem: Marker, file: TFile, index: number): Promise<void> {
+		const coordinates = formatCoordinates(markerItem.getLatLng());
+
+		try {
+			await this.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
+				const existing: unknown = frontmatter[C.property.marker.identifier];
+				const markers: MarkerObject[] = Array.isArray(existing)
+					? (existing as MarkerObject[])
+					: existing
+						? [existing as MarkerObject]
+						: [];
+
+				if (markers[index]) markers[index] = { ...markers[index], coordinates };
+				frontmatter[C.property.marker.identifier] = markers;
+			});
+		} catch {
+			new Notice(t("map.markerDrag.notice.failure"));
+		}
 	}
 
 	private buildMarkerIcon(iconId: IconName | undefined, colour: string | undefined): DivIcon {

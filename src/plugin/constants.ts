@@ -18,6 +18,9 @@ export const Constants = {
 			createNote: "file-plus",
 		},
 		imageTypes: ["avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", "webp"],
+		events: {
+			dragModeChanged: "bases-leaflet-view:drag-mode-changed",
+		},
 	},
 	marker: {
 		defaultColour: "#21409a",
