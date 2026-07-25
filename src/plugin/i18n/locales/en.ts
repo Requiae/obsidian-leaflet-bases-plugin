@@ -133,5 +133,18 @@ export default {
 	},
 	marker: {
 		name: "Marker",
+		picker: {
+			baseModal: {
+				placeholder: "Select a base with a Leaflet map view",
+			},
+			mapModal: {
+				title: "Pick coordinates",
+				description: "Click on the map to set this marker's coordinates.",
+			},
+			notice: {
+				noMaps: "No Leaflet map views found in this vault",
+				imageLoadFailed: "Failed to load the map image",
+			},
+		},
 	},
 };

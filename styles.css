@@ -9,6 +9,14 @@ div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	margin: 0;
 }
 
+.leaflet-map-coordinate-picker-modal {
+	width: min(90vw, 900px);
+}
+.leaflet-map-coordinate-picker-modal div.bases-leaflet-map {
+	width: 100%;
+	background-color: rgba(80, 120, 180, 0.1);
+}
+
 .bases-leaflet-view-search-icon-span {
 	display: flex;
 }

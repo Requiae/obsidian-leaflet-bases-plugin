@@ -4,6 +4,7 @@ import { Coordinates } from "@plugin/types";
 import {
 	clamp,
 	distance,
+	fillMapDefaults,
 	isLatLngTuple,
 	isNonEmptyObject,
 	isNotNull,
@@ -33,6 +34,57 @@ describe("Clamp function", () => {
 
 	test("reduce value to maximum if above boundaries", () => {
 		expect(clamp(maximum + 1, minimum, maximum)).toEqual(maximum);
+	});
+});
+
+describe("Fill map defaults function", () => {
+	test("fills in all defaults when only image is provided", () => {
+		expect(fillMapDefaults({ image: "map.png" })).toEqual({
+			name: undefined,
+			image: "map.png",
+			height: 600,
+			minZoom: 0,
+			maxZoom: 2,
+			defaultZoom: 0,
+			zoomDelta: 0.5,
+			scale: 1,
+			unit: "",
+		});
+	});
+
+	test("keeps provided values", () => {
+		expect(
+			fillMapDefaults({
+				name: "First floor",
+				image: "map.png",
+				height: 400,
+				minZoom: 1,
+				maxZoom: 5,
+				defaultZoom: 3,
+				zoomDelta: 1,
+				scale: 2,
+				unit: "m",
+			}),
+		).toEqual({
+			name: "First floor",
+			image: "map.png",
+			height: 400,
+			minZoom: 1,
+			maxZoom: 5,
+			defaultZoom: 3,
+			zoomDelta: 1,
+			scale: 2,
+			unit: "m",
+		});
+	});
+
+	test("clamps defaultZoom within minZoom and maxZoom", () => {
+		expect(fillMapDefaults({ image: "map.png", minZoom: 1, maxZoom: 5, defaultZoom: 0 }).defaultZoom).toEqual(1);
+		expect(fillMapDefaults({ image: "map.png", minZoom: 1, maxZoom: 5, defaultZoom: 8 }).defaultZoom).toEqual(5);
+	});
+
+	test("raises maxZoom to at least minZoom", () => {
+		expect(fillMapDefaults({ image: "map.png", minZoom: 4, maxZoom: 2 }).maxZoom).toEqual(4);
 	});
 });
 

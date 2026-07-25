@@ -3,7 +3,7 @@ import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { MapObject, ViewRegistrationBuilder } from "@plugin/types";
-import { clamp } from "@plugin/util";
+import { fillMapDefaults } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MapManager } from "./map";
 import { MarkerManager } from "./marker";
@@ -76,20 +76,9 @@ class LeafletMapView extends BasesView {
 
 		if (!SchemaValidator.map(settings)) return;
 
-		const minZoom = settings.minZoom ?? C.map.default.minZoom;
-		const maxZoom = Math.max(settings.maxZoom ?? C.map.default.maxZoom, minZoom);
-
-		this.markerManager.updateSettings(settings.name, minZoom);
-		await this.mapManager.updateSettings({
-			...settings,
-			height: settings.height ?? C.map.default.height,
-			minZoom,
-			maxZoom,
-			defaultZoom: clamp(settings.defaultZoom ?? minZoom, minZoom, maxZoom),
-			zoomDelta: settings.zoomDelta ?? C.map.default.zoomDelta,
-			scale: settings.scale ?? C.map.default.scale,
-			unit: settings.unit ?? C.map.default.unit,
-		});
+		const required = fillMapDefaults(settings);
+		this.markerManager.updateSettings(required.name, required.minZoom);
+		await this.mapManager.updateSettings(required);
 	}
 
 	static getViewOptions(): BasesAllOptions[] {

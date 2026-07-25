@@ -1,9 +1,26 @@
 import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates, StringMap } from "@plugin/types";
+import { Constants as C } from "@plugin/constants";
+import { Coordinates, MapObject, RequiredMapObject, StringMap } from "@plugin/types";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
+}
+
+export function fillMapDefaults(settings: MapObject): RequiredMapObject {
+	const minZoom = settings.minZoom ?? C.map.default.minZoom;
+	const maxZoom = Math.max(settings.maxZoom ?? C.map.default.maxZoom, minZoom);
+
+	return {
+		...settings,
+		height: settings.height ?? C.map.default.height,
+		minZoom,
+		maxZoom,
+		defaultZoom: clamp(settings.defaultZoom ?? minZoom, minZoom, maxZoom),
+		zoomDelta: settings.zoomDelta ?? C.map.default.zoomDelta,
+		scale: settings.scale ?? C.map.default.scale,
+		unit: settings.unit ?? C.map.default.unit,
+	};
 }
 
 export function distance(a: LatLngLiteral, b: LatLngLiteral): number {
