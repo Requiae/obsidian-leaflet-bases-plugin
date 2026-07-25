@@ -1,5 +1,5 @@
 import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
-import { BasesView } from "obsidian";
+import { App, BasesEntry, BasesView } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { RequiredMapObject } from "@plugin/types";
 
@@ -33,6 +33,14 @@ export class SubControl {
 		this.map = options.map;
 		this.view = options.view;
 		this.onSelectCallback = options.onSelectCallback;
+	}
+
+	protected get app(): App {
+		return this.view.app;
+	}
+
+	protected get entries(): BasesEntry[] {
+		return this.view.data.data;
 	}
 
 	setSelected(isSelected: boolean): void {
