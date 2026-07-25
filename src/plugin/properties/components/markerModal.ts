@@ -1,11 +1,12 @@
 import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
-import { MarkerModalMode, MarkerObject } from "@plugin/types";
+import { MarkerModalMode, MarkerObject, NoteNameFieldOptions } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 import { IconSuggest } from "./iconSuggest";
 import { MarkerModalErrorComponent } from "./markerModalErrorComponent";
+import { NoteSuggest } from "./noteSuggest";
 
 function buildColourOptionsObject(): Record<string, string> {
 	return Object.fromEntries(
@@ -25,12 +26,27 @@ export class MarkerModal extends Modal {
 		onSubmit: (result: MarkerObject) => void,
 		initialValue: MarkerObject | undefined,
 		mode: MarkerModalMode,
+		noteNameField?: NoteNameFieldOptions,
 	) {
 		super(app);
 		this.setTitle(t(`modal.title.${mode}`));
 
 		this.value = initialValue ?? {};
 		const coordinatesValidator = Validator.coordinates;
+
+		if (noteNameField) {
+			new Setting(this.contentEl)
+				.setName(t("modal.noteName.title"))
+				.setDesc(t("modal.noteName.description"))
+				.addSearch((searchField) => {
+					searchField.onChange((value) => {
+						noteNameField.onChange(value !== "" ? value : undefined);
+					});
+					new NoteSuggest(app, searchField, noteNameField.existingFiles, (file) => {
+						noteNameField.onChange(file);
+					});
+				});
+		}
 
 		new Setting(this.contentEl)
 			.setName(t("modal.mapName.title"))

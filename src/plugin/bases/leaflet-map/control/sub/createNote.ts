@@ -1,9 +1,9 @@
 import { LeafletMouseEvent } from "leaflet";
-import { Notice } from "obsidian";
+import { Notice, TFile } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
-import { MarkerModalMode, StringMap } from "@plugin/types";
+import { MarkerModalMode, MarkerObject, StringMap } from "@plugin/types";
 import { formatCoordinates, getIconWithDefault } from "@plugin/util";
 import { SubControl } from "../subControl";
 
@@ -24,39 +24,61 @@ export class CreateNoteControl extends SubControl {
 	}
 
 	override mapClicked(event: LeafletMouseEvent): void {
-		void this.createNoteAt(event);
+		this.createNoteAt(event);
 	}
 
-	private async createNoteAt(event: LeafletMouseEvent): Promise<void> {
+	private createNoteAt(event: LeafletMouseEvent): void {
 		const coordinates = formatCoordinates(event.latlng);
 		const mapName = this.options.name;
+
+		let noteSelection: string | TFile | undefined;
+
+		new MarkerModal(
+			this.view.app,
+			(result) => {
+				void this.createOrUpdateFile(result, noteSelection);
+			},
+			{ coordinates, mapName },
+			MarkerModalMode.Add,
+			{
+				existingFiles: this.view.data.data.map((entry) => entry.file),
+				onChange: (value) => (noteSelection = value),
+			},
+		).open();
+	}
+
+	private async createOrUpdateFile(
+		marker: MarkerObject,
+		noteSelection: string | TFile | undefined,
+	): Promise<void> {
+		if (noteSelection instanceof TFile) {
+			await this.addMarkerToExistingFile(noteSelection, marker);
+			return;
+		}
 
 		try {
 			// Delegates location/naming to Bases' own new-note handling, so it respects
 			// the vault's "Default location for new notes" setting like any other note.
 			await this.view.createFileForView(
-				t("map.controls.createNote.defaultName"),
+				noteSelection ?? t("map.controls.createNote.defaultName"),
 				(frontmatter: StringMap) => {
-					frontmatter[C.property.marker.identifier] = [{ coordinates, mapName }];
+					frontmatter[C.property.marker.identifier] = [marker];
 				},
 			);
 		} catch {
 			new Notice(t("map.controls.createNote.notice.failure"));
-			return;
 		}
+	}
 
-		const file = this.view.app.workspace.getActiveFile();
-		if (!file) return;
-
-		new MarkerModal(
-			this.view.app,
-			(result) => {
-				void this.view.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
-					frontmatter[C.property.marker.identifier] = [result];
-				});
-			},
-			{ coordinates, mapName },
-			MarkerModalMode.Add,
-		).open();
+	private async addMarkerToExistingFile(file: TFile, marker: MarkerObject): Promise<void> {
+		await this.view.app.fileManager.processFrontMatter(file, (frontmatter: StringMap) => {
+			const existing: unknown = frontmatter[C.property.marker.identifier];
+			const existingMarkers: MarkerObject[] = Array.isArray(existing)
+				? (existing as MarkerObject[])
+				: existing
+					? [existing as MarkerObject]
+					: [];
+			frontmatter[C.property.marker.identifier] = [...existingMarkers, marker];
+		});
 	}
 }

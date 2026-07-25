@@ -69,6 +69,10 @@ export default {
 			[MarkerModalMode.Add]: "Create marker",
 			[MarkerModalMode.Edit]: "Submit changes",
 		},
+		noteName: {
+			title: "Note name",
+			description: 'Optional. Name for the new note, defaults to "Untitled" if left empty.',
+		},
 		mapName: {
 			title: "Map name",
 			description:
@@ -128,6 +132,11 @@ export default {
 				notice: {
 					failure: "Failed creating note",
 				},
+			},
+		},
+		markerDrag: {
+			notice: {
+				failure: "Failed moving marker",
 			},
 		},
 	},
