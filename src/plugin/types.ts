@@ -41,6 +41,8 @@ export type MapObject = {
 
 export type NoteSelection = string | TFile | undefined;
 
+export type NoteSelection = string | TFile | undefined;
+
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
 // Reconstruct interface as type to avoid "Index signature is missing" error
 export type IconifyJSONIconsObject = {
