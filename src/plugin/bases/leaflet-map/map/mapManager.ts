@@ -41,9 +41,10 @@ export class MapManager {
 
 		if (
 			plugin.settingsManager.settings.enableMeasureTool ||
-			plugin.settingsManager.settings.enableDragTool
+			plugin.settingsManager.settings.enableDragTool ||
+			plugin.settingsManager.settings.enableCreateNoteTool
 		) {
-			this.controls = new ControlContainer(plugin.settingsManager.settings);
+			this.controls = new ControlContainer(plugin.app, viewUtil, plugin.settingsManager.settings);
 			this.controls.addTo(this.leafletMap);
 		}
 

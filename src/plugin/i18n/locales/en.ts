@@ -12,6 +12,10 @@ export default {
 				title: "Enable drag tool",
 				description: "Enable tool that allows you to drag markers",
 			},
+			createNote: {
+				title: "Enable create note tool",
+				description: "Enable tool that creates a new note with a marker at the clicked location",
+			},
 		},
 		icons: {
 			title: "Additional icon sets",
@@ -64,6 +68,11 @@ export default {
 			[MarkerModalMode.Add]: "Create marker",
 			[MarkerModalMode.Edit]: "Submit changes",
 		},
+		noteName: {
+			title: "Note name",
+			description:
+				'Optional. Type a name to create a new note there, or pick an existing note shown in the base to add the marker to that note instead. Defaults to "Untitled" if left empty.',
+		},
 		mapName: {
 			title: "Map name",
 			description:
@@ -109,6 +118,9 @@ export default {
 			measure: "Measure",
 			pan: "Pan",
 			drag: "Drag",
+			createNote: {
+				label: "Create note here",
+			},
 			copy: {
 				label: "Copy coordinates",
 				notice: {
