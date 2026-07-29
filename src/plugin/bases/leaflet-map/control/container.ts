@@ -1,6 +1,8 @@
-import { Control, DomUtil, Map } from "leaflet";
+import { Control, DomUtil, Map as LeafletMap } from "leaflet";
+import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { BasesLeafletViewSettings, RequiredMapObject } from "@plugin/types";
-import { CopyControl, MeasureControl, PanControl } from "./sub";
+import { MeasureControl, PanControl } from "./sub";
+import { DragControl } from "./sub/drag";
 import { SubControl } from "./subControl";
 
 export class ControlContainer extends Control {
@@ -15,7 +17,7 @@ export class ControlContainer extends Control {
 	override onAdd(map: Map): HTMLElement {
 		this.registerSubControl(PanControl, map);
 		if (this.pluginSettings.enableMeasureTool) this.registerSubControl(MeasureControl, map);
-		if (this.pluginSettings.enableCopyTool) this.registerSubControl(CopyControl, map);
+		if (this.pluginSettings.enableDragTool) this.registerSubControl(DragControl, map);
 
 		const containerEl = DomUtil.create("div", "leaflet-bar leaflet-control");
 
@@ -31,7 +33,7 @@ export class ControlContainer extends Control {
 		return containerEl;
 	}
 
-	override onRemove(map: Map | undefined): void {
+	override onRemove(map: LeafletMap | undefined): void {
 		map?.removeEventListener("click");
 
 		this.controls.forEach((control) => control.onRemove());

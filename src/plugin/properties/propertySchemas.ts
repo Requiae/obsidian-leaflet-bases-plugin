@@ -19,4 +19,5 @@ export const mapSchema: Schema<keyof MapObject> = {
 	zoomDelta: { validator: Validator.positiveNumber },
 	scale: { validator: Validator.positiveNumber },
 	unit: { validator: Validator.string },
+	center: { validator: Validator.coordinates },
 };

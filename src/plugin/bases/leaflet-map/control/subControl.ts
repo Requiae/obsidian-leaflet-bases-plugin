@@ -1,8 +1,9 @@
-import { DomEvent, DomUtil, LeafletMouseEvent, Map } from "leaflet";
+import { DomEvent, DomUtil, LeafletMouseEvent } from "leaflet";
+import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
 import { RequiredMapObject } from "@plugin/types";
 
-interface SubControlOptions {
+export interface SubControlOptions {
 	index: number;
 	map: Map;
 	onSelectCallback: (index: number) => void;
@@ -13,6 +14,7 @@ export class SubControl {
 	readonly map: Map;
 
 	private onSelectCallback: (index: number) => void = () => {};
+	protected refreshCallback: () => void = () => {};
 	protected button: HTMLButtonElement | undefined;
 	protected options: RequiredMapObject = {
 		...C.map.default,

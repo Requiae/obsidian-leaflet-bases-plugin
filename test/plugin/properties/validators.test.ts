@@ -408,3 +408,82 @@ describe("Colour validator", () => {
 		});
 	});
 });
+
+describe("LatLngTuple validator", () => {
+	const validator = Validator.latLngTuple;
+
+	test("returns true on valid LatLngTuple values", () => {
+		expect(validator([0, 0])).toEqual(true);
+		expect(validator([1, 0])).toEqual(true);
+		expect(validator([0, 4])).toEqual(true);
+		expect(validator([-1, -5])).toEqual(true);
+	});
+
+	test("returns false on non-LatLngTuple value", () => {
+		expect(validator("")).toEqual(false);
+		expect(validator(true)).toEqual(false);
+		expect(validator(false)).toEqual(false);
+		expect(validator({})).toEqual(false);
+		expect(validator({ kaas: 1 })).toEqual(false);
+		expect(validator(() => {})).toEqual(false);
+		expect(validator(null)).toEqual(false);
+		expect(validator(undefined)).toEqual(false);
+		expect(validator([])).toEqual(false);
+		expect(validator([1])).toEqual(false);
+		expect(validator([NaN, 1])).toEqual(false);
+		expect(validator([1, 1, 1])).toEqual(false);
+		expect(validator(["", ""])).toEqual(false);
+	});
+});
+
+describe("StringMap validator", () => {
+	const validator = Validator.stringMap;
+
+	test("is true on non empty objects", () => {
+		expect(validator({ 1: 1 })).toEqual(true);
+		expect(validator({ a: 1 })).toEqual(true);
+		expect(validator({ 1: "aaa" })).toEqual(true);
+		expect(validator({ a: "aaa" })).toEqual(true);
+		expect(validator({ 1: {} })).toEqual(true);
+		expect(validator({ a: {} })).toEqual(true);
+	});
+
+	describe("is false on", () => {
+		test("empty objects", () => {
+			expect(validator({})).toEqual(false);
+		});
+
+		test("null values", () => {
+			expect(validator(null)).toEqual(false);
+		});
+
+		test("undefined values", () => {
+			expect(validator(undefined)).toEqual(false);
+		});
+
+		test("number values", () => {
+			expect(validator(0)).toEqual(false);
+			expect(validator(1)).toEqual(false);
+		});
+
+		test("boolean values", () => {
+			expect(validator(true)).toEqual(false);
+			expect(validator(false)).toEqual(false);
+		});
+
+		test("string values", () => {
+			expect(validator("a")).toEqual(false);
+		});
+
+		test("array values", () => {
+			expect(validator([])).toEqual(false);
+			expect(validator([1, 2])).toEqual(false);
+			expect(validator(["a", "b"])).toEqual(false);
+		});
+
+		test("function values", () => {
+			expect(validator(() => {})).toEqual(false);
+			expect(validator((a: number) => a + 1)).toEqual(false);
+		});
+	});
+});

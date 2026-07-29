@@ -8,9 +8,9 @@ export default {
 				title: "Enable measure tool",
 				description: "Enable tool that allows you to measure distances",
 			},
-			copy: {
-				title: "Enable copy tool",
-				description: "Enable tool that allows you to copy coordinated to your clipboard",
+			drag: {
+				title: "Enable drag tool",
+				description: "Enable tool that allows you to drag markers",
 			},
 		},
 		icons: {
@@ -35,10 +35,8 @@ export default {
 		options: {
 			image: "Image",
 			height: "Embedded height",
-			mapname: {
-				title: "Map name",
-				placeholder: "Optional",
-			},
+			mapname: "Map name",
+			center: "Default center point",
 			zoom: {
 				header: "Zoom",
 				default: "Default zoom",
@@ -54,6 +52,7 @@ export default {
 					placeholder: "Unit of measurement",
 				},
 			},
+			placeholder: "Optional",
 		},
 	},
 	modal: {
@@ -108,15 +107,29 @@ export default {
 	map: {
 		controls: {
 			measure: "Measure",
-			pan: {
-				label: "Pan",
-			},
+			pan: "Pan",
+			drag: "Drag",
 			copy: {
 				label: "Copy coordinates",
 				notice: {
 					success: "Coordinates copied to clipboard",
 					failure: "Failed copying coordinates to clipboard",
 				},
+			},
+		},
+		contextMenu: {
+			marker: {
+				addToNew: "Add marker to new note",
+				addToExisting: "Add marker to existing note",
+				edit: "Edit marker",
+				setMinimalZoom: "Set marker minimal zoom",
+				resetMinimalZoom: "Reset marker minimal zoom",
+				delete: "Delete",
+			},
+			map: {
+				copyCoordinates: "Copy coordinates",
+				setDefaultZoom: "Set default zoom",
+				setDefaultCenterPoint: "Set default center point",
 			},
 		},
 	},

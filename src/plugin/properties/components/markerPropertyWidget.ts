@@ -6,6 +6,7 @@ import {
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerObject } from "@plugin/types";
+import { isArray } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { MarkerAddComponent } from "./markerAdd";
 import { MarkerValueComponent } from "./markerValue";
@@ -25,8 +26,7 @@ export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 };
 
 function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is MarkerObject[] {
-	if (!Array.isArray(propertyValue)) return false;
-	return propertyValue.every((element) => SchemaValidator.marker(element));
+	return isArray(propertyValue, SchemaValidator.marker);
 }
 
 class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {

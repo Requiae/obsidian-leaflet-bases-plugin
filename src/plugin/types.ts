@@ -1,3 +1,4 @@
+import { LatLng } from "leaflet";
 import { BasesViewRegistration, IconName } from "obsidian";
 import { IconifyInfo, IconifyJSONIconsData } from "@iconify/types";
 import { BasesLeafletViewPlugin } from "./plugin";
@@ -20,6 +21,11 @@ export type MarkerObject = {
 	minZoom?: number;
 };
 
+export interface MarkerEntry extends MarkerObject {
+	name: string;
+	link: string;
+}
+
 export type MapObject = {
 	name?: string;
 	image: string | Wiki;
@@ -30,7 +36,13 @@ export type MapObject = {
 	zoomDelta?: number;
 	scale?: number;
 	unit?: string;
+	center?: Coordinates;
 };
+
+export interface SimpleTFile {
+	basename: string;
+	path: string;
+}
 
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
 // Reconstruct interface as type to avoid "Index signature is missing" error
@@ -39,7 +51,10 @@ export type IconifyJSONIconsObject = {
 } & { info?: ReducedIconifyInfo };
 
 // Set all properties of MapObject to required except name
-export type RequiredMapObject = Omit<Required<MapObject>, "name"> & { name?: string };
+export type RequiredMapObject = Omit<Required<MapObject>, "name" | "center"> & {
+	name?: string;
+	center?: Coordinates;
+};
 
 export type ValidatorFunction<T> = (value: unknown) => value is T;
 
@@ -54,9 +69,11 @@ export abstract class Manager {
 	abstract unload(): void;
 }
 
+export type LeafletContextMenuCallback = (latLng: LatLng) => void;
+
 export interface BasesLeafletViewSettings {
 	enableMeasureTool: boolean;
-	enableCopyTool: boolean;
+	enableDragTool: boolean;
 	iconData: IconifyJSONIconsObject[];
 }
 

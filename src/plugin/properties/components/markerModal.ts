@@ -1,4 +1,4 @@
-import { App, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
+import { App, ButtonComponent, ColorComponent, DropdownComponent, Modal, Setting } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject } from "@plugin/types";
@@ -16,22 +16,41 @@ function buildColourOptionsObject(): Record<string, string> {
 	);
 }
 
-export class MarkerModal extends Modal {
-	private value: Partial<MarkerObject>;
+export class MarkerModal<T extends MarkerObject> extends Modal {
+	protected value: Partial<MarkerObject>;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
+
+	protected confirmButton: ButtonComponent | undefined;
 
 	constructor(
 		app: App,
-		onSubmit: (result: MarkerObject) => void,
+		protected onSubmit: (result: T) => void,
 		initialValue: MarkerObject | undefined,
-		mode: MarkerModalMode,
+		protected mode: MarkerModalMode,
 	) {
 		super(app);
-		this.setTitle(t(`modal.title.${mode}`));
+		this.setTitle(t(`modal.title.${this.mode}`));
 
-		this.value = initialValue ?? {};
-		const coordinatesValidator = Validator.coordinates;
+		this.value = { ...initialValue };
 
+		this.addSettings();
+	}
+
+	protected addSettings() {
+		this.addMapNameSetting();
+		this.addCoordinatesSetting();
+		this.addIconSetting();
+		this.addColourSetting();
+		this.addMinZoomSetting();
+
+		this.addConfirmButton();
+	}
+
+	private setSubmitEnabledCallback(cb: (isEnabled: boolean) => void): void {
+		this.submitEnabledCallback = cb;
+	}
+
+	private addMapNameSetting(): void {
 		new Setting(this.contentEl)
 			.setName(t("modal.mapName.title"))
 			.setDesc(t("modal.mapName.description"))
@@ -40,7 +59,9 @@ export class MarkerModal extends Modal {
 					.setValue(this.value.mapName ?? "")
 					.onChange((value) => (this.value.mapName = value !== "" ? value : undefined));
 			});
+	}
 
+	private addCoordinatesSetting(): void {
 		let coordinatesError: MarkerModalErrorComponent;
 		new Setting(this.contentEl)
 			.setName(t("modal.coordinates.title"))
@@ -51,7 +72,7 @@ export class MarkerModal extends Modal {
 					if (value === "") {
 						coordinatesError.setMessage(t("modal.coordinates.error.required"));
 						this.submitEnabledCallback(false);
-					} else if (!coordinatesValidator(value)) {
+					} else if (!Validator.coordinates(value)) {
 						coordinatesError.setMessage(t("modal.coordinates.error.invalid"));
 						this.submitEnabledCallback(false);
 					} else {
@@ -67,7 +88,9 @@ export class MarkerModal extends Modal {
 				coordinatesError = new MarkerModalErrorComponent(errorEl).setMessage("");
 				return coordinatesError;
 			});
+	}
 
+	private addIconSetting(): void {
 		new Setting(this.contentEl)
 			.setName(t("modal.icon.title"))
 			.setDesc(t("modal.icon.description"))
@@ -76,9 +99,11 @@ export class MarkerModal extends Modal {
 					.setValue(this.value.icon ?? "")
 					.setPlaceholder(t("modal.icon.placeholder"))
 					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
-				new IconSuggest(app, searchField);
+				new IconSuggest(this.app, searchField);
 			});
+	}
 
+	private addColourSetting(): void {
 		let colourComponent: ColorComponent;
 		let dropdownComponent: DropdownComponent;
 		new Setting(this.contentEl)
@@ -105,7 +130,9 @@ export class MarkerModal extends Modal {
 						}
 					});
 			});
+	}
 
+	private addMinZoomSetting(): void {
 		new Setting(this.contentEl)
 			.setName(t("modal.minZoom.title"))
 			.setDesc(t("modal.minZoom.description"))
@@ -115,24 +142,23 @@ export class MarkerModal extends Modal {
 					.setValue(this.value.minZoom?.toString() ?? "")
 					.onChange((value) => (this.value.minZoom = value !== "" ? Number(value) : undefined));
 			});
+	}
 
+	private addConfirmButton(): void {
 		new Setting(this.contentEl).addButton((button) => {
 			button
-				.setButtonText(t(`modal.submit.${mode}`))
+				.setButtonText(t(`modal.submit.${this.mode}`))
 				.setCta()
 				.onClick(() => {
 					if (SchemaValidator.marker(this.value)) {
 						this.close();
-						onSubmit(this.value);
+						this.onSubmit(this.value as T);
 					}
 				});
 			this.setSubmitEnabledCallback((isEnabled) => {
 				button.setDisabled(!isEnabled);
 			});
+			this.confirmButton = button;
 		});
-	}
-
-	private setSubmitEnabledCallback(cb: (isEnabled: boolean) => void): void {
-		this.submitEnabledCallback = cb;
 	}
 }

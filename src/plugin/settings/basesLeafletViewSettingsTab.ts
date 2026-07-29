@@ -36,11 +36,11 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 			})
 			.addSetting((setting) => {
 				setting
-					.setName(t("settings.tools.copy.title"))
-					.setDesc(t("settings.tools.copy.description"))
+					.setName(t("settings.tools.drag.title"))
+					.setDesc(t("settings.tools.drag.description"))
 					.addToggle((toggle) =>
-						toggle.setValue(this.manager.settings.enableCopyTool).onChange(async (value) => {
-							await this.manager.updateSettings({ enableCopyTool: value });
+						toggle.setValue(this.manager.settings.enableMeasureTool).onChange(async (value) => {
+							await this.manager.updateSettings({ enableMeasureTool: value });
 						}),
 					);
 			});
