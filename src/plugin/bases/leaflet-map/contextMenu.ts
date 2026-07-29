@@ -1,4 +1,4 @@
-import { Handler, LatLng, LeafletMouseEvent } from "leaflet";
+import { Handler, LatLng, LeafletEvent, LeafletMouseEvent } from "leaflet";
 import { App, Menu, Notice } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { t } from "@plugin/i18n/locale";
@@ -34,7 +34,7 @@ export class ContextMenu extends Handler {
 	override addHooks(): void {
 		this.map
 			.on("contextmenu", (event: LeafletMouseEvent) => this.show(event), this)
-			.on("markermenu", (event: LeafletMouseEvent) => this.show(event), this);
+			.on("markermenu", (event: LeafletEvent) => this.show(event as LeafletMouseEvent), this);
 	}
 
 	override removeHooks(): void {

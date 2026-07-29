@@ -14,7 +14,7 @@ export class SubControl {
 	readonly map: Map;
 
 	private onSelectCallback: (index: number) => void = () => {};
-	protected refreshCallback: () => void;
+	protected refreshCallback: () => void = () => {};
 	protected button: HTMLButtonElement | undefined;
 	protected options: RequiredMapObject = {
 		...C.map.default,

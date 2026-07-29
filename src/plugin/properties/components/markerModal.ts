@@ -16,7 +16,7 @@ function buildColourOptionsObject(): Record<string, string> {
 	);
 }
 
-export class MarkerModal extends Modal {
+export class MarkerModal<T extends MarkerObject> extends Modal {
 	protected value: Partial<MarkerObject>;
 	private submitEnabledCallback: (isEnabled: boolean) => void = () => {};
 
@@ -24,7 +24,7 @@ export class MarkerModal extends Modal {
 
 	constructor(
 		app: App,
-		protected onSubmit: (result: MarkerObject) => void,
+		protected onSubmit: (result: T) => void,
 		initialValue: MarkerObject | undefined,
 		protected mode: MarkerModalMode,
 	) {
@@ -152,7 +152,7 @@ export class MarkerModal extends Modal {
 				.onClick(() => {
 					if (SchemaValidator.marker(this.value)) {
 						this.close();
-						this.onSubmit(this.value);
+						this.onSubmit(this.value as T);
 					}
 				});
 			this.setSubmitEnabledCallback((isEnabled) => {

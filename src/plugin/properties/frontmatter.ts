@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { MarkerEntry, MarkerObject, StringMap } from "@plugin/types";
+import { MarkerEntry, MarkerObject } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
@@ -24,7 +24,10 @@ export class Frontmatter {
 	constructor(private app: App) {}
 
 	addMarker(marker: MarkerEntry): void {
-		void this.processFrontMatter(marker, (frontmatter: StringMap) => {
+		void this.processFrontMatter(marker, (frontmatter) => {
+			if (!Validator.stringMap(frontmatter))
+				throw new Error(`Frontmatter is not of type StringMap`);
+
 			if (hasMarkers(frontmatter)) {
 				frontmatter.marker.push(markerEntryToObject(marker));
 			} else {

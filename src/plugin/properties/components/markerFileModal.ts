@@ -6,8 +6,8 @@ import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { FileSuggest } from "./fileSuggest";
 import { MarkerModal } from "./markerModal";
 
-export class MarkerFileModal extends MarkerModal {
-	private selectedFile: SimpleTFile | null;
+export class MarkerFileModal<T extends MarkerEntry> extends MarkerModal<T> {
+	private selectedFile: SimpleTFile | null = null;
 
 	constructor(
 		app: App,
