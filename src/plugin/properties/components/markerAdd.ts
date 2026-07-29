@@ -8,7 +8,7 @@ export class MarkerAddComponent {
 	onChangeCallback: (value: MarkerObject) => void = () => {};
 
 	constructor(app: App, containerEl: HTMLElement) {
-		this.plusEl = activeDocument.createElement("li");
+		this.plusEl = activeWindow.createEl("li");
 		this.plusEl.addClass("leaflet-map-property-add-item");
 		this.createAddButton();
 
@@ -47,11 +47,11 @@ export class MarkerAddComponent {
 			},
 		});
 
-		const line1 = activeDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+		const line1 = activeWindow.createSvg("path");
 		line1.setAttribute("d", "M3 7 11 7");
 		plus.appendChild(line1);
 
-		const line2 = activeDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+		const line2 = activeWindow.createSvg("path");
 		line2.setAttribute("d", "M7 3 7 11");
 		plus.appendChild(line2);
 	}
