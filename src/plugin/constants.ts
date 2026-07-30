@@ -1,5 +1,3 @@
-/* eslint-disable no-useless-escape */
-
 export const Constants = {
 	map: {
 		default: {
@@ -45,6 +43,7 @@ export const Constants = {
 	regExp: {
 		hexColourValidation: /^#([0-9A-F]{3}){1,2}$$/i,
 		coordinatesValidation: /^\s*[0-9]+\s*,\s*[0-9]+\s*$/,
+		// eslint-disable-next-line no-useless-escape -- keep the escape for readability of the hyphen inside the character class
 		iconValidation: /^([a-z]+([\-][a-z]+)*:)?[a-z]+([\-][a-z]+)*([\-][0-9]+)?$/,
 		url: /https?:/,
 		arrayString: /^\[.*[\]]$/,
