@@ -1,4 +1,4 @@
-import { App } from "obsidian";
+import { App, TFile } from "obsidian";
 import { MarkerEntry, MarkerObject } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
@@ -24,16 +24,25 @@ export class Frontmatter {
 	constructor(private app: App) {}
 
 	addMarker(marker: MarkerEntry): void {
-		void this.processFrontMatter(marker, (frontmatter) => {
-			if (!Validator.stringMap(frontmatter))
-				throw new Error(`Frontmatter is not of type StringMap`);
+		void this.processFrontMatter(marker, (frontmatter) =>
+			this.appendMarker(frontmatter, markerEntryToObject(marker)),
+		);
+	}
 
-			if (hasMarkers(frontmatter)) {
-				frontmatter.marker.push(markerEntryToObject(marker));
-			} else {
-				frontmatter.marker = [markerEntryToObject(marker)];
-			}
-		});
+	addMarkerToFile(file: TFile, marker: MarkerObject): void {
+		void this.app.fileManager.processFrontMatter(file, (frontmatter) =>
+			this.appendMarker(frontmatter, marker),
+		);
+	}
+
+	private appendMarker(frontmatter: unknown, marker: MarkerObject): void {
+		if (!Validator.stringMap(frontmatter)) throw new Error(`Frontmatter is not of type StringMap`);
+
+		if (hasMarkers(frontmatter)) {
+			frontmatter.marker.push(marker);
+		} else {
+			frontmatter.marker = [marker];
+		}
 	}
 
 	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry | MarkerObject): void {

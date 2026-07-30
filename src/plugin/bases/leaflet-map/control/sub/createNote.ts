@@ -3,6 +3,7 @@ import { TFile } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerNoteModal } from "@plugin/properties/components/markerNoteModal";
+import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerModalMode, MarkerObject, NoteSelection } from "@plugin/types";
 import { getIconWithDefault, writeCoordinates } from "@plugin/util";
 import { SubControl } from "../subControl";
@@ -52,11 +53,6 @@ export class CreateNoteControl extends SubControl {
 	}
 
 	private addMarkerToExistingFile(file: TFile, marker: MarkerObject): void {
-		void this.app.fileManager.processFrontMatter(file, (frontmatter: Record<string, unknown>) => {
-			const existingMarkers = Array.isArray(frontmatter[C.property.marker.identifier])
-				? (frontmatter[C.property.marker.identifier] as unknown[])
-				: [];
-			frontmatter[C.property.marker.identifier] = [...existingMarkers, marker];
-		});
+		new Frontmatter(this.app).addMarkerToFile(file, marker);
 	}
 }
