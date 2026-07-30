@@ -1,10 +1,9 @@
 import { LeafletMouseEvent } from "leaflet";
-import { TFile } from "obsidian";
+import { createOrUpdateNote } from "@plugin/bases/leaflet-map/createOrUpdateNote";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MarkerNoteModal } from "@plugin/properties/components/markerNoteModal";
-import { Frontmatter } from "@plugin/properties/frontmatter";
-import { MarkerModalMode, MarkerObject, NoteSelection } from "@plugin/types";
+import { MarkerModalMode } from "@plugin/types";
 import { getIconWithDefault, writeCoordinates } from "@plugin/util";
 import { SubControl } from "../subControl";
 
@@ -34,25 +33,10 @@ export class CreateNoteControl extends SubControl {
 
 		new MarkerNoteModal(
 			this.app,
-			(marker, noteSelection) => this.createOrUpdateFile(marker, noteSelection),
+			(marker, noteSelection) => createOrUpdateNote(this.app, this.viewUtil, marker, noteSelection),
 			{ coordinates, mapName },
 			MarkerModalMode.Add,
 			this.viewUtil.entries.map((entry) => entry.file),
 		).open();
-	}
-
-	private createOrUpdateFile(marker: MarkerObject, noteSelection: NoteSelection): void {
-		if (noteSelection instanceof TFile) {
-			this.addMarkerToExistingFile(noteSelection, marker);
-			return;
-		}
-
-		// Delegates location/naming to Bases' own new-note handling, so it respects
-		// the vault's "Default location for new notes" setting like any other note.
-		this.viewUtil.createFileForView({ [C.property.marker.identifier]: [marker] }, noteSelection);
-	}
-
-	private addMarkerToExistingFile(file: TFile, marker: MarkerObject): void {
-		new Frontmatter(this.app).addMarkerToFile(file, marker);
 	}
 }

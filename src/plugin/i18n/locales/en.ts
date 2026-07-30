@@ -131,8 +131,7 @@ export default {
 		},
 		contextMenu: {
 			marker: {
-				addToNew: "Add marker to new note",
-				addToExisting: "Add marker to existing note",
+				addNote: "Add marker to note",
 				edit: "Edit marker",
 				setMinimalZoom: "Set marker minimal zoom",
 				resetMinimalZoom: "Reset marker minimal zoom",

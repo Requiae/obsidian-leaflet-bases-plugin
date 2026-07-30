@@ -23,12 +23,6 @@ function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean 
 export class Frontmatter {
 	constructor(private app: App) {}
 
-	addMarker(marker: MarkerEntry): void {
-		void this.processFrontMatter(marker, (frontmatter) =>
-			this.appendMarker(frontmatter, markerEntryToObject(marker)),
-		);
-	}
-
 	addMarkerToFile(file: TFile, marker: MarkerObject): void {
 		void this.app.fileManager.processFrontMatter(file, (frontmatter) =>
 			this.appendMarker(frontmatter, marker),

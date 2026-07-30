@@ -39,11 +39,6 @@ export type MapObject = {
 	center?: Coordinates;
 };
 
-export interface SimpleTFile {
-	basename: string;
-	path: string;
-}
-
 export type NoteSelection = string | TFile | undefined;
 
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
