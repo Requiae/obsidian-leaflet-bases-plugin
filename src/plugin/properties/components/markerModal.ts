@@ -32,7 +32,9 @@ export class MarkerModal<T extends MarkerObject> extends Modal {
 		this.setTitle(t(`modal.title.${this.mode}`));
 
 		this.value = { ...initialValue };
+	}
 
+	override onOpen(): void {
 		this.addSettings();
 	}
 
