@@ -1,4 +1,9 @@
+import { parse } from "yaml";
 import { FileManager, MetadataCache, UserEvent, Vault, Workspace } from "obsidian";
+
+export function parseYaml(yaml: string): unknown {
+	return parse(yaml);
+}
 
 export class App {
 	/** @public */

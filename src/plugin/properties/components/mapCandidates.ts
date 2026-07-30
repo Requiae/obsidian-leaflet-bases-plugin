@@ -12,9 +12,14 @@ export interface MapCandidate {
 
 type RawView = BasesConfigFileView & Record<string, unknown>;
 
+const embeddedBaseCodeBlock = /```base\r?\n([\s\S]*?)```/g;
+
 export async function findLeafletMapCandidates(app: App): Promise<MapCandidate[]> {
 	const baseFiles = app.vault.getFiles().filter((file) => file.extension === "base");
-	const candidateLists = await Promise.all(baseFiles.map((file) => findInFile(app, file)));
+	const candidateLists = await Promise.all([
+		...baseFiles.map((file) => findInFile(app, file)),
+		...app.vault.getMarkdownFiles().map((file) => findInEmbeddedBases(app, file)),
+	]);
 	return candidateLists.flat();
 }
 
@@ -23,7 +28,17 @@ export async function openMapCandidate(app: App, candidate: MapCandidate): Promi
 }
 
 async function findInFile(app: App, file: TFile): Promise<MapCandidate[]> {
-	const config = await readBaseConfig(app, file);
+	const config = parseConfig(await app.vault.cachedRead(file));
+	return findInConfig(file, config);
+}
+
+async function findInEmbeddedBases(app: App, file: TFile): Promise<MapCandidate[]> {
+	const content = await app.vault.cachedRead(file);
+	const configs = [...content.matchAll(embeddedBaseCodeBlock)].map((match) => parseConfig(match[1] ?? ""));
+	return configs.flatMap((config) => findInConfig(file, config));
+}
+
+function findInConfig(file: TFile, config: BasesConfigFile | null): MapCandidate[] {
 	const views = config?.views;
 	if (!Array.isArray(views)) return [];
 
@@ -33,9 +48,9 @@ async function findInFile(app: App, file: TFile): Promise<MapCandidate[]> {
 		.filter(isNotNull);
 }
 
-async function readBaseConfig(app: App, file: TFile): Promise<BasesConfigFile | null> {
+function parseConfig(yaml: string): BasesConfigFile | null {
 	try {
-		const parsed: unknown = parseYaml(await app.vault.cachedRead(file));
+		const parsed: unknown = parseYaml(yaml);
 		return typeof parsed === "object" && parsed !== null ? parsed : null;
 	} catch {
 		return null;
