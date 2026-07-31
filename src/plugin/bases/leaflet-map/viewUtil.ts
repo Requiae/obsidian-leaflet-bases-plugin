@@ -1,4 +1,4 @@
-import { BasesAllOptions, BasesView } from "obsidian";
+import { BasesAllOptions, BasesEntry, BasesView } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MapObject, RequiredMapObject, StringMap } from "@plugin/types";
@@ -20,6 +20,10 @@ const KeyIdentifierMap: Record<keyof MapObject, string> = {
 
 export class ViewUtil {
 	constructor(private view: BasesView) {}
+
+	get entries(): BasesEntry[] {
+		return this.view.data.data;
+	}
 
 	getSettings(): RequiredMapObject | void {
 		const settings = Object.fromEntries(
@@ -51,8 +55,8 @@ export class ViewUtil {
 		this.view.config.set(KeyIdentifierMap[key], value);
 	}
 
-	createFileForView(frontmatterData: StringMap) {
-		void this.view.createFileForView(undefined, (frontmatter: StringMap) => {
+	createFileForView(frontmatterData: StringMap, name?: string) {
+		void this.view.createFileForView(name, (frontmatter: StringMap) => {
 			Object.entries(frontmatterData).forEach(([key, value]) => (frontmatter[key] = value));
 		});
 	}

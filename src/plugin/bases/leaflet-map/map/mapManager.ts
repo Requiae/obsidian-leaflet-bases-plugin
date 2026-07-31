@@ -37,13 +37,22 @@ export class MapManager {
 			zoomSnap: C.map.default.zoomSnap,
 			layers: [this.markerLayer],
 			closePopupOnClick: true,
+			// Leaflet's Keyboard handler focuses the map container on every mousedown
+			// (any button, not just left-click) to enable arrow-key panning, then tries
+			// to undo the resulting scroll via `window.scrollTo()`. That only resets a
+			// real window scroll; Obsidian's panes scroll inside their own divs, so the
+			// undo is a no-op and every mousedown (e.g. right-clicking for the context
+			// menu) permanently shifts the surrounding pane. This plugin doesn't rely on
+			// keyboard panning, so disable it outright.
+			keyboard: false,
 		});
 
 		if (
 			plugin.settingsManager.settings.enableMeasureTool ||
-			plugin.settingsManager.settings.enableDragTool
+			plugin.settingsManager.settings.enableDragTool ||
+			plugin.settingsManager.settings.enableCreateNoteTool
 		) {
-			this.controls = new ControlContainer(plugin.settingsManager.settings);
+			this.controls = new ControlContainer(plugin.app, viewUtil, plugin.settingsManager.settings);
 			this.controls.addTo(this.leafletMap);
 		}
 

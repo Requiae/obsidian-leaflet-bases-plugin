@@ -2,12 +2,13 @@ import { Handler, LatLng, LeafletEvent, LeafletMouseEvent } from "leaflet";
 import { App, Menu, Notice } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { t } from "@plugin/i18n/locale";
-import { MarkerFileModal } from "@plugin/properties/components/markerFileModal";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
+import { MarkerNoteModal } from "@plugin/properties/components/markerNoteModal";
 import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry, MarkerModalMode } from "@plugin/types";
 import { toOptionalFixed, writeCoordinates } from "@plugin/util";
 import { Validator } from "@plugin/validation/validators";
+import { createOrUpdateNote } from "./createOrUpdateNote";
 import { ViewUtil } from "./viewUtil";
 
 interface LeafletMarkerEvent extends LeafletMouseEvent {
@@ -87,36 +88,25 @@ export class ContextMenu extends Handler {
 		}
 
 		if (event.type === "contextmenu") {
-			// Add marker to new note
+			// Add marker to a new or existing note
 			menu.addItem((item) =>
 				item
-					.setTitle(t("map.contextMenu.marker.addToNew"))
+					.setTitle(t("map.contextMenu.marker.addNote"))
 					.setSection("marker")
 					.setIcon("square-pen")
 					.onClick(() =>
-						new MarkerFileModal(
+						new MarkerNoteModal(
 							this.app,
-							(result) => this.frontmatter.addMarker(result),
+							(marker, noteSelection) =>
+								createOrUpdateNote(this.app, this.viewUtil, marker, noteSelection),
 							{
 								coordinates: writeCoordinates(this.position),
 								mapName: (this.viewUtil.getSettings() ?? undefined)?.name,
 							},
 							MarkerModalMode.Add,
+							this.viewUtil.entries.map((entry) => entry.file),
 						).open(),
 					),
-			);
-
-			// Add marker to existing note
-			menu.addItem((item) =>
-				item
-					.setTitle(t("map.contextMenu.marker.addToExisting"))
-					.setSection("marker")
-					.setIcon("map-pin-plus")
-					.onClick(() => {
-						// TODO: Implement add marker to existing note method
-						// use marker modal altered to select existing note
-						// maybe combine with new note>
-					}),
 			);
 		}
 

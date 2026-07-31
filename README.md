@@ -85,6 +85,13 @@ views:
 3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
    ![edit marker modal](docs/add-marker-edit.png)
 
+#### Using the map
+
+1. Enable the "create note" tool in the plugin settings (`Settings` → `Leaflet bases` → `Enable create note tool`).
+2. Select the "Create note here" tool in the map's toolbar and click a spot on the map.
+3. Fill in the form. In the note name field, either type a name to create a new note there, or pick an existing note shown in the base to add the marker to that note instead.
+4. New notes are created at your vault's default location for new notes.
+
 #### Using source code frontmatter
 
 Ensure that the frontmatter block is the first thing in your note.

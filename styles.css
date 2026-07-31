@@ -7,6 +7,14 @@ div.bases-leaflet-map-container div.bases-leaflet-map {
 }
 div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	margin: 0;
+	/* Leaflet only disables native browser image drag while its own pan-drag is
+	   active (L.DomUtil.disableImageDrag()). That leaves this plugin's full-size
+	   map image natively draggable the rest of the time, so a stray mousedown+move
+	   (e.g. right-clicking to open the context menu) can trigger the browser's own
+	   image drag-and-drop, visibly dragging the map image out from under any modal
+	   opened right after. */
+	-webkit-user-drag: none;
+	user-select: none;
 }
 
 .bases-leaflet-view-search-icon-span {

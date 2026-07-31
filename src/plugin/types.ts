@@ -1,5 +1,5 @@
 import { LatLng } from "leaflet";
-import { BasesViewRegistration, IconName } from "obsidian";
+import { BasesViewRegistration, IconName, TFile } from "obsidian";
 import { IconifyInfo, IconifyJSONIconsData } from "@iconify/types";
 import { BasesLeafletViewPlugin } from "./plugin";
 
@@ -39,10 +39,7 @@ export type MapObject = {
 	center?: Coordinates;
 };
 
-export interface SimpleTFile {
-	basename: string;
-	path: string;
-}
+export type NoteSelection = string | TFile | undefined;
 
 export type ReducedIconifyInfo = Pick<IconifyInfo, "name" | "author" | "license">;
 // Reconstruct interface as type to avoid "Index signature is missing" error
@@ -74,6 +71,7 @@ export type LeafletContextMenuCallback = (latLng: LatLng) => void;
 export interface BasesLeafletViewSettings {
 	enableMeasureTool: boolean;
 	enableDragTool: boolean;
+	enableCreateNoteTool: boolean;
 	iconData: IconifyJSONIconsObject[];
 }
 

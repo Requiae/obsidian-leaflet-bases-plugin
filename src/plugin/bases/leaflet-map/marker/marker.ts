@@ -35,6 +35,11 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
 export function marker(app: App, map: Map, entry: MarkerEntry, options?: MarkerOptions): Marker {
 	return new Marker(app, map, entry, {
 		icon: buildMarkerIcon(entry.icon, entry.colour),
+		// Leaflet auto-pans the map whenever a marker's icon gains focus, to keep it
+		// in view for keyboard users. Chromium also focuses a clickable element on
+		// mousedown regardless of button, so right-clicking a marker (to open its
+		// context menu) triggers this same auto-pan as an unwanted side effect.
+		autoPanOnFocus: false,
 		...options,
 	});
 }

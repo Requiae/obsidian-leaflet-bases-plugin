@@ -13,6 +13,7 @@ export const Constants = {
 			drag: "hand",
 			measure: "ruler",
 			pan: "mouse-pointer-2",
+			createNote: "file-plus",
 		},
 		imageTypes: ["avif", "bmp", "gif", "jpeg", "jpg", "png", "svg", "webp"],
 		events: {
@@ -52,6 +53,7 @@ export const Constants = {
 		default: {
 			enableMeasureTool: true,
 			enableDragTool: true,
+			enableCreateNoteTool: true,
 		},
 		links: {
 			preview: "https://icon-sets.iconify.design/",
