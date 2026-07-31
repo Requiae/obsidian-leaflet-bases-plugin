@@ -1,6 +1,6 @@
 ## Lint follow-ups
 
-- **`obsidianmd/no-tfile-tfolder-cast` in `test/plugin/properties/mapCandidates.test.ts`**: the test mocks build fake `TFile`s via `{ path, extension } as unknown as TFile`. Replace with real `TFile` instances (or a small test factory) so the test doesn't rely on a cast the linter otherwise flags in production code.
+- **`obsidianmd/no-tfile-tfolder-cast` in `test/plugin/properties/mapCandidates.test.ts`** (introduced by #15, not yet on `main`): the test mocks build fake `TFile`s via `{ path, extension } as unknown as TFile`. Replace with real `TFile` instances (or a small test factory) so the test doesn't rely on a cast the linter otherwise flags in production code.
 - **`obsidianmd/settings-tab/prefer-setting-definitions` in `src/plugin/settings/basesLeafletViewSettingsTab.ts`**: the settings tab doesn't implement `getSettingDefinitions()`, so its settings won't appear in Obsidian's settings search on 1.13.0+. Migrate to the declarative settings API.
 
 ## Tooling

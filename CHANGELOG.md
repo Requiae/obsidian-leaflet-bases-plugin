@@ -7,6 +7,9 @@ All notable changes to this project are documented in this file.
 ### Added
 - "Create note here" map toolbar tool: click a spot on the map to create a new note (respecting the vault's "Default location for new notes" setting) or add the marker to an existing note, from a single field. ([#14](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/14))
 - The context menu's "Add marker to note" now uses the same new-or-existing-note flow as the toolbar tool, replacing the old new-note-only flow. ([#14](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/14))
+- Pick a marker's map and coordinates directly from the map itself: the marker property's '+' button now lets you pick which Leaflet map view a marker belongs to (when the vault has more than one), then click on that map to set its coordinates, instead of typing them by hand. ([#15](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/15))
+- The marker modal gains an "Open map" button that jumps to the note's Leaflet map view, and a live preview of the currently selected icon. ([#15](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/15))
+- Browse and add Iconify icon sets in-app: a new "Browse icon sets" button searches Iconify's full collection and adds a set with one click, instead of requiring a manual `.json` download. ([#16](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/16))
 
 ### Fixed
 - `MarkerModal` no longer crashes when a subclass (e.g. the note-picker modal) reads a constructor argument while building its settings, by moving settings construction to Obsidian's `onOpen()` lifecycle hook instead of the constructor. ([#14](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/14))
