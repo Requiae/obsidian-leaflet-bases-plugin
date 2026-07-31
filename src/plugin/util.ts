@@ -1,10 +1,30 @@
 import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
-import { Coordinates, MarkerEntry, MarkerObject } from "@plugin/types";
+import { Constants as C } from "@plugin/constants";
+import { Coordinates, MapObject, MarkerEntry, MarkerObject, RequiredMapObject } from "@plugin/types";
 import { Validator } from "./validation/validators";
 
 export function clamp(value: number, min: number, max: number): number {
 	return Math.min(Math.max(value, min), max);
+}
+
+// Used to compute required (fully-defaulted) settings for a map view that
+// isn't the currently-loaded one, e.g. when reading another .base file's
+// raw YAML config to find candidate Leaflet map views to pick from.
+export function fillMapDefaults(settings: MapObject): RequiredMapObject {
+	const minZoom = settings.minZoom ?? C.map.default.minZoom;
+	const maxZoom = Math.max(settings.maxZoom ?? C.map.default.maxZoom, minZoom);
+
+	return {
+		...settings,
+		height: settings.height ?? C.map.default.height,
+		minZoom,
+		maxZoom,
+		defaultZoom: clamp(settings.defaultZoom ?? minZoom, minZoom, maxZoom),
+		zoomDelta: settings.zoomDelta ?? C.map.default.zoomDelta,
+		scale: settings.scale ?? C.map.default.scale,
+		unit: settings.unit ?? C.map.default.unit,
+	};
 }
 
 export function distance(a: LatLngLiteral, b: LatLngLiteral): number {

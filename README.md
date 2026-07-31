@@ -80,7 +80,7 @@ views:
 
 1. Add a new marker property to the note you want to have a marker.
    ![add marker property](docs/add-marker-property.png)
-2. Add a marker using the '+' button that appeared. Fill in the form in the modal and click 'Create marker'.
+2. Add a marker using the '+' button that appeared. If the vault has more than one Leaflet map view, pick which one the marker belongs to, then click on that map to set the marker's coordinates. Fill in the form in the modal and click 'Create marker'.
    ![add marker modal](docs/add-marker-modal.png)
 3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
    ![edit marker modal](docs/add-marker-edit.png)

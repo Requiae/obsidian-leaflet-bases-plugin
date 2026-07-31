@@ -17,12 +17,29 @@ div.bases-leaflet-map-container div.bases-leaflet-map img.leaflet-image-layer {
 	user-select: none;
 }
 
+.leaflet-map-coordinate-picker-modal {
+	width: min(90vw, 900px);
+}
+.leaflet-map-coordinate-picker-modal div.bases-leaflet-map {
+	width: 100%;
+	background-color: rgba(80, 120, 180, 0.1);
+}
+
 .bases-leaflet-view-search-icon-span {
 	display: flex;
 }
 .bases-leaflet-view-search-icon-span div {
 	display: inline-block;
 	margin-inline-start: 0.5rem;
+}
+
+.bases-leaflet-view-icon-preview {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--input-height);
+	height: var(--input-height);
+	color: var(--text-muted);
 }
 
 .bases-leaflet-view-setting-empty {

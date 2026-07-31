@@ -1,5 +1,9 @@
-import { App } from "obsidian";
-import { MarkerModalMode, MarkerObject } from "@plugin/types";
+import { App, Notice } from "obsidian";
+import { t } from "@plugin/i18n/locale";
+import { Coordinates, MarkerModalMode, MarkerObject } from "@plugin/types";
+import { BaseMapPickerModal } from "./baseMapPickerModal";
+import { findLeafletMapCandidates, MapCandidate } from "./mapCandidates";
+import { MapCoordinatePickerModal } from "./mapCoordinatePickerModal";
 import { MarkerModal } from "./markerModal";
 
 export class MarkerAddComponent {
@@ -14,15 +18,35 @@ export class MarkerAddComponent {
 
 		this.plusEl.onClickEvent((event) => {
 			event.stopPropagation();
-			new MarkerModal(
-				app,
-				(result) => this.onChangeCallback(result),
-				undefined,
-				MarkerModalMode.Add,
-			).open();
+			void this.pickCoordinatesThenAddMarker(app);
 		});
 
 		containerEl.appendChild(this.plusEl);
+	}
+
+	private async pickCoordinatesThenAddMarker(app: App): Promise<void> {
+		const candidates = await findLeafletMapCandidates(app);
+		if (candidates.length === 0) {
+			new Notice(t("marker.picker.notice.noMaps"));
+			return;
+		}
+
+		new BaseMapPickerModal(app, candidates, (candidate) => this.pickCoordinates(app, candidate)).open();
+	}
+
+	private pickCoordinates(app: App, candidate: MapCandidate): void {
+		new MapCoordinatePickerModal(app, candidate, (coordinates) =>
+			this.openMarkerModal(app, candidate, coordinates),
+		).open();
+	}
+
+	private openMarkerModal(app: App, candidate: MapCandidate, coordinates: Coordinates): void {
+		new MarkerModal(
+			app,
+			(result) => this.onChangeCallback(result),
+			{ coordinates, mapName: candidate.settings.name },
+			MarkerModalMode.Add,
+		).open();
 	}
 
 	unload() {

@@ -4,8 +4,10 @@ import { t } from "@plugin/i18n/locale";
 import { MarkerModalMode, MarkerObject } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
+import { IconPreviewComponent } from "./iconPreviewComponent";
 import { IconSuggest } from "./iconSuggest";
 import { MarkerModalErrorComponent } from "./markerModalErrorComponent";
+import { openMatchingMap } from "./openMatchingMap";
 
 function buildColourOptionsObject(): Record<string, string> {
 	return Object.fromEntries(
@@ -90,17 +92,34 @@ export class MarkerModal<T extends MarkerObject> extends Modal {
 				coordinatesError = new MarkerModalErrorComponent(errorEl).setMessage("");
 				return coordinatesError;
 			});
+
+		new Setting(this.contentEl)
+			.setName(t("modal.openMap.title"))
+			.setDesc(t("modal.openMap.description"))
+			.addButton((button) => {
+				button
+					.setButtonText(t("modal.openMap.button"))
+					.onClick(() => void openMatchingMap(this.app, this.value.mapName));
+			});
 	}
 
 	private addIconSetting(): void {
+		let iconPreview: IconPreviewComponent;
 		new Setting(this.contentEl)
 			.setName(t("modal.icon.title"))
 			.setDesc(t("modal.icon.description"))
+			.addComponent((containerEl) => {
+				iconPreview = new IconPreviewComponent(containerEl).setIcon(this.value.icon);
+				return iconPreview;
+			})
 			.addSearch((searchField) => {
 				searchField
 					.setValue(this.value.icon ?? "")
 					.setPlaceholder(t("modal.icon.placeholder"))
-					.onChange((value) => (this.value.icon = value !== "" ? value : undefined));
+					.onChange((value) => {
+						this.value.icon = value !== "" ? value : undefined;
+						iconPreview.setIcon(this.value.icon);
+					});
 				new IconSuggest(this.app, searchField);
 			});
 	}
