@@ -1,4 +1,4 @@
-import { BasesAllOptions, BasesEntry, BasesView } from "obsidian";
+import { BasesAllOptions, BasesEntry, BasesView, Notice } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
 import { MapObject, RequiredMapObject, StringMap } from "@plugin/types";
@@ -55,10 +55,16 @@ export class ViewUtil {
 		this.view.config.set(KeyIdentifierMap[key], value);
 	}
 
-	createFileForView(frontmatterData: StringMap, name?: string) {
-		void this.view.createFileForView(name, (frontmatter: StringMap) => {
-			Object.entries(frontmatterData).forEach(([key, value]) => (frontmatter[key] = value));
-		});
+	async createFileForView(frontmatterData: StringMap, name?: string) {
+		try {
+			await this.view.createFileForView(name, (frontmatter: StringMap) => {
+				Object.entries(frontmatterData).forEach(([key, value]) => (frontmatter[key] = value));
+			});
+		} catch (error) {
+			if ((error as Error).message === "Formula cannot be deserialized") {
+				new Notice(t("settings.tools.createNote.error.deserialise"));
+			} else throw error;
+		}
 	}
 
 	static getViewOptions(): BasesAllOptions[] {
