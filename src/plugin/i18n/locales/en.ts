@@ -147,8 +147,8 @@ export default {
 			},
 			map: {
 				copyCoordinates: "Copy coordinates",
-				setDefaultZoom: "Set default zoom",
-				setDefaultCenterPoint: "Set default center point",
+				setDefaultZoom: "Set map default zoom",
+				setDefaultCenterPoint: "Set map default center point",
 			},
 		},
 	},
