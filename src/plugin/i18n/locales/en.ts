@@ -15,6 +15,9 @@ export default {
 			createNote: {
 				title: "Enable create note tool",
 				description: "Enable tool that creates a new note with a marker at the clicked location",
+				error: {
+					deserialise: "Obsidian could not deserialise your formula",
+				},
 			},
 		},
 		icons: {

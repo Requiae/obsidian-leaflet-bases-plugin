@@ -22,3 +22,5 @@ All notable changes to this project are documented in this file.
 - Right-clicking a marker no longer re-centers the map on it. ([#14](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/14))
 - Right-clicking the map on a trackpad (e.g. macOS two-finger click) no longer pans the map out from under the context menu — trackpad right-clicks are reported to the browser as a left mousedown, which tricked Leaflet's dragging handler. ([#16](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/16))
 - The marker-add map/coordinate picker now also finds Leaflet map views defined in bases embedded as code blocks in markdown notes, not just standalone `.base` files. ([#15](https://github.com/Requiae/obsidian-leaflet-bases-plugin/pull/15))
+- Markers now properly reset after the base view is changed ([[#12](https://github.com/Requiae/obsidian-leaflet-bases-plugin/issues/12)])
+- The note-picker modal now crashes gracefully when obsidian is unable to deserialise the user's base formula
