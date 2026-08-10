@@ -15,5 +15,5 @@ export function createOrUpdateNote(
 		return;
 	}
 
-	viewUtil.createFileForView({ [C.property.marker.identifier]: [marker] }, noteSelection);
+	void viewUtil.createFileForView({ [C.property.marker.identifier]: [marker] }, noteSelection);
 }
