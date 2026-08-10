@@ -1,12 +1,13 @@
 import { App, TFile } from "obsidian";
+import { Constants as C } from "@plugin/constants";
 import { MarkerEntry, MarkerObject } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 
-function hasMarkers(value: unknown): value is { marker: MarkerObject[] } {
+function hasMarkers(value: unknown): value is { [C.property.marker.identifier]: MarkerObject[] } {
 	if (!Validator.stringMap(value)) return false;
-	if (!("marker" in value)) return false;
+	if (!(C.property.marker.identifier in value)) return false;
 	return isArray(value.marker, SchemaValidator.marker);
 }
 
@@ -33,9 +34,9 @@ export class Frontmatter {
 		if (!Validator.stringMap(frontmatter)) throw new Error(`Frontmatter is not of type StringMap`);
 
 		if (hasMarkers(frontmatter)) {
-			frontmatter.marker.push(marker);
+			frontmatter[C.property.marker.identifier].push(marker);
 		} else {
-			frontmatter.marker = [marker];
+			frontmatter[C.property.marker.identifier] = [marker];
 		}
 	}
 
@@ -43,10 +44,16 @@ export class Frontmatter {
 		void this.processFrontMatter(markerOld, (frontmatter) => {
 			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${markerOld.link}`);
 
-			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, markerOld));
+			const markerIndex = frontmatter[C.property.marker.identifier].findIndex((el) =>
+				areEqualMarkers(el, markerOld),
+			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${markerOld.link}`);
 
-			frontmatter.marker.splice(markerIndex, 1, markerEntryToObject(markerNew));
+			frontmatter[C.property.marker.identifier].splice(
+				markerIndex,
+				1,
+				markerEntryToObject(markerNew),
+			);
 		});
 	}
 
@@ -54,10 +61,12 @@ export class Frontmatter {
 		void this.processFrontMatter(marker, (frontmatter) => {
 			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${marker.link}`);
 
-			const markerIndex = frontmatter.marker.findIndex((el) => areEqualMarkers(el, marker));
+			const markerIndex = frontmatter[C.property.marker.identifier].findIndex((el) =>
+				areEqualMarkers(el, marker),
+			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${marker.link}`);
 
-			frontmatter.marker.splice(markerIndex, 1);
+			frontmatter[C.property.marker.identifier].splice(markerIndex, 1);
 		});
 	}
 
@@ -69,8 +78,7 @@ export class Frontmatter {
 
 		let file = marker.link.length > 0 ? this.app.vault.getFileByPath(marker.link) : null;
 		if (!file) {
-			// TODO: Handle file already exists... Maybe rethink this entire thing
-			file = await this.app.vault.create(`${marker.name}.md`, "");
+			throw new Error("No file found");
 		}
 
 		await this.app.fileManager.processFrontMatter(file, (frontmatter) => operation(frontmatter));

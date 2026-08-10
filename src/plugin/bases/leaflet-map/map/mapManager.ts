@@ -103,6 +103,7 @@ export class MapManager {
 			.addLayer(this.imageOverlay)
 			.setMaxBounds(imageData.bounds)
 			.fitBounds(imageData.bounds);
+		this.leafletMap.setZoom(settings.defaultZoom, { animate: false });
 
 		if (settings.center) {
 			this.leafletMap.panTo(parseCoordinates(settings.center), { animate: false });

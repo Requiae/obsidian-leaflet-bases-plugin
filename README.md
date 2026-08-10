@@ -82,7 +82,7 @@ views:
    ![add marker property](docs/add-marker-property.png)
 2. Add a marker using the '+' button that appeared. If the vault has more than one Leaflet map view, pick which one the marker belongs to, then click on that map to set the marker's coordinates. Fill in the form in the modal and click 'Create marker'.
    ![add marker modal](docs/add-marker-modal.png)
-3. You can add more markers using the '+' button, add markers by clicking the tags, or remove them using the 'x' buttons.
+3. You can add more markers using the '+' button, edit markers by clicking the tags, or remove them using the 'x' buttons.
    ![edit marker modal](docs/add-marker-edit.png)
 
 #### Using the map
@@ -90,7 +90,18 @@ views:
 1. Enable the "create note" tool in the plugin settings (`Settings` → `Leaflet bases` → `Enable create note tool`).
 2. Select the "Create note here" tool in the map's toolbar and click a spot on the map.
 3. Fill in the form. In the note name field, either type a name to create a new note there, or pick an existing note shown in the base to add the marker to that note instead.
-4. New notes are created at your vault's default location for new notes.
+4. New notes are created at your vault's default location for new notes. Be aware that if Obsidian is unable to deserialise your formula this can fail.
+
+> You can drag markers using the drag tool. Be sure to enable it first (`Settings` → `Leaflet bases` → `Enable drag tool`).
+
+#### Using the context menu
+
+1. Right a spot on the map.
+2. Select `Add marker to note`.
+3. Fill in the form. In the note name field, either type a name to create a new note there, or pick an existing note shown in the base to add the marker to that note instead.
+4. New notes are created at your vault's default location for new notes. Be aware that if Obsidian is unable to deserialise your formula this can fail.
+
+> You can edit and delete markers from the context menu by right clicking the marker and choosing the option you want.
 
 #### Using source code frontmatter
 
