@@ -59,6 +59,15 @@ export const Constants = {
 			preview: "https://icon-sets.iconify.design/",
 			github: "https://github.com/iconify/icon-sets/tree/master/json",
 		},
+		iconify: {
+			apiBaseUrl: "https://api.iconify.design",
+			// The live API's `{prefix}.json` route is only for on-demand icon data
+			// (and returns a "200 with body 404" sentinel for unsupported requests,
+			// see https://github.com/iconify/api/issues/30), not a full collection dump.
+			// The full per-collection JSON files live in this repo instead (the same
+			// one users are told to browse manually in the icons settings section).
+			rawJsonBaseUrl: "https://raw.githubusercontent.com/iconify/icon-sets/master/json",
+		},
 	},
 	view: {
 		type: "leaflet-map",

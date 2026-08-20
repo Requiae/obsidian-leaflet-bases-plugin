@@ -143,6 +143,16 @@ marker:
 
 > Any icons added to Obsidian using another plugin should work just fine as long as their icons stick to Obsidian's design limitations. However, these icons likely won't work with Quartz.
 
+#### Browsing Iconify icon sets
+
+1. Open your vault settings. Under community plugins, go to `Leaflet bases`.
+2. Under `Additional icon sets`, click `Browse icon sets`.
+3. Search for the icon set you want, and click `Add`.
+
+#### Adding a set manually
+
+Use this if you already have an icon set `.json` file, or need a custom set not on Iconify's registry.
+
 1. Go to the [Iconify website](https://icon-sets.iconify.design/) and find the iconset you want.
 2. Select any icon and find the set prefix. In the image this is `game-icons`
    ![find iconset prefix](docs/add-icon-prefix.png)

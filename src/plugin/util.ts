@@ -1,7 +1,7 @@
 import { LatLng, LatLngLiteral, LatLngTuple } from "leaflet";
 import { getIcon } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { Coordinates, MapObject, MarkerEntry, MarkerObject, RequiredMapObject } from "@plugin/types";
+import { Coordinates, MapObject, MarkerEntry, MarkerObject, RequiredMapObject, StringMap } from "@plugin/types";
 import { Validator } from "./validation/validators";
 
 export function clamp(value: number, min: number, max: number): number {
@@ -75,6 +75,11 @@ export function isArray<T>(
 ): array is T[] {
 	if (!Array.isArray(array)) return false;
 	return array.every((element) => validator(element));
+}
+
+export function isNonEmptyObject(value: unknown): value is StringMap {
+	if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+	return Object.keys(value).length > 0;
 }
 
 export function markerEntryToObject(entry: MarkerEntry | MarkerObject): MarkerObject {

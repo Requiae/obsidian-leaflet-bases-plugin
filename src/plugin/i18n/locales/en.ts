@@ -22,10 +22,25 @@ export default {
 		},
 		icons: {
 			title: "Additional icon sets",
+			browse: {
+				settingName: "Browse Iconify icon sets",
+				settingDescription:
+					"Search Iconify's collection of open-source icon sets and add one with a single click.",
+				buttonText: "Browse icon sets",
+				title: "Browse Iconify icon sets",
+				searchPlaceholder: "Search by name, prefix, or category",
+				addButtonText: "Add",
+				addedButtonText: "Added",
+				loading: "Loading icon sets…",
+				loadError: "Could not load the Iconify collection list. Check your connection and try again.",
+				retry: "Retry",
+				addError: "There was an error adding this icon set",
+				empty: "No icon sets match your search",
+			},
 			add: {
-				title: "Add iconify icon set",
+				title: "Add iconify icon set manually",
 				description: {
-					start: "Additional",
+					start: "Already have a file, or need a custom set not on Iconify's registry? Additional",
 					previewLink: "Iconify icon sets",
 					middle: "can be downloaded as .json files at the",
 					githubLink: "Iconify GitHub repository",

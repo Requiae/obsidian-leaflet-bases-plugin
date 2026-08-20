@@ -22,6 +22,8 @@ function isLeafletMarkerEvent(event: LeafletMouseEvent): event is LeafletMarkerE
 export class ContextMenu extends Handler {
 	private position = new LatLng(0, 0);
 	private frontmatter: Frontmatter;
+	private centerBeforeMouseDown: LatLng | undefined;
+	private onMouseDown = () => (this.centerBeforeMouseDown = this.map.getCenter());
 
 	constructor(
 		private app: App,
@@ -36,17 +38,33 @@ export class ContextMenu extends Handler {
 		this.map
 			.on("contextmenu", (event: LeafletMouseEvent) => this.show(event), this)
 			.on("markermenu", (event: LeafletEvent) => this.show(event as LeafletMouseEvent), this);
+		this.map.getContainer().addEventListener("mousedown", this.onMouseDown, true);
 	}
 
 	override removeHooks(): void {
 		this.map.off();
+		this.map.getContainer().removeEventListener("mousedown", this.onMouseDown, true);
 	}
 
 	private show(event: LeafletMouseEvent): void {
+		this.cancelPhantomDrag();
 		this.position = event.latlng;
 
 		const menu = Menu.forEvent(event.originalEvent);
 		this.setMenuContent(menu, event);
+	}
+
+	private cancelPhantomDrag(): void {
+		// Trackpad right-clicks (e.g. macOS two-finger click) are reported to the
+		// browser as a left mousedown (button 0) immediately followed by
+		// `contextmenu`. Leaflet's dragging handler can only tell buttons apart, so
+		// it sees a normal left click, and the tiny natural movement during the
+		// gesture is enough to cross its drag threshold and pan the map before this
+		// contextmenu handler runs. Reset dragging (safely a no-op if nothing was
+		// dragging) and snap back to the pre-click position.
+		this.map.dragging.disable();
+		this.map.dragging.enable();
+		if (this.centerBeforeMouseDown) this.map.panTo(this.centerBeforeMouseDown, { animate: false });
 	}
 
 	private setMenuContent(menu: Menu, event: LeafletMouseEvent): void {

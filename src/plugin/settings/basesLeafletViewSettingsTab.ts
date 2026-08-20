@@ -4,6 +4,7 @@ import { t } from "@plugin/i18n/locale";
 import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { IconifyJSONIconsObject } from "@plugin/types";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
+import { IconSetBrowserModal } from "./iconSetBrowserModal";
 import { LoadedIconSetsComponent } from "./loadedIconSetsComponent";
 import { SettingsManager } from "./settingsManager";
 
@@ -61,7 +62,22 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 	private addIconsGroup(): void {
 		let loadedIcons: LoadedIconSetsComponent;
 		new SettingGroup(this.containerEl)
-			.setHeading("Additional icon sets")
+			.setHeading(t("settings.icons.title"))
+			.addSetting((setting) => {
+				setting
+					.setName(t("settings.icons.browse.settingName"))
+					.setDesc(t("settings.icons.browse.settingDescription"))
+					.addButton((button) => {
+						button
+							.setButtonText(t("settings.icons.browse.buttonText"))
+							.setCta()
+							.onClick(() => {
+								new IconSetBrowserModal(this.app, this.manager, this.plugin.iconManager, () =>
+									loadedIcons?.render(),
+								).open();
+							});
+					});
+			})
 			.addSetting((setting) => {
 				const fragment = new DocumentFragment();
 				fragment.createSpan({ text: "" }, (span) => {
@@ -81,7 +97,7 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 					span.createEl("i", { text: t("settings.icons.add.description.warning") });
 				});
 				setting
-					.setName("Add iconify icon set")
+					.setName(t("settings.icons.add.title"))
 					.setDesc(fragment)
 					.addButton(async (button) => {
 						const input = button.buttonEl.createEl("input", {
