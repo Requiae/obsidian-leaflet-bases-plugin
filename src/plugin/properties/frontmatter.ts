@@ -5,11 +5,22 @@ import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
 
-function findMarkerPropertyIds(map: StringMap): string[] {
-	return Object.entries(map).reduce<string[]>((markerProperties, [key, value]) => {
-		if (isArray(value, SchemaValidator.marker)) markerProperties.push(key);
-		return markerProperties;
-	}, []);
+/** If the default property id is not used, then there's no way to realistically determine which property id holds the expected values, so we just return the first that holds markers. */
+function findFirstMarkerPropertyId(map: StringMap): string | null {
+	if (
+		C.property.marker.default in map &&
+		isArray(map[C.property.marker.default], SchemaValidator.marker)
+	) {
+		return C.property.marker.default;
+	}
+
+	// Default key doesn't hold markers
+	for (const [key, value] of Object.entries(map)) {
+		if (isArray(value, SchemaValidator.marker)) return key;
+	}
+
+	// No alternatives found
+	return null;
 }
 
 function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
@@ -34,9 +45,9 @@ export class Frontmatter {
 	private appendMarker(frontmatter: unknown, marker: MarkerObject): void {
 		if (!Validator.stringMap(frontmatter)) throw new Error(`Frontmatter is not of type StringMap`);
 
-		const markerPropertyId = findMarkerPropertyIds(frontmatter)[0];
-		if (markerPropertyId) {
-			(frontmatter[markerPropertyId] as MarkerObject[]).push(marker);
+		const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+		if (firstMarkerPropertyId) {
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).push(marker);
 		} else {
 			frontmatter[C.property.marker.default] = [marker];
 		}
@@ -48,15 +59,15 @@ export class Frontmatter {
 				throw new Error(`Frontmatter is not of type StringMap`);
 			}
 
-			const markerPropertyId = findMarkerPropertyIds(frontmatter)[0];
-			if (!markerPropertyId) throw new Error(`No markers found in ${markerOld.link}`);
+			const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${markerOld.link}`);
 
-			const markerIndex = (frontmatter[markerPropertyId] as MarkerObject[]).findIndex((el) =>
+			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>
 				areEqualMarkers(el, markerOld),
 			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${markerOld.link}`);
 
-			(frontmatter[markerPropertyId] as MarkerObject[]).splice(
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).splice(
 				markerIndex,
 				1,
 				markerEntryToObject(markerNew),
@@ -70,15 +81,15 @@ export class Frontmatter {
 				throw new Error(`Frontmatter is not of type StringMap`);
 			}
 
-			const markerPropertyId = findMarkerPropertyIds(frontmatter)[0];
-			if (!markerPropertyId) throw new Error(`No markers found in ${marker.link}`);
+			const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${marker.link}`);
 
-			const markerIndex = (frontmatter[markerPropertyId] as MarkerObject[]).findIndex((el) =>
+			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>
 				areEqualMarkers(el, marker),
 			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${marker.link}`);
 
-			(frontmatter[markerPropertyId] as MarkerObject[]).splice(markerIndex, 1);
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).splice(markerIndex, 1);
 		});
 	}
 
