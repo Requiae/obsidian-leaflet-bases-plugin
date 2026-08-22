@@ -26,7 +26,8 @@ export const Constants = {
 	},
 	property: {
 		marker: {
-			identifier: "marker",
+			type: "marker",
+			default: "marker",
 			icon: "lucide-map-pin",
 		},
 		predefinedColours: {

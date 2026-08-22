@@ -12,7 +12,7 @@ import { MarkerAddComponent } from "./markerAdd";
 import { MarkerValueComponent } from "./markerValue";
 
 export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
-	type: C.property.marker.identifier,
+	type: C.property.marker.type,
 	name: () => t("marker.name"),
 	icon: C.property.marker.icon,
 	validate: validateMarkerPropertyValue,
@@ -22,7 +22,6 @@ export const markerWidget: PropertyWidget<MarkerPropertyWidgetComponent> = {
 			validateMarkerPropertyValue(value) ? value : [],
 			ctx,
 		),
-	reservedKeys: [C.property.marker.identifier],
 };
 
 function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is MarkerObject[] {
@@ -31,7 +30,7 @@ function validateMarkerPropertyValue(propertyValue: unknown): propertyValue is M
 
 class MarkerPropertyWidgetComponent implements PropertyWidgetComponentBase {
 	containerEl: HTMLElement;
-	type = C.property.marker.identifier;
+	type = C.property.marker.type;
 
 	listComponent: HTMLUListElement;
 	innerComponents: MarkerValueComponent[] = [];

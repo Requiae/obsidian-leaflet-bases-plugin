@@ -8,11 +8,11 @@ export class PropertyManager extends Manager {
 
 	async load(): Promise<void> {
 		this.metadataTypeManager = this.plugin.app.metadataTypeManager;
-		this.metadataTypeManager.registeredTypeWidgets[C.property.marker.identifier] = markerWidget;
+		this.metadataTypeManager.registeredTypeWidgets[C.property.marker.type] = markerWidget;
 	}
 
 	unload(): void {
-		delete this.metadataTypeManager?.registeredTypeWidgets[C.property.marker.identifier];
+		delete this.metadataTypeManager?.registeredTypeWidgets[C.property.marker.type];
 		this.metadataTypeManager = null;
 	}
 }
