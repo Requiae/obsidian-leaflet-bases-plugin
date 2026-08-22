@@ -10,6 +10,7 @@ import {
 import { App, IconName } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { Frontmatter } from "@plugin/properties/frontmatter";
 import { MarkerEntry } from "@plugin/types";
 import { getIconWithDefault, parseCoordinates, writeCoordinates } from "@plugin/util";
@@ -32,8 +33,13 @@ function buildMarkerIcon(iconId: IconName | undefined, colour: string | undefine
 	});
 }
 
-export function marker(app: App, map: Map, entry: MarkerEntry, options?: MarkerOptions): Marker {
-	return new Marker(app, map, entry, {
+export function marker(
+	plugin: BasesLeafletViewPlugin,
+	map: Map,
+	entry: MarkerEntry,
+	options?: MarkerOptions,
+): Marker {
+	return new Marker(plugin, map, entry, {
 		icon: buildMarkerIcon(entry.icon, entry.colour),
 		// Leaflet auto-pans the map whenever a marker's icon gains focus, to keep it
 		// in view for keyboard users. Chromium also focuses a clickable element on
@@ -45,16 +51,18 @@ export function marker(app: App, map: Map, entry: MarkerEntry, options?: MarkerO
 }
 
 export class Marker extends LeafletMarker {
+	private app: App;
 	private frontmatter: Frontmatter;
 
 	constructor(
-		private app: App,
+		plugin: BasesLeafletViewPlugin,
 		private map: Map,
 		private entry: MarkerEntry,
 		options?: MarkerOptions,
 	) {
 		super(parseCoordinates(entry.coordinates), options);
-		this.frontmatter = new Frontmatter(app);
+		this.app = plugin.app;
+		this.frontmatter = new Frontmatter(plugin.app, plugin.settingsManager);
 
 		this.bindTooltip(entry.name);
 

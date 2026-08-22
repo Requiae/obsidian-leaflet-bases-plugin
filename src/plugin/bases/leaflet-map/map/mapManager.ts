@@ -52,14 +52,14 @@ export class MapManager {
 			plugin.settingsManager.settings.enableDragTool ||
 			plugin.settingsManager.settings.enableCreateNoteTool
 		) {
-			this.controls = new ControlContainer(plugin.app, viewUtil, plugin.settingsManager.settings);
+			this.controls = new ControlContainer(plugin, viewUtil);
 			this.controls.addTo(this.leafletMap);
 		}
 
-		this.contextMenu = new ContextMenu(plugin.app, viewUtil, this.leafletMap);
+		this.contextMenu = new ContextMenu(plugin, viewUtil, this.leafletMap);
 		this.contextMenu.addHooks();
 
-		this.markerManager = new MarkerManager(plugin.app, this.leafletMap, this.markerLayer);
+		this.markerManager = new MarkerManager(plugin, this.leafletMap, this.markerLayer);
 	}
 
 	unload(): void {

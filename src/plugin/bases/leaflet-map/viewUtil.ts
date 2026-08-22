@@ -1,6 +1,7 @@
 import { BasesAllOptions, BasesEntry, BasesView, Notice } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { t } from "@plugin/i18n/locale";
+import { SettingsManager } from "@plugin/settings/settingsManager";
 import { MapObject, RequiredMapObject, StringMap } from "@plugin/types";
 import { clamp } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
@@ -20,7 +21,10 @@ const KeyIdentifierMap: Record<keyof MapObject, string> = {
 } as const;
 
 export class ViewUtil {
-	constructor(private view: BasesView) {}
+	constructor(
+		private view: BasesView,
+		private settingsManager: SettingsManager,
+	) {}
 
 	get entries(): BasesEntry[] {
 		return this.view.data.data;
@@ -36,7 +40,8 @@ export class ViewUtil {
 		if (typeof settings.scale === "string") settings.scale = parseFloat(settings.scale);
 
 		// Set default before parsing to prevent PEBKAC errors
-		settings.markerProperty = settings.markerProperty || C.map.default.markerProperty;
+		settings.markerProperty =
+			settings.markerProperty || this.settingsManager.settings.defaultMarkerPropertyId;
 
 		if (!SchemaValidator.map(settings)) return;
 
@@ -83,7 +88,7 @@ export class ViewUtil {
 				displayName: t("view.options.markerProperty"),
 				type: "text",
 				key: C.view.obsidianIdentifiers.markerProperty,
-				default: C.map.default.markerProperty,
+				default: "marker", // TODO: This needs to be taken from plugin settings
 			},
 			{
 				displayName: t("view.options.view.header"),

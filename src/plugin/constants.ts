@@ -1,7 +1,6 @@
 export const Constants = {
 	map: {
 		default: {
-			markerProperty: "note.marker",
 			minZoom: 0,
 			maxZoom: 2,
 			zoomDelta: 0.5,

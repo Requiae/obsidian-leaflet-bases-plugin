@@ -1,27 +1,10 @@
 import { App, TFile } from "obsidian";
 import { Constants as C } from "@plugin/constants";
+import { SettingsManager } from "@plugin/settings/settingsManager";
 import { MarkerEntry, MarkerObject, StringMap } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
-
-/** If the default property id is not used, then there's no way to realistically determine which property id holds the expected values, so we just return the first that holds markers. */
-function findFirstMarkerPropertyId(map: StringMap): string | null {
-	if (
-		C.property.marker.default in map &&
-		isArray(map[C.property.marker.default], SchemaValidator.marker)
-	) {
-		return C.property.marker.default;
-	}
-
-	// Default key doesn't hold markers
-	for (const [key, value] of Object.entries(map)) {
-		if (isArray(value, SchemaValidator.marker)) return key;
-	}
-
-	// No alternatives found
-	return null;
-}
 
 function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
 	return (
@@ -34,7 +17,26 @@ function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean 
 }
 
 export class Frontmatter {
-	constructor(private app: App) {}
+	constructor(
+		private app: App,
+		private settingsManager: SettingsManager,
+	) {}
+
+	/** If the default property id is not used, then there's no way to realistically determine which property id holds the expected values, so we just return the first that holds markers. */
+	private findFirstMarkerPropertyId(map: StringMap): string | null {
+		const defaultProperty = this.settingsManager.settings.defaultMarkerPropertyId;
+		if (defaultProperty in map && isArray(map[defaultProperty], SchemaValidator.marker)) {
+			return defaultProperty;
+		}
+
+		// Default key doesn't hold markers
+		for (const [key, value] of Object.entries(map)) {
+			if (isArray(value, SchemaValidator.marker)) return key;
+		}
+
+		// No alternatives found
+		return null;
+	}
 
 	addMarkerToFile(file: TFile, marker: MarkerObject): void {
 		void this.app.fileManager.processFrontMatter(file, (frontmatter) =>
@@ -45,7 +47,7 @@ export class Frontmatter {
 	private appendMarker(frontmatter: unknown, marker: MarkerObject): void {
 		if (!Validator.stringMap(frontmatter)) throw new Error(`Frontmatter is not of type StringMap`);
 
-		const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+		const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
 		if (firstMarkerPropertyId) {
 			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).push(marker);
 		} else {
@@ -59,7 +61,7 @@ export class Frontmatter {
 				throw new Error(`Frontmatter is not of type StringMap`);
 			}
 
-			const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+			const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
 			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${markerOld.link}`);
 
 			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>
@@ -81,7 +83,7 @@ export class Frontmatter {
 				throw new Error(`Frontmatter is not of type StringMap`);
 			}
 
-			const firstMarkerPropertyId = findFirstMarkerPropertyId(frontmatter);
+			const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
 			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${marker.link}`);
 
 			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>

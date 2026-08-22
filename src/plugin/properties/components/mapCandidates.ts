@@ -34,7 +34,9 @@ async function findInFile(app: App, file: TFile): Promise<MapCandidate[]> {
 
 async function findInEmbeddedBases(app: App, file: TFile): Promise<MapCandidate[]> {
 	const content = await app.vault.cachedRead(file);
-	const configs = [...content.matchAll(embeddedBaseCodeBlock)].map((match) => parseConfig(match[1] ?? ""));
+	const configs = [...content.matchAll(embeddedBaseCodeBlock)].map((match) =>
+		parseConfig(match[1] ?? ""),
+	);
 	return configs.flatMap((config) => findInConfig(file, config));
 }
 
@@ -59,6 +61,7 @@ function parseConfig(yaml: string): BasesConfigFile | null {
 
 function toCandidate(file: TFile, view: RawView): MapCandidate | null {
 	const raw: MapObject = {
+		// TODO: Fix this missing property error
 		name: toStringOrUndefined(view[C.view.obsidianIdentifiers.mapName]),
 		image: normaliseImage(view[C.view.obsidianIdentifiers.image]) ?? "",
 		height: toNumberOrUndefined(view[C.view.obsidianIdentifiers.height]),

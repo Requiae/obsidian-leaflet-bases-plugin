@@ -1,7 +1,8 @@
 import { LayerGroup } from "leaflet";
-import { App, BasesEntry, BasesPropertyId, TFile, Value } from "obsidian";
+import { BasesEntry, BasesPropertyId, TFile, Value } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { MarkerEntry } from "@plugin/types";
 import { isNotNull } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
@@ -55,13 +56,15 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 export class MarkerManager {
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
-	private markerProperty: BasesPropertyId = C.map.default.markerProperty;
+	private markerProperty: BasesPropertyId;
 
 	constructor(
-		private app: App,
+		private plugin: BasesLeafletViewPlugin,
 		private map: Map,
 		private markerLayer: LayerGroup,
-	) {}
+	) {
+		this.markerProperty = `note.${plugin.settingsManager.settings.defaultMarkerPropertyId}`;
+	}
 
 	unload(): void {
 		this.markerLayer.clearLayers();
@@ -78,7 +81,7 @@ export class MarkerManager {
 				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
 			)
 			.forEach((markerEntry) => {
-				const markerItem = marker(this.app, this.map, markerEntry);
+				const markerItem = marker(this.plugin, this.map, markerEntry);
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
 				this.map.on(C.map.events.markerRefresh, () =>

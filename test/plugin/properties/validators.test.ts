@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { Validator } from "@plugin/validation/validators";
 
+// TODO: Test markerProperty
+
 describe("String validator", () => {
 	const validator = Validator.string;
 

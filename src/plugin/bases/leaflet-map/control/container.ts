@@ -1,8 +1,8 @@
 import { Control, DomUtil, Map as LeafletMap } from "leaflet";
-import { App } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { ViewUtil } from "@plugin/bases/leaflet-map/viewUtil";
-import { BasesLeafletViewSettings, RequiredMapObject } from "@plugin/types";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
+import { RequiredMapObject } from "@plugin/types";
 import { CreateNoteControl, MeasureControl, PanControl } from "./sub";
 import { DragControl } from "./sub/drag";
 import { SubControl } from "./subControl";
@@ -13,18 +13,19 @@ export class ControlContainer extends Control {
 	private activeIndex: number = 0;
 
 	constructor(
-		private app: App,
+		private plugin: BasesLeafletViewPlugin,
 		private viewUtil: ViewUtil,
-		private pluginSettings: BasesLeafletViewSettings,
 	) {
 		super({ position: "topleft" });
 	}
 
 	override onAdd(map: Map): HTMLElement {
 		this.registerSubControl(PanControl, map);
-		if (this.pluginSettings.enableMeasureTool) this.registerSubControl(MeasureControl, map);
-		if (this.pluginSettings.enableDragTool) this.registerSubControl(DragControl, map);
-		if (this.pluginSettings.enableCreateNoteTool) this.registerSubControl(CreateNoteControl, map);
+
+		const pluginSettings = this.plugin.settingsManager.settings;
+		if (pluginSettings.enableMeasureTool) this.registerSubControl(MeasureControl, map);
+		if (pluginSettings.enableDragTool) this.registerSubControl(DragControl, map);
+		if (pluginSettings.enableCreateNoteTool) this.registerSubControl(CreateNoteControl, map);
 
 		const containerEl = DomUtil.create("div", "leaflet-bar leaflet-control");
 
@@ -60,7 +61,7 @@ export class ControlContainer extends Control {
 		const options = {
 			index: this.controls.length,
 			map,
-			app: this.app,
+			plugin: this.plugin,
 			viewUtil: this.viewUtil,
 			onSelectCallback,
 		};
