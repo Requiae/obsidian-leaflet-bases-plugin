@@ -17,8 +17,26 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 
 	override display(): void {
 		this.containerEl.empty();
+		this.addMarkersGroup();
 		this.addToolsGroup();
 		this.addIconsGroup();
+	}
+
+	private addMarkersGroup(): void {
+		new SettingGroup(this.containerEl)
+			.setHeading(t("settings.markers.title"))
+			.addSetting((setting) => {
+				setting
+					.setName(t("settings.markers.defaultPropertyId.title"))
+					.setDesc(t("settings.markers.defaultPropertyId.description"))
+					.addText((text) =>
+						text.setValue(this.manager.settings.defaultMarkerPropertyId).onChange(async (value) => {
+							await this.manager.updateSettings({
+								defaultMarkerPropertyId: value || C.property.marker.default,
+							});
+						}),
+					);
+			});
 	}
 
 	private addToolsGroup(): void {
@@ -49,11 +67,9 @@ export class BasesLeafletViewSettingsTab extends PluginSettingTab {
 					.setName(t("settings.tools.createNote.title"))
 					.setDesc(t("settings.tools.createNote.description"))
 					.addToggle((toggle) =>
-						toggle
-							.setValue(this.manager.settings.enableCreateNoteTool)
-							.onChange(async (value) => {
-								await this.manager.updateSettings({ enableCreateNoteTool: value });
-							}),
+						toggle.setValue(this.manager.settings.enableCreateNoteTool).onChange(async (value) => {
+							await this.manager.updateSettings({ enableCreateNoteTool: value });
+						}),
 					);
 			});
 	}

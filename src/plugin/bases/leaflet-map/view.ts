@@ -30,7 +30,7 @@ class LeafletMapView extends BasesView {
 
 		const containerEl = parentEl.createDiv("bases-leaflet-map-container");
 
-		this.viewUtil = new ViewUtil(this);
+		this.viewUtil = new ViewUtil(this, plugin.settingsManager);
 
 		this.mapManager = new MapManager(plugin, containerEl, this.viewUtil);
 	}

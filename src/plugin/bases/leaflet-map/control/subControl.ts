@@ -3,12 +3,13 @@ import { App } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { ViewUtil } from "@plugin/bases/leaflet-map/viewUtil";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { RequiredMapObject } from "@plugin/types";
 
 export interface SubControlOptions {
 	index: number;
 	map: Map;
-	app: App;
+	plugin: BasesLeafletViewPlugin;
 	viewUtil: ViewUtil;
 	onSelectCallback: (index: number) => void;
 }
@@ -17,16 +18,13 @@ export class SubControl {
 	readonly index: number;
 	readonly map: Map;
 	protected readonly app: App;
+	protected readonly plugin: BasesLeafletViewPlugin;
 	protected readonly viewUtil: ViewUtil;
 
 	private onSelectCallback: (index: number) => void = () => {};
 	protected refreshCallback: () => void = () => {};
 	protected button: HTMLButtonElement | undefined;
-	protected options: RequiredMapObject = {
-		...C.map.default,
-		defaultZoom: C.map.default.minZoom,
-		image: "",
-	};
+	protected options: RequiredMapObject;
 
 	private _isSelected: boolean = false;
 	get isSelected(): boolean {
@@ -36,9 +34,17 @@ export class SubControl {
 	constructor(options: SubControlOptions) {
 		this.index = options.index;
 		this.map = options.map;
-		this.app = options.app;
+		this.app = options.plugin.app;
+		this.plugin = options.plugin;
 		this.viewUtil = options.viewUtil;
 		this.onSelectCallback = options.onSelectCallback;
+
+		this.options = {
+			...C.map.default,
+			markerProperty: `note.${options.plugin.settingsManager.settings.defaultMarkerPropertyId}`,
+			defaultZoom: C.map.default.minZoom,
+			image: "",
+		};
 	}
 
 	setSelected(isSelected: boolean): void {

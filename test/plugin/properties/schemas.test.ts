@@ -33,6 +33,7 @@ describe("Marker schema validator", () => {
 });
 
 describe("Map schema validator", () => {
+	// TODO: Include markerProperty key
 	const validator = SchemaValidator.map;
 
 	test("returns true on valid input", () => {

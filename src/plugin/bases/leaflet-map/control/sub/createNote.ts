@@ -33,7 +33,8 @@ export class CreateNoteControl extends SubControl {
 
 		new MarkerNoteModal(
 			this.app,
-			(marker, noteSelection) => createOrUpdateNote(this.app, this.viewUtil, marker, noteSelection),
+			(marker, noteSelection) =>
+				createOrUpdateNote(this.plugin, this.viewUtil, marker, noteSelection),
 			{ coordinates, mapName },
 			MarkerModalMode.Add,
 			this.viewUtil.entries.map((entry) => entry.file),

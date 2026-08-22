@@ -1,7 +1,8 @@
 import { LayerGroup } from "leaflet";
-import { App, BasesEntry, TFile, Value } from "obsidian";
+import { BasesEntry, BasesPropertyId, TFile, Value } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { Constants as C } from "@plugin/constants";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { MarkerEntry } from "@plugin/types";
 import { isNotNull } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
@@ -55,34 +56,32 @@ function markersFromEntry(entry: Value | null, file: TFile): MarkerEntry[] | nul
 export class MarkerManager {
 	private mapName: string | undefined;
 	private mapMinZoom: number = 0;
-
-	private data: { data: BasesEntry[] } | undefined;
+	private markerProperty: BasesPropertyId;
 
 	constructor(
-		private app: App,
+		private plugin: BasesLeafletViewPlugin,
 		private map: Map,
 		private markerLayer: LayerGroup,
-	) {}
+	) {
+		this.markerProperty = `note.${plugin.settingsManager.settings.defaultMarkerPropertyId}`;
+	}
 
 	unload(): void {
 		this.markerLayer.clearLayers();
-		this.data = undefined;
 	}
 
 	updateMarkers(data: { data: BasesEntry[] }): void {
-		this.data = data;
-
 		this.map.removeEventListener(C.map.events.markerRefresh);
 		this.markerLayer.clearLayers();
 
 		data.data
-			.flatMap((entry) => markersFromEntry(entry.getValue("note.marker"), entry.file))
+			.flatMap((entry) => markersFromEntry(entry.getValue(this.markerProperty), entry.file))
 			.filter(isNotNull)
 			.filter(
 				(markerEntry) => markerEntry.mapName === undefined || markerEntry.mapName === this.mapName,
 			)
 			.forEach((markerEntry) => {
-				const markerItem = marker(this.app, this.map, markerEntry);
+				const markerItem = marker(this.plugin, this.map, markerEntry);
 
 				this.addMarkerWhenZoom(markerItem, markerEntry);
 				this.map.on(C.map.events.markerRefresh, () =>
@@ -91,8 +90,9 @@ export class MarkerManager {
 			});
 	}
 
-	updateSettings(mapName: string | undefined, mapMinZoom: number) {
+	updateSettings(mapName: string | undefined, markerProperty: BasesPropertyId, mapMinZoom: number) {
 		this.mapName = mapName;
+		this.markerProperty = markerProperty;
 		this.mapMinZoom = mapMinZoom;
 	}
 

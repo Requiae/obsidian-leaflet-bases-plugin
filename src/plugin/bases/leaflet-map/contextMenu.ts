@@ -1,7 +1,8 @@
 import { Handler, LatLng, LeafletEvent, LeafletMouseEvent } from "leaflet";
-import { App, Menu, Notice } from "obsidian";
+import { Menu, Notice } from "obsidian";
 import { Map } from "@plugin/bases/leaflet-map/map/map";
 import { t } from "@plugin/i18n/locale";
+import { BasesLeafletViewPlugin } from "@plugin/plugin";
 import { MarkerModal } from "@plugin/properties/components/markerModal";
 import { MarkerNoteModal } from "@plugin/properties/components/markerNoteModal";
 import { Frontmatter } from "@plugin/properties/frontmatter";
@@ -24,12 +25,12 @@ export class ContextMenu extends Handler {
 	private frontmatter: Frontmatter;
 
 	constructor(
-		private app: App,
+		private plugin: BasesLeafletViewPlugin,
 		private viewUtil: ViewUtil,
 		private map: Map,
 	) {
 		super(map);
-		this.frontmatter = new Frontmatter(app);
+		this.frontmatter = new Frontmatter(plugin.app, plugin.settingsManager);
 	}
 
 	override addHooks(): void {
@@ -96,9 +97,9 @@ export class ContextMenu extends Handler {
 					.setIcon("square-pen")
 					.onClick(() =>
 						new MarkerNoteModal(
-							this.app,
+							this.plugin.app,
 							(marker, noteSelection) =>
-								createOrUpdateNote(this.app, this.viewUtil, marker, noteSelection),
+								createOrUpdateNote(this.plugin, this.viewUtil, marker, noteSelection),
 							{
 								coordinates: writeCoordinates(this.position),
 								mapName: (this.viewUtil.getSettings() ?? undefined)?.name,
@@ -155,7 +156,7 @@ export class ContextMenu extends Handler {
 					.setIcon("pencil-line")
 					.onClick(() =>
 						new MarkerModal(
-							this.app,
+							this.plugin.app,
 							(result) => this.frontmatter.updateMarker(event.entry, result),
 							{ ...event.entry },
 							MarkerModalMode.Edit,

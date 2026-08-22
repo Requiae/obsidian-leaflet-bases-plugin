@@ -1,15 +1,10 @@
 import { App, TFile } from "obsidian";
 import { Constants as C } from "@plugin/constants";
-import { MarkerEntry, MarkerObject } from "@plugin/types";
+import { SettingsManager } from "@plugin/settings/settingsManager";
+import { MarkerEntry, MarkerObject, StringMap } from "@plugin/types";
 import { isArray, markerEntryToObject } from "@plugin/util";
 import { SchemaValidator } from "@plugin/validation/schemaValidators";
 import { Validator } from "@plugin/validation/validators";
-
-function hasMarkers(value: unknown): value is { [C.property.marker.identifier]: MarkerObject[] } {
-	if (!Validator.stringMap(value)) return false;
-	if (!(C.property.marker.identifier in value)) return false;
-	return isArray(value.marker, SchemaValidator.marker);
-}
 
 function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean {
 	return (
@@ -22,7 +17,26 @@ function areEqualMarkers(marker1: MarkerObject, marker2: MarkerObject): boolean 
 }
 
 export class Frontmatter {
-	constructor(private app: App) {}
+	constructor(
+		private app: App,
+		private settingsManager: SettingsManager,
+	) {}
+
+	/** If the default property id is not used, then there's no way to realistically determine which property id holds the expected values, so we just return the first that holds markers. */
+	private findFirstMarkerPropertyId(map: StringMap): string | null {
+		const defaultProperty = this.settingsManager.settings.defaultMarkerPropertyId;
+		if (defaultProperty in map && isArray(map[defaultProperty], SchemaValidator.marker)) {
+			return defaultProperty;
+		}
+
+		// Default key doesn't hold markers
+		for (const [key, value] of Object.entries(map)) {
+			if (isArray(value, SchemaValidator.marker)) return key;
+		}
+
+		// No alternatives found
+		return null;
+	}
 
 	addMarkerToFile(file: TFile, marker: MarkerObject): void {
 		void this.app.fileManager.processFrontMatter(file, (frontmatter) =>
@@ -33,23 +47,29 @@ export class Frontmatter {
 	private appendMarker(frontmatter: unknown, marker: MarkerObject): void {
 		if (!Validator.stringMap(frontmatter)) throw new Error(`Frontmatter is not of type StringMap`);
 
-		if (hasMarkers(frontmatter)) {
-			frontmatter[C.property.marker.identifier].push(marker);
+		const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
+		if (firstMarkerPropertyId) {
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).push(marker);
 		} else {
-			frontmatter[C.property.marker.identifier] = [marker];
+			frontmatter[C.property.marker.default] = [marker];
 		}
 	}
 
 	updateMarker(markerOld: MarkerEntry, markerNew: MarkerEntry | MarkerObject): void {
 		void this.processFrontMatter(markerOld, (frontmatter) => {
-			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${markerOld.link}`);
+			if (!Validator.stringMap(frontmatter)) {
+				throw new Error(`Frontmatter is not of type StringMap`);
+			}
 
-			const markerIndex = frontmatter[C.property.marker.identifier].findIndex((el) =>
+			const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
+			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${markerOld.link}`);
+
+			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>
 				areEqualMarkers(el, markerOld),
 			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${markerOld.link}`);
 
-			frontmatter[C.property.marker.identifier].splice(
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).splice(
 				markerIndex,
 				1,
 				markerEntryToObject(markerNew),
@@ -59,14 +79,19 @@ export class Frontmatter {
 
 	removeMarker(marker: MarkerEntry): void {
 		void this.processFrontMatter(marker, (frontmatter) => {
-			if (!hasMarkers(frontmatter)) throw new Error(`No markers found in ${marker.link}`);
+			if (!Validator.stringMap(frontmatter)) {
+				throw new Error(`Frontmatter is not of type StringMap`);
+			}
 
-			const markerIndex = frontmatter[C.property.marker.identifier].findIndex((el) =>
+			const firstMarkerPropertyId = this.findFirstMarkerPropertyId(frontmatter);
+			if (!firstMarkerPropertyId) throw new Error(`No markers found in ${marker.link}`);
+
+			const markerIndex = (frontmatter[firstMarkerPropertyId] as MarkerObject[]).findIndex((el) =>
 				areEqualMarkers(el, marker),
 			);
 			if (markerIndex < 0) throw new Error(`Selected marker not found in ${marker.link}`);
 
-			frontmatter[C.property.marker.identifier].splice(markerIndex, 1);
+			(frontmatter[firstMarkerPropertyId] as MarkerObject[]).splice(markerIndex, 1);
 		});
 	}
 

@@ -1,5 +1,5 @@
 import { LatLng } from "leaflet";
-import { BasesViewRegistration, IconName, TFile } from "obsidian";
+import { BasesPropertyId, BasesViewRegistration, IconName, TFile } from "obsidian";
 import { IconifyInfo, IconifyJSONIconsData } from "@iconify/types";
 import { BasesLeafletViewPlugin } from "./plugin";
 
@@ -28,6 +28,7 @@ export interface MarkerEntry extends MarkerObject {
 
 export type MapObject = {
 	name?: string;
+	markerProperty: BasesPropertyId;
 	image: string | Wiki;
 	height?: number;
 	minZoom?: number;
@@ -69,6 +70,7 @@ export abstract class Manager {
 export type LeafletContextMenuCallback = (latLng: LatLng) => void;
 
 export interface BasesLeafletViewSettings {
+	defaultMarkerPropertyId: string;
 	enableMeasureTool: boolean;
 	enableDragTool: boolean;
 	enableCreateNoteTool: boolean;
