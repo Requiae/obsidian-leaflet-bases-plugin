@@ -75,7 +75,7 @@ export class MapManager {
 	}
 
 	async updateSettings(settings: RequiredMapObject): Promise<void> {
-		this.markerManager.updateSettings(settings.name, settings.minZoom);
+		this.markerManager.updateSettings(settings.name, settings.markerProperty, settings.minZoom);
 
 		await this.updateImageOverlay(settings);
 		this.updateZoom(settings);

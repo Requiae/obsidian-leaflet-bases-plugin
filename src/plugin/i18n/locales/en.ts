@@ -40,10 +40,14 @@ export default {
 	view: {
 		name: "Leaflet Map",
 		options: {
-			image: "Image",
-			height: "Embedded height",
 			mapname: "Map name",
-			center: "Default center point",
+			markerProperty: "Marker property",
+			view: {
+				header: "View",
+				image: "Image",
+				height: "Embedded height",
+				center: "Default center point",
+			},
 			zoom: {
 				header: "Zoom",
 				default: "Default zoom",

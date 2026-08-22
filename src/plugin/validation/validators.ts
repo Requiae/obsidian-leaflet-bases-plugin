@@ -1,5 +1,5 @@
 import { LatLngTuple } from "leaflet";
-import { IconName } from "obsidian";
+import { BasesPropertyId, IconName } from "obsidian";
 import { Constants as C } from "@plugin/constants";
 import { Coordinates, Hex, StringMap, Url, ValidatorFunction, Wiki } from "@plugin/types";
 
@@ -7,6 +7,10 @@ type ValidatedProperties = string | Wiki | number | boolean | undefined | LatLng
 
 function stringValidator(value: unknown): value is string {
 	return typeof value === "string";
+}
+
+function basesPropertyIdValidator(value: unknown): value is BasesPropertyId {
+	return stringValidator(value) && C.regExp.basesPropertyIdValidation.test(value);
 }
 
 function sourcevalidator(value: unknown): value is string | Wiki {
@@ -29,15 +33,15 @@ function positiveNumberValidator(value: unknown): value is number {
 }
 
 function coordinatesValidator(value: unknown): value is Coordinates {
-	return typeof value === "string" && C.regExp.coordinatesValidation.test(value);
+	return stringValidator(value) && C.regExp.coordinatesValidation.test(value);
 }
 
 function iconValidator(value: unknown): value is IconName {
-	return typeof value === "string" && C.regExp.iconValidation.test(value);
+	return stringValidator(value) && C.regExp.iconValidation.test(value);
 }
 
 function colourValidator(value: unknown): value is Hex {
-	return typeof value === "string" && C.regExp.hexColourValidation.test(value);
+	return stringValidator(value) && C.regExp.hexColourValidation.test(value);
 }
 
 function booleanValidator(value: unknown): value is boolean {
@@ -59,6 +63,7 @@ function stringMapValidator(value: unknown): value is StringMap {
 
 export const Validator = {
 	string: stringValidator,
+	basesPropertyId: basesPropertyIdValidator,
 	source: sourcevalidator,
 	number: numberValidator,
 	positiveNumber: positiveNumberValidator,

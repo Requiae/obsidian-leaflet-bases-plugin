@@ -11,6 +11,7 @@ export const markerSchema: Schema<keyof MarkerObject> = {
 
 export const mapSchema: Schema<keyof MapObject> = {
 	name: { validator: Validator.string },
+	markerProperty: { validator: Validator.basesPropertyId },
 	image: { validator: Validator.source, required: true },
 	height: { validator: Validator.positiveNumber },
 	minZoom: { validator: Validator.number },

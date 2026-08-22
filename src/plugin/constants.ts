@@ -1,6 +1,7 @@
 export const Constants = {
 	map: {
 		default: {
+			markerProperty: "note.marker",
 			minZoom: 0,
 			maxZoom: 2,
 			zoomDelta: 0.5,
@@ -42,6 +43,7 @@ export const Constants = {
 		},
 	},
 	regExp: {
+		basesPropertyIdValidation: /^(note\.|formula\.|file\.)/,
 		hexColourValidation: /^#([0-9A-F]{3}){1,2}$$/i,
 		coordinatesValidation: /^\s*[0-9]+\s*,\s*[0-9]+\s*$/,
 		// eslint-disable-next-line no-useless-escape -- keep the escape for readability of the hyphen inside the character class
@@ -65,6 +67,7 @@ export const Constants = {
 		icon: "lucide-map",
 		obsidianIdentifiers: {
 			mapName: "mapName",
+			markerProperty: "markerProperty",
 			image: "image",
 			height: "height",
 			minZoom: "minZoom",
