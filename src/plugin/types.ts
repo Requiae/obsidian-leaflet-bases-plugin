@@ -70,6 +70,7 @@ export abstract class Manager {
 export type LeafletContextMenuCallback = (latLng: LatLng) => void;
 
 export interface BasesLeafletViewSettings {
+	defaultMarkerPropertyId: string;
 	enableMeasureTool: boolean;
 	enableDragTool: boolean;
 	enableCreateNoteTool: boolean;

@@ -2,6 +2,13 @@ import { MarkerModalMode } from "@plugin/types";
 
 export default {
 	settings: {
+		markers: {
+			title: "Markers",
+			defaultPropertyId: {
+				title: "Default note property",
+				description: "What note property markers are stored in by default",
+			},
+		},
 		tools: {
 			title: "Map tools",
 			measure: {

@@ -54,6 +54,7 @@ export const Constants = {
 	},
 	settings: {
 		default: {
+			defaultMarkerPropertyId: "marker",
 			enableMeasureTool: true,
 			enableDragTool: true,
 			enableCreateNoteTool: true,
