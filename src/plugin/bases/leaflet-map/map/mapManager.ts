@@ -13,7 +13,7 @@ import { parseCoordinates } from "@plugin/util";
 
 export class MapManager {
 	private mapEl: HTMLElement;
-	private leafletMap: Map;
+	private leafletMap: Map | undefined;
 	private settings: RequiredMapObject | undefined = undefined;
 
 	// Layers
@@ -66,8 +66,9 @@ export class MapManager {
 		this.markerManager.unload();
 		this.controls?.onRemove(this.leafletMap);
 		this.contextMenu.removeHooks();
-		this.leafletMap.clearAllEventListeners();
-		this.leafletMap.remove();
+		this.leafletMap?.clearAllEventListeners();
+		this.leafletMap?.remove();
+		this.leafletMap = undefined;
 	}
 
 	updateData(data: { data: BasesEntry[] }): void {
@@ -85,7 +86,7 @@ export class MapManager {
 
 		// This cleans up all sorts of remaining data from the leaflet map and fixes issues
 		// caused by making changes to the image overlay and container size
-		this.leafletMap.invalidateSize();
+		this.leafletMap?.invalidateSize();
 
 		this.settings = settings;
 	}
@@ -96,34 +97,36 @@ export class MapManager {
 		const imageData = await this.imageLoader.getImageData(settings.image);
 		if (!imageData) return;
 
-		if (this.imageOverlay) this.leafletMap.removeLayer(this.imageOverlay);
+		if (this.imageOverlay) this.leafletMap?.removeLayer(this.imageOverlay);
 		this.imageOverlay = imageOverlay(imageData.url, imageData.bounds);
 
 		this.leafletMap
-			.addLayer(this.imageOverlay)
-			.setMaxBounds(imageData.bounds)
-			.fitBounds(imageData.bounds);
-		this.leafletMap.setZoom(settings.defaultZoom, { animate: false });
+			?.addLayer(this.imageOverlay)
+			?.setMaxBounds(imageData.bounds)
+			?.fitBounds(imageData.bounds);
+		this.leafletMap?.setZoom(settings.defaultZoom, { animate: false });
 
 		if (settings.center) {
-			this.leafletMap.panTo(parseCoordinates(settings.center), { animate: false });
+			this.leafletMap?.panTo(parseCoordinates(settings.center), { animate: false });
 		}
 	}
 
 	private updateZoom(settings: RequiredMapObject): void {
-		this.leafletMap.setMinZoom(settings.minZoom);
-		this.leafletMap.setMaxZoom(settings.maxZoom);
+		this.leafletMap?.setMinZoom(settings.minZoom);
+		this.leafletMap?.setMaxZoom(settings.maxZoom);
 
-		this.leafletMap.setZoom(settings.defaultZoom, { animate: false });
+		this.leafletMap?.setZoom(settings.defaultZoom, { animate: false });
 
 		// No clue why there are no setting functions for this but mehh, this works
-		this.leafletMap.options = {
-			...this.leafletMap.options,
-			zoomDelta: settings.zoomDelta,
-			// wheelPxPerZoomLevel defaults to 60, but the actual amount is dependent on the user's scroll device
-			// This is therefore just an approximation based on the default value
-			wheelPxPerZoomLevel: 60 / settings.zoomDelta,
-		};
+		if (this.leafletMap) {
+			this.leafletMap.options = {
+				...this.leafletMap.options,
+				zoomDelta: settings.zoomDelta,
+				// wheelPxPerZoomLevel defaults to 60, but the actual amount is dependent on the user's scroll device
+				// This is therefore just an approximation based on the default value
+				wheelPxPerZoomLevel: 60 / settings.zoomDelta,
+			};
+		}
 	}
 
 	private updateCss(settings: RequiredMapObject): void {
